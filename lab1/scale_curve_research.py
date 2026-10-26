@@ -162,7 +162,7 @@ def plot_curves(summary, output_dir, *, mode="full", only_class=None, repeats=2)
             fig.text(.922,.875,"IAD  /  GA",color="#A9C6D7",
                      fontsize=10,ha="right",va="center",zorder=2)
 
-            ax = fig.add_axes((.10,.20,.84,.57))
+            ax = fig.add_axes((.10,.27,.84,.50))
             ax.set_facecolor("white")
             ax.set_axisbelow(True)
             ax.grid(axis="y",color="#E1E9F2",linewidth=1.2)
@@ -201,15 +201,15 @@ def plot_curves(summary, output_dir, *, mode="full", only_class=None, repeats=2)
                          handlelength=2.6)
             for text in lg.get_texts():
                 text.set_color("#233D58")
-            fig.text(.062,.118,
+            fig.text(.062,.124,
                     f"Общая популяция: {int(rows[0]['total_population'])}   •   "
                     f"Поколений: {int(rows[0]['generations'])}   •   "
                     f"Запусков на размерность: {repeats}",
                     color="#29425E",fontsize=10,weight="medium")
-            fig.text(.062,.077,
+            fig.text(.062,.071,
                     "Точки — измеренные значения; линии — скользящее среднее по 3 соседним размерностям",
                     color="#697D94",fontsize=9.5)
-            fig.text(.94,.078,"SMOKE" if mode=="smoke" else "РЕАЛЬНЫЕ ИЗМЕРЕНИЯ",
+            fig.text(.94,.071,"SMOKE" if mode=="smoke" else "РЕАЛЬНЫЕ ИЗМЕРЕНИЯ",
                      color="#8090A2",fontsize=9,ha="right",weight="bold")
             base=out/f"{name}_{field}"
             fig.savefig(base.with_suffix(".png"),dpi=160)

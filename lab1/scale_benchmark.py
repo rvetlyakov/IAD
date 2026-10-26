@@ -381,6 +381,8 @@ def plot_comparison(summary, output_dir):
             ax.set_title(f"{name}: matched total population and generations")
             ax.set_xlabel("Assignment matrix size n x n")
             ax.set_ylabel(y_label)
+            # Avoid exaggerating tiny improvements with a truncated vertical axis.
+            ax.set_ylim(bottom=0)
             ax.legend()
             ax.grid(alpha=0.25)
             fig.tight_layout()

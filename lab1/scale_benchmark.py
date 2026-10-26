@@ -335,6 +335,59 @@ def _write_csv(path, rows):
         writer.writerows(rows)
 
 
+
+def summarize_comparison(rows):
+    groups = {}
+    for row in rows:
+        groups.setdefault((row["class"], row["size"], row["variant"]), []).append(row)
+    summary = []
+    for (name, size, variant), group in sorted(groups.items()):
+        summary.append({
+            "class": name, "size": size, "variant": variant,
+            "runs": len(group),
+            "mean_relative_gap": statistics.mean(x["relative_gap"] for x in group),
+            "optimal_rate": statistics.mean(x["relative_gap"] == 0 for x in group),
+            "mean_seconds": statistics.mean(x["elapsed_seconds"] for x in group),
+            "total_population": group[0]["total_population"],
+            "generations": group[0]["generations"],
+        })
+    return summary
+
+
+def plot_comparison(summary, output_dir):
+    """Plots reflect measured holdout data only; smoke output is labeled."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+
+    plots = output_dir / "plots"
+    plots.mkdir(exist_ok=True)
+    classes = sorted(set(row["class"] for row in summary))
+    for name in classes:
+        for key, y_label, multiplier in (
+            ("mean_relative_gap", "Mean relative error (%)", 100),
+            ("mean_seconds", "Wall-clock time including multiprocessing overhead (s)", 1),
+        ):
+            fig, ax = plt.subplots(figsize=(9, 5))
+            for variant in ("single", "islands"):
+                subset = sorted(
+                    (row for row in summary if row["class"] == name and
+                     row["variant"] == variant),
+                    key=lambda x: x["size"]
+                )
+                ax.plot([row["size"] for row in subset],
+                        [row[key] * multiplier for row in subset],
+                        marker="o", label=variant)
+            ax.set_title(f"{name}: matched total population and generations")
+            ax.set_xlabel("Assignment matrix size n x n")
+            ax.set_ylabel(y_label)
+            ax.legend()
+            ax.grid(alpha=0.25)
+            fig.tight_layout()
+            fig.savefig(plots / f"{name}_{key}.png", dpi=140)
+            plt.close(fig)
+
+
 def run_study(mode: str = "smoke", output_dir: Path | str = "results/scale_benchmark",
               seed: int = 20261026, workers: int = 2,
               repeats: int | None = None):
@@ -399,6 +452,9 @@ def run_study(mode: str = "smoke", output_dir: Path | str = "results/scale_bench
         # Write partial confirmed results per class in case a full run is interrupted.
         _write_csv(folder / "tuning.csv", tuning)
         _write_csv(folder / "comparison.csv", report["comparison"])
+        summary = summarize_comparison(report["comparison"])
+        _write_csv(folder / "summary.csv", summary)
+        plot_comparison(summary, folder)
         (folder / "best_parameters.json").write_text(
             json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
         )

@@ -215,6 +215,79 @@ def plot_curves(summary, output_dir, *, mode="full", only_class=None, repeats=2)
             fig.savefig(base.with_suffix(".png"),dpi=160)
             fig.savefig(base.with_suffix(".svg"))
             plt.close(fig)
+        plot_quality_difference(rows, out, name, mode, repeats)
+
+
+def plot_quality_difference(rows, folder, class_name, mode, repeats):
+    """Dedicated difference chart when zero-based error curves overlap."""
+    import matplotlib
+    matplotlib.use("Agg")
+    import matplotlib.pyplot as plt
+    from matplotlib.patches import FancyBboxPatch
+
+    plt.rcParams.update({
+        "font.family": "Montserrat", "font.size": 11,
+        "axes.unicode_minus": False, "svg.fonttype": "none",
+        "savefig.facecolor": "#F6F8FC",
+    })
+    xvals=sorted({int(r["size"]) for r in rows})
+    lookup={(int(r["size"]),r["variant"]):r for r in rows}
+    advantage=[
+        (float(lookup[n,"single"]["mean_relative_gap"])-
+         float(lookup[n,"islands"]["mean_relative_gap"]))*100
+        for n in xvals
+    ]
+    moving=centered_running_mean(advantage) if len(advantage)>=3 else advantage
+
+    fig=plt.figure(figsize=(13.333,7.5),dpi=160,facecolor="#F6F8FC")
+    head=FancyBboxPatch((.035,.83),.93,.135,transform=fig.transFigure,
+              boxstyle="round,pad=0.004,rounding_size=0.018",
+              facecolor="#132A44",edgecolor="none",zorder=1)
+    fig.patches.append(head)
+    fig.text(.062,.925,"СРАВНЕНИЕ ОТКЛОНЕНИЙ",color="#72D6D3",
+             fontsize=10,fontweight="bold",va="center",zorder=2)
+    fig.text(.062,.865,TITLES[class_name],color="white",
+             fontsize=24,fontweight="bold",va="center",zorder=2)
+    fig.text(.922,.875,"IAD  /  GA",color="#A9C6D7",
+             fontsize=10,ha="right",va="center",zorder=2)
+
+    ax=fig.add_axes((.10,.27,.84,.50))
+    ax.set_facecolor("white")
+    ax.set_axisbelow(True)
+    ax.grid(axis="y",color="#E1E9F2",linewidth=1.2)
+    ax.grid(axis="x",color="#F0F3F8",linewidth=.8)
+    ax.axhline(0,color="#71859C",linewidth=1.5,linestyle=(0,(4,4)))
+    ax.plot(xvals,moving,color="#00B5AB",linewidth=3.4,
+            solid_capstyle="round",label="Преимущество островной модели")
+    ax.scatter(xvals,advantage,facecolor="#00B5AB",s=34,alpha=.45,
+               linewidths=.7,edgecolors="white",zorder=5)
+    ax.fill_between(xvals,0,moving,color="#00B5AB",alpha=.13)
+    span=max(1, max(abs(v) for v in advantage+moving)*1.23)
+    ax.set_ylim(-span,span)
+    ax.set_xlim(xvals[0],xvals[-1])
+    ax.set_xticks(xvals[::2]+([] if len(xvals)%2 else [xvals[-1]]))
+    ax.set_xlabel("Размерность матрицы  n × n",color="#253D5B",
+                  labelpad=14,fontsize=12)
+    ax.set_ylabel("Разница отклонений, п.п.",color="#253D5B",
+                  labelpad=13,fontsize=11)
+    ax.tick_params(colors="#526782",labelsize=10,length=0,pad=8)
+    for e in ("top","right","left","bottom"):
+        ax.spines[e].set_visible(False)
+    legend=ax.legend(loc="upper left",facecolor="white",edgecolor="#E0EAF5",
+                     fontsize=11,borderpad=.85)
+    for text in legend.get_texts(): text.set_color("#233D58")
+    fig.text(.062,.124,
+             "Выше нуля — островной ГА точнее; ниже нуля — обычный ГА точнее",
+             color="#29425E",fontsize=10,weight="medium")
+    fig.text(.062,.071,
+             f"11 измеренных размерностей, {repeats} запуска на каждую  •  сглаживание 3 точки",
+             color="#697D94",fontsize=9.5)
+    fig.text(.94,.071,"SMOKE" if mode=="smoke" else "РЕАЛЬНЫЕ ИЗМЕРЕНИЯ",
+             color="#8090A2",fontsize=9,ha="right",weight="bold")
+    base=folder/f"{class_name}_quality_advantage"
+    fig.savefig(base.with_suffix(".png"),dpi=160)
+    fig.savefig(base.with_suffix(".svg"))
+    plt.close(fig)
 
 
 def main():

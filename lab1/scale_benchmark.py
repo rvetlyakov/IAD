@@ -126,13 +126,13 @@ def _evolve_island(task):
         if len(ga.population) != ga.n:
             # Migration immediately triggers selection, as in the original island GA.
             ga.select()
-    best_cost = ga.get_best()[1]
+    best_cost = int(ga.get_best()[1])
     for _ in range(steps):
         ga.mutate()
         # Remember improvements even if a new mutation loses the RSS lottery.
-        best_cost = min(best_cost, ga.get_best()[1])
+        best_cost = min(best_cost, int(ga.get_best()[1]))
         ga.select()
-        best_cost = min(best_cost, ga.get_best()[1])
+        best_cost = min(best_cost, int(ga.get_best()[1]))
     return [v.vector for v in ga.population], best_cost
 
 
@@ -227,8 +227,8 @@ def run_variant(matrix, settings: dict, seed: int, workers: int = 2) -> RunResul
     cost = min(best_seen, *(assignment_cost(matrix, chromosome)
                 for state in states for chromosome in state))
     elapsed = time.perf_counter() - started
-    return RunResult(cost, elapsed, total, generations,
-                     actual_workers, islands > 1 and actual_workers > 1)
+    return RunResult(int(cost), float(elapsed), int(total), int(generations),
+                     int(actual_workers), bool(islands > 1 and actual_workers > 1))
 
 
 def evaluate_pair(matrix, common_settings: dict, island_settings: dict,
@@ -260,7 +260,7 @@ def evaluate_pair(matrix, common_settings: dict, island_settings: dict,
             "generations": result.generations,
             "exact_cost": exact,
             "ga_cost": result.cost,
-            "relative_gap": (result.cost - exact) / exact,
+            "relative_gap": float((result.cost - exact) / exact),
             "elapsed_seconds": result.elapsed_seconds,
             "workers": result.workers,
             "parallel": result.parallel,

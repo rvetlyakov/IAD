@@ -33,9 +33,9 @@ SIZE_CLASSES = {
 }
 TRAIN_SIZES = {"small": 30, "medium": 300, "large": 1500}
 VALIDATE_SIZES = {
-    "small": (10, 50),
-    "medium": (100, 500),
-    "large": (1000, 2000),
+    "small": (10, 20, 30, 40, 50),
+    "medium": (100, 200, 300, 400, 500),
+    "large": (1000, 1250, 1500, 1750, 2000),
 }
 SMOKE_TRAIN = {"small": 4, "medium": 7, "large": 10}
 SMOKE_VALIDATE = {
@@ -126,10 +126,14 @@ def _evolve_island(task):
         if len(ga.population) != ga.n:
             # Migration immediately triggers selection, as in the original island GA.
             ga.select()
+    best_cost = ga.get_best()[1]
     for _ in range(steps):
         ga.mutate()
+        # Remember improvements even if a new mutation loses the RSS lottery.
+        best_cost = min(best_cost, ga.get_best()[1])
         ga.select()
-    return [v.vector for v in ga.population]
+        best_cost = min(best_cost, ga.get_best()[1])
+    return [v.vector for v in ga.population], best_cost
 
 
 def _migrate(states, sizes, matrix, percent):
@@ -180,12 +184,23 @@ def run_variant(matrix, settings: dict, seed: int, workers: int = 2) -> RunResul
         raise ValueError("expected square cost matrix")
 
     started = time.perf_counter()
-    states = [None] * islands
+    # Identical N initial chromosomes for the ordinary and island variants.
+    initial_rng = random.Random(seed)
+    initial = [initial_rng.sample(range(len(matrix)), len(matrix))
+               for _ in range(total)]
+    states = []
+    cursor = 0
+    for size in sizes:
+        states.append(initial[cursor:cursor + size])
+        cursor += size
+    best_seen = min(assignment_cost(matrix, chromosome)
+                    for chromosome in initial)
     if islands == 1:
         _install_matrix(matrix)
-        states[0] = _evolve_island(
-            (None, sizes[0], settings, generations, seed)
+        states[0], epoch_best = _evolve_island(
+            (states[0], sizes[0], settings, generations, seed + 1)
         )
+        best_seen = min(best_seen, epoch_best)
     else:
         # Persistent processes, matrix transferred once in pool initializer.
         with ProcessPoolExecutor(
@@ -202,13 +217,15 @@ def run_variant(matrix, settings: dict, seed: int, workers: int = 2) -> RunResul
                      seed + 1009 * i + 100003 * epoch)
                     for i in range(islands)
                 ]
-                states = list(executor.map(_evolve_island, tasks))
+                outcomes = list(executor.map(_evolve_island, tasks))
+                states = [population for population, _ in outcomes]
+                best_seen = min(best_seen, *(best for _, best in outcomes))
                 offset += steps
                 if offset < generations:
                     states = _migrate(states, sizes, matrix, percent)
                 epoch += 1
-    cost = min(assignment_cost(matrix, chromosome)
-               for state in states for chromosome in state)
+    cost = min(best_seen, *(assignment_cost(matrix, chromosome)
+                for state in states for chromosome in state))
     elapsed = time.perf_counter() - started
     return RunResult(cost, elapsed, total, generations,
                      actual_workers, islands > 1 and actual_workers > 1)

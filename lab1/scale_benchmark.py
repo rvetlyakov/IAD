@@ -346,7 +346,7 @@ def summarize_comparison(rows):
             "class": name, "size": size, "variant": variant,
             "runs": len(group),
             "mean_relative_gap": statistics.mean(x["relative_gap"] for x in group),
-            "optimal_rate": statistics.mean(x["relative_gap"] == 0 for x in group),
+            "optimal_rate": statistics.mean(int(x["relative_gap"] == 0) for x in group),
             "mean_seconds": statistics.mean(x["elapsed_seconds"] for x in group),
             "total_population": group[0]["total_population"],
             "generations": group[0]["generations"],

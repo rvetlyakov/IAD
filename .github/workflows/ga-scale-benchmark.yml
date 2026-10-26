@@ -1,0 +1,67 @@
+name: GA scale and island benchmark
+
+on:
+  push:
+    branches:
+      - "fix/scale-island-*"
+  pull_request:
+    paths:
+      - "lab1/scale_benchmark.py"
+      - "tests/test_scale_benchmark.py"
+      - ".github/workflows/ga-scale-benchmark.yml"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Technical smoke or full 100-2000 benchmark"
+        type: choice
+        required: true
+        default: smoke
+        options:
+          - smoke
+          - full
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install scientific dependencies
+        run: python -m pip install numpy scipy matplotlib nbformat nbclient nbconvert ipykernel
+      - name: Verify Python modules compile
+        run: python -m compileall -q lab1 tests
+      - name: Run complete regression suite
+        run: python -m unittest discover -s tests -v
+      - name: Run tiny multiprocess benchmark
+        run: python -u lab1/scale_benchmark.py --mode smoke --workers 2 --output-dir results/scale_benchmark_smoke
+      - name: Upload explicitly labeled smoke artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scale-benchmark-smoke
+          path: results/scale_benchmark_smoke/
+          if-no-files-found: ignore
+
+  full:
+    if: github.event_name == 'workflow_dispatch' && inputs.mode == 'full'
+    runs-on: ubuntu-latest
+    timeout-minutes: 330
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install runtime dependencies
+        run: python -m pip install numpy scipy matplotlib
+      - name: Run full 100-2000 study
+        run: python -u lab1/scale_benchmark.py --mode full --workers 2 --repeats 2 --output-dir results/scale_benchmark_full
+      - name: Preserve finished classes and plots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scale-benchmark-full
+          path: results/scale_benchmark_full/
+          if-no-files-found: ignore

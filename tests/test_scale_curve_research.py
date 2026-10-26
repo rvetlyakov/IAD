@@ -33,7 +33,7 @@ class CurveResearchTests(unittest.TestCase):
             self.assertTrue((root/"raw.csv").exists())
             self.assertEqual(len(build_summary(rows)), 12)
             plot_curves(build_summary(rows), root/"plots", mode="smoke")
-            self.assertEqual(len(list((root/"plots").glob("*.png"))), 6)
+            self.assertEqual(len(list((root/"plots").glob("*.png"))), 9)
             self.assertGreater(min(p.stat().st_size for p in (root/"plots").glob("*.png")), 20000)
             report=json.loads((root/"metadata.json").read_text())
             self.assertEqual(report["mode"],"smoke")

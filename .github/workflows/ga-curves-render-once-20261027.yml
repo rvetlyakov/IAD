@@ -1,0 +1,47 @@
+name: Rerender nine verified presentation graphs
+
+on:
+  push:
+    branches:
+      - "fix/scale-island-benchmark-20261026"
+    paths:
+      - ".github/workflows/ga-curves-render-once-20261027.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install Montserrat and plotting libraries
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y fonts-montserrat
+          python -m pip install 'numpy>=2.1,<3' 'scipy>=1.14,<2' 'matplotlib>=3.9,<4'
+      - name: Test figure layout and generate from existing measured CSV
+        run: |
+          python -m unittest discover -s tests -p test_scale_curve_research.py -v
+          python - <<'PY'
+          import csv,sys
+          from pathlib import Path
+          sys.path.insert(0,'lab1')
+          from scale_curve_research import plot_curves
+          d=Path('results/scale_curves_100_2000')
+          rows=list(csv.DictReader((d/'summary.csv').open()))
+          plot_curves(rows,d/'plots',mode='full',repeats=2)
+          assert len(list((d/'plots').glob('*.png')))==9
+          assert len(list((d/'plots').glob('*.svg')))==9
+          print('Rebuilt nine plots from observed measurements')
+          PY
+      - name: Commit rerendered graphs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f results/scale_curves_100_2000/plots
+          git commit -m "viz: corrected labels and added nine high-quality comparison charts"
+          git push origin HEAD:fix/scale-island-benchmark-20261026

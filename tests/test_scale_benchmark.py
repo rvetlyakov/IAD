@@ -50,6 +50,16 @@ class ScaleBenchmarkTests(unittest.TestCase):
         self.assertGreaterEqual(islands.cost, 6)
         self.assertTrue(islands.parallel)
 
+    def test_same_initial_budget_preserves_optimal_initial_chromosome(self):
+        # Elitism 100% makes this a controlled test of initial chromosomes,
+        # not a test of probabilistic selection or mutation.
+        matrix = generate_matrix(6, 1234)
+        params = dict(BASELINE, total_population=12, max_generations=1,
+                      mutation_probability=0.0, elitist_percent=1.0)
+        single = run_variant(matrix, dict(params, num_islands=1), seed=333)
+        islands = run_variant(matrix, dict(params, num_islands=3), seed=333)
+        self.assertEqual(single.cost, islands.cost)
+
     def test_comparison_uses_same_reference_and_matrix(self):
         matrix = generate_matrix(5, 91)
         params = dict(BASELINE, total_population=12, max_generations=4,

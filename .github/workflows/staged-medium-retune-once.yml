@@ -1,0 +1,99 @@
+name: "GA medium: retune generations then frozen OFAT"
+on:
+  push:
+    branches:
+      - "research/dense-ofat-20261027"
+    paths:
+      - ".github/workflows/staged-medium-retune-once.yml"
+permissions:
+  contents: write
+jobs:
+  medium:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install scientific stack and Montserrat
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y fonts-montserrat
+          python -m pip install 'numpy>=2,<3' 'scipy>=1.14,<2' 'matplotlib>=3.9,<4'
+      - name: Re-run full suite and tuning-specific regression tests
+        run: |
+          python -m unittest discover -s tests -v
+          python -m compileall -q lab1/staged_tuning.py lab1/staged_charts.py
+      - name: Measure all 15 combinations of G up to 1000 and K on six train matrices
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+          OMP_NUM_THREADS: '1'
+        run: |
+          python -u lab1/staged_tuning.py --class-name medium --stage train --output results/staged_tuning_v2
+      - name: Coordinate-refine remaining active factors on training matrices
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+          OMP_NUM_THREADS: '1'
+        run: |
+          python -u lab1/staged_tuning.py --class-name medium --stage refine --rounds 1 --output results/staged_tuning_v2
+      - name: Freeze selected medium baseline; strict one-factor sweep at 16 sizes
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+          OMP_NUM_THREADS: '1'
+        run: |
+          python -u lab1/staged_tuning.py --class-name medium --stage ofat --output results/staged_tuning_v2
+      - name: Evaluate frozen settings on six new independent matrices
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+          OMP_NUM_THREADS: '1'
+        run: |
+          python -u lab1/staged_tuning.py --class-name medium --stage holdout --output results/staged_tuning_v2
+      - name: Draw actual medium-only smooth plots, without slide headings
+        run: |
+          python -u lab1/staged_charts.py --root results/staged_tuning_v2
+      - name: Validate true measurements and independent matrix partitions
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import csv,json
+          import sys
+          sys.path.insert(0, 'lab1')
+          from staged_tuning import LEVELS,SEEDS,CLASS_GRID
+          root=Path('results/staged_tuning_v2')
+          load=lambda p:list(csv.DictReader((root/p).open()))
+          train=load('medium_train.csv')
+          ofat=load('medium_ofat.csv')
+          hold=load('medium_holdout.csv')
+          meta=json.loads((root/'medium_frozen_baseline.json').read_text())
+          assert len(train)==3*2*5*3,len(train)
+          assert len(ofat)==len(CLASS_GRID['medium'])*sum(map(len,LEVELS.values()))
+          assert len(hold)==2*3*3,len(hold)
+          assert int(meta['selected_settings']['generations']) in (100,250,500,750,1000)
+          assert len(list((root/'plots').glob('*.png')))==2*len(LEVELS)
+          assert len(list((root/'plots').glob('*.svg')))==2*len(LEVELS)
+          for row in ofat:
+              b=json.loads(row['context_json']);c=json.loads(row['settings_json'])
+              assert {k for k in b if b[k]!=c[k]}<={row['parameter']}
+          seeds=lambda rows:{r['matrix_seed'] for r in rows}
+          assert not (seeds(train)&seeds(ofat) or seeds(train)&seeds(hold) or seeds(ofat)&seeds(hold))
+          print('PASS: full medium tuning, strict 16-point OFAT and unseen holdout')
+          PY
+      - name: Publish measured results to review branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f results/staged_tuning_v2
+          git commit -m "results: train medium G up to 1000, freeze settings, and draw verified error/time chart pairs"
+          git fetch origin research/dense-ofat-20261027
+          git rebase origin/research/dense-ofat-20261027
+          git push origin HEAD:research/dense-ofat-20261027
+      - name: Save research data if interrupted
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: medium-G1000-frozen-OFAT
+          path: results/staged_tuning_v2
+          if-no-files-found: warn
+          retention-days: 90

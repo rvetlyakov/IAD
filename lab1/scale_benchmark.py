@@ -90,6 +90,10 @@ def assignment_cost(matrix, vector) -> int:
 
 
 def exact_cost(matrix: np.ndarray) -> int:
+    """Exact assignment cost for Python nested lists or NumPy square arrays."""
+    matrix = np.asarray(matrix, dtype=np.int64)
+    if matrix.ndim != 2 or matrix.shape[0] != matrix.shape[1]:
+        raise ValueError("Expected a square cost matrix")
     rows, cols = linear_sum_assignment(matrix)
     return int(np.sum(matrix[rows, cols], dtype=np.int64))
 

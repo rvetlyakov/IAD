@@ -16,8 +16,8 @@ from staged_tuning import CLASS_GRID,LEVELS,read
 
 COLORS=["#155A9D","#17907C","#E07F39","#914992","#C6535B"]
 AREAS={"small":"#E9F6F2","medium":"#EAF1FA","large":"#FAEFED"}
-AREA_LABELS={"small":"малые · 2–99","medium":"средние · 100–499",
-             "large":"большие · 500–2000"}
+AREA_LABELS={"small":"малые · 2–99","medium":"средние · 100–500",
+             "large":"большие · 1000–2000"}
 SIZES={key:len(x) for key,x in CLASS_GRID.items()}
 
 def render(out):

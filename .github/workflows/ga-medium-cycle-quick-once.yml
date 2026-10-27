@@ -1,0 +1,59 @@
+name: "GA medium three-cycle independent quick validation"
+on:
+  push:
+    branches:
+      - "fix/medium-3cycle-improvement-20261028"
+    paths:
+      - ".github/workflows/ga-medium-cycle-quick-once.yml"
+permissions:
+  contents: write
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install SciPy
+        run: python -m pip install 'numpy>=2,<3' 'scipy>=1.14,<2'
+      - name: Run 30 paired medium trials
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+        run: python -u lab1/medium_cycle_quick_verify.py
+      - name: Check observations
+        run: |
+          python - <<'PY'
+          import csv,json
+          from pathlib import Path
+          d=Path('results/medium_cycle_holdout_verified_20261028')
+          rows=list(csv.DictReader((d/'raw.csv').open()))
+          assert len(rows)==30
+          m=json.loads((d/'metadata.json').read_text())
+          assert len(m['comparison'])==6
+          assert all(int(r['population'])==120 and int(r['generations'])==250 for r in rows)
+          assert all(int(r['local_calls'])==10 for r in rows)
+          for i in range(0,len(rows),2):
+              a,b=rows[i:i+2]
+              c=json.loads(a['settings_json']); e=json.loads(b['settings_json'])
+              assert {k for k in c if c[k]!=e[k]}=={'cycle3'}
+          print('PASS: 30 real runs, only cycle3 toggled')
+          PY
+      - name: Commit measured data to review branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f results/medium_cycle_holdout_verified_20261028
+          git commit -m "results: 30 paired medium GA experiments with independent seeds"
+          git fetch origin fix/medium-3cycle-improvement-20261028
+          git rebase origin/fix/medium-3cycle-improvement-20261028
+          git push origin HEAD:fix/medium-3cycle-improvement-20261028
+      - name: Upload CSV and metadata even on partial failure
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: medium-cycle-quick-verified-csv
+          path: results/medium_cycle_holdout_verified_20261028
+          if-no-files-found: ignore
+          retention-days: 90

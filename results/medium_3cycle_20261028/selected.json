@@ -1,0 +1,39 @@
+{
+  "method": "minimum paired TRAIN mean error; ties shortest wall time",
+  "selection": {
+    "k": 16,
+    "passes": 1,
+    "mean_error_pct": 32.573971777559876,
+    "mean_seconds": 0.6384836476666701,
+    "count": 6
+  },
+  "selected_settings": {
+    "population": 120,
+    "generations": 250,
+    "mutation_prob": 0.7,
+    "inversion_pct": 2,
+    "elitism": 0.2,
+    "selection": "rank",
+    "rank_power": 2,
+    "adaptive": true,
+    "adaptive_horizon": 250,
+    "adaptive_long_pct": 20.0,
+    "adaptive_long_prob": 0.05,
+    "local_every": 25,
+    "local_top": 1,
+    "local_passes": 2,
+    "local_candidates": 16,
+    "cycle3": true,
+    "cycle3_passes": 1,
+    "islands": 1,
+    "migration_interval": 25,
+    "migration_pct": 0.1
+  },
+  "training_sizes": [
+    150,
+    300,
+    450
+  ],
+  "training_repeats": 2,
+  "validation_disjoint": "SURVEY and HOLDOUT use different matrix seeds"
+}

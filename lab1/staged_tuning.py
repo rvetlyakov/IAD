@@ -296,21 +296,48 @@ def validate(group,root,workers=2):
     m=json.loads((root/f"{group}_frozen_baseline.json").read_text())
     base=Config(**m["starting_settings"])
     selected=Config(**m["selected_settings"])
+    island_cfg=Config(**m["island_settings"]) if "island_settings" in m else None
+    if island_cfg is not None:
+        for key in ("population","generations","local_every","local_top",
+                    "local_passes","local_candidates","cycle3","cycle3_passes"):
+            if getattr(selected,key)!=getattr(island_cfg,key):
+                raise AssertionError(f"Unfair single/island comparison: {key}")
     rows=[]
     for n in HOLDOUT[group]:
         for repeat,token in enumerate(SEEDS["holdout"]):
             mat_seed=_seed(n,token,"holdout")
             a,opt=problem(n,mat_seed)
-            for name,cfg in [("before",base),("after",selected)]+(
-                [("after_islands",Config(**m["island_settings"]))]
-                if "island_settings" in m else []):
+            variants=[("before",base),("after",selected)]
+            if island_cfg is not None:variants.append(("after_islands",island_cfg))
+            pair={}
+            for name,cfg in variants:
                 ans,err=evaluate(a,opt,cfg,mat_seed+9,workers)
+                if name in ("after","after_islands"):
+                    pair[name]=ans["local_calls"]
                 rows.append({"class_name":group,"n":n,"repeat":repeat,
                     "variant":name,"cost":ans["cost"],"exact":opt,
                     "error_pct":err,"seconds":ans["seconds"],
+                    "population":ans["total_population"],
+                    "generations":ans["generations"],
+                    "local_calls":ans["local_calls"],
+                    "num_islands":ans["num_islands"],
                     "matrix_seed":mat_seed,"ga_seed":mat_seed+9,
                     "settings_json":json.dumps(asdict(cfg),sort_keys=True)})
+            if "after_islands" in pair:
+                assert pair["after"]==pair["after_islands"],(n,repeat,pair)
         save(root/f"{group}_holdout.csv",rows)
+    aggregate=[]
+    for name in ("before","after","after_islands"):
+        sample=[r for r in rows if r["variant"]==name]
+        if sample:
+            aggregate.append(dict(class_name=group,variant=name,
+                observed_runs=len(sample),
+                mean_error_pct=mean(r["error_pct"] for r in sample),
+                mean_seconds=mean(r["seconds"] for r in sample),
+                mean_local_calls=mean(r["local_calls"] for r in sample),
+                total_population=sample[0]["population"],
+                generations=sample[0]["generations"]))
+    save(root/f"{group}_holdout_comparison.csv",aggregate)
     return rows
 
 # Values found on larger/smaller training groups are candidates, never

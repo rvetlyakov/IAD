@@ -1,0 +1,201 @@
+{
+  "phase": "selected exclusively on training matrices",
+  "class": "medium",
+  "starting_settings": {
+    "population": 240,
+    "generations": 100,
+    "mutation_prob": 0.7,
+    "inversion_pct": 20.0,
+    "elitism": 0.0,
+    "selection": "raw",
+    "rank_power": 4.0,
+    "adaptive": true,
+    "adaptive_horizon": 500,
+    "adaptive_long_pct": 20.0,
+    "adaptive_long_prob": 0.05,
+    "local_every": 30,
+    "local_top": 4,
+    "local_passes": 1,
+    "local_candidates": 8,
+    "islands": 1,
+    "migration_interval": 15,
+    "migration_pct": 0.1
+  },
+  "selected_settings": {
+    "population": 240,
+    "generations": 1000,
+    "mutation_prob": 1.0,
+    "inversion_pct": 5.0,
+    "elitism": 0.0,
+    "selection": "raw",
+    "rank_power": 4.0,
+    "adaptive": true,
+    "adaptive_horizon": 100,
+    "adaptive_long_pct": 20.0,
+    "adaptive_long_prob": 0.05,
+    "local_every": 5,
+    "local_top": 4,
+    "local_passes": 1,
+    "local_candidates": 8,
+    "islands": 1,
+    "migration_interval": 15,
+    "migration_pct": 0.1
+  },
+  "winner": {
+    "generations": 1000,
+    "local_candidates": 8,
+    "mean_error_pct": 107.78218424495529,
+    "mean_seconds": 2.031217164999996,
+    "samples": 6
+  },
+  "train_sizes": [
+    150,
+    300,
+    450
+  ],
+  "train_repeats": 2,
+  "training_grid": [
+    {
+      "generations": 1000,
+      "local_candidates": 8,
+      "mean_error_pct": 107.78218424495529,
+      "mean_seconds": 2.031217164999996,
+      "samples": 6
+    },
+    {
+      "generations": 750,
+      "local_candidates": 8,
+      "mean_error_pct": 109.99482037236763,
+      "mean_seconds": 1.518778310666664,
+      "samples": 6
+    },
+    {
+      "generations": 500,
+      "local_candidates": 8,
+      "mean_error_pct": 114.38358041703361,
+      "mean_seconds": 1.0068604383333302,
+      "samples": 6
+    },
+    {
+      "generations": 250,
+      "local_candidates": 8,
+      "mean_error_pct": 116.52949508006573,
+      "mean_seconds": 0.5052887820000009,
+      "samples": 6
+    },
+    {
+      "generations": 1000,
+      "local_candidates": 16,
+      "mean_error_pct": 117.76070867521204,
+      "mean_seconds": 2.2280764329999982,
+      "samples": 6
+    },
+    {
+      "generations": 1000,
+      "local_candidates": 32,
+      "mean_error_pct": 118.67691464775575,
+      "mean_seconds": 2.6085289831666665,
+      "samples": 6
+    },
+    {
+      "generations": 100,
+      "local_candidates": 8,
+      "mean_error_pct": 119.66242437289704,
+      "mean_seconds": 0.20661238133333745,
+      "samples": 6
+    },
+    {
+      "generations": 750,
+      "local_candidates": 32,
+      "mean_error_pct": 121.80203331113148,
+      "mean_seconds": 1.9683226923333355,
+      "samples": 6
+    },
+    {
+      "generations": 750,
+      "local_candidates": 16,
+      "mean_error_pct": 124.97097229730471,
+      "mean_seconds": 1.6726726663333384,
+      "samples": 6
+    },
+    {
+      "generations": 500,
+      "local_candidates": 16,
+      "mean_error_pct": 127.41710826413225,
+      "mean_seconds": 1.1101343424999979,
+      "samples": 6
+    },
+    {
+      "generations": 250,
+      "local_candidates": 16,
+      "mean_error_pct": 132.38492486998797,
+      "mean_seconds": 0.5551879566666701,
+      "samples": 6
+    },
+    {
+      "generations": 100,
+      "local_candidates": 16,
+      "mean_error_pct": 134.2300510207669,
+      "mean_seconds": 0.22359250383333537,
+      "samples": 6
+    },
+    {
+      "generations": 500,
+      "local_candidates": 32,
+      "mean_error_pct": 136.24008874102648,
+      "mean_seconds": 1.2930529226666738,
+      "samples": 6
+    },
+    {
+      "generations": 250,
+      "local_candidates": 32,
+      "mean_error_pct": 139.02858738753068,
+      "mean_seconds": 0.6496396348333325,
+      "samples": 6
+    },
+    {
+      "generations": 100,
+      "local_candidates": 32,
+      "mean_error_pct": 141.26007753325433,
+      "mean_seconds": 0.25975004966667,
+      "samples": 6
+    }
+  ],
+  "island_settings": {
+    "population": 240,
+    "generations": 1000,
+    "mutation_prob": 1.0,
+    "inversion_pct": 5.0,
+    "elitism": 0.0,
+    "selection": "raw",
+    "rank_power": 4.0,
+    "adaptive": true,
+    "adaptive_horizon": 100,
+    "adaptive_long_pct": 20.0,
+    "adaptive_long_prob": 0.05,
+    "local_every": 5,
+    "local_top": 4,
+    "local_passes": 1,
+    "local_candidates": 8,
+    "islands": 8,
+    "migration_interval": 50,
+    "migration_pct": 0.1
+  },
+  "refine_rounds": 1,
+  "refine_order": [
+    "selection",
+    "rank_power",
+    "adaptive",
+    "adaptive_horizon",
+    "mutation_prob",
+    "inversion_pct",
+    "elitism",
+    "population",
+    "local_every",
+    "local_candidates",
+    "local_passes",
+    "local_top",
+    "generations"
+  ],
+  "refinement_method": "strict one-coordinate training search; no test or survey matrices"
+}

@@ -82,7 +82,10 @@ distance - integer - разность между нашим и оптималь�
                           t=tournament_size)
 
     iteration = 0
-    fitness_history = []
+    # One history entry before the first generation: plateau_limit counts
+    # actual transitions rather than requiring an extra generation.
+    fitness_history = [evolution.fitness()]
+    _, best_cost = evolution.get_best()
 
     # === ГЛАВНЫЙ ЦИКЛ ЭВОЛЮЦИИ ===
     while iteration < max_iterations:
@@ -90,7 +93,13 @@ distance - integer - разность между нашим и оптималь�
         # Независимая эволюция на каждом острове
 
         evolution.mutate()  # Мутация
+        # Preserve the best *visited* solution, including a mutant that RSS
+        # later drops. This matches the scale benchmark's score definition.
+        _, trial_cost = evolution.get_best()
+        best_cost = min(best_cost, trial_cost)
         evolution.select()  # Отбор лучших
+        _, trial_cost = evolution.get_best()
+        best_cost = min(best_cost, trial_cost)
         iteration += 1
 
         # Считаем среднюю приспособленность
@@ -103,7 +112,7 @@ distance - integer - разность между нашим и оптималь�
         # print(f"-> Достигнут лимит в {max_iterations} итераций.")
 
     # 2. Ищем наилучшее решение
-    best_vector, best_cost = evolution.get_best()
+    best_vector, _ = evolution.get_best()
 
     # === НАХОЖДЕНИЕ ЭТАЛОНА ===
     n_size = len(matrix)

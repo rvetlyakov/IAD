@@ -42,7 +42,7 @@ def validate(A, c):
         raise ValueError("selection must be raw or positive-power rank RSS")
     if not 0<=c.adaptive_long_prob<=1 or not 0<c.adaptive_long_pct<=100:
         raise ValueError("invalid adaptive mutation controls")
-    if c.local_every<0 or c.local_top<1 or c.local_passes<1 or c.local_candidates<1:
+    if c.local_every<0 or c.local_top<0 or c.local_top>c.population or c.local_passes<1 or c.local_candidates<1:
         raise ValueError("invalid local search controls")
     if c.migration_interval<1 or not 0<=c.migration_pct<=1:
         raise ValueError("invalid migration controls")
@@ -146,7 +146,8 @@ def best_columns(a,k):
     return np.take_along_axis(cand,ordered,axis=1)
 
 def _evolve(state):
-    a,pop,c,begin,steps,rng_state,columns,best=state
+    a,pop,c,begin,steps,rng_state,columns,best,island_id=state
+    local_calls=0
     rng=np.random.default_rng()
     rng.bit_generator.state=rng_state
     pc=costs(a,pop)
@@ -158,7 +159,12 @@ def _evolve(state):
         if int(pc[arg])<best[0]:
             best=(int(pc[arg]),pool[arg].copy())
         if c.local_every and (gen+1)%c.local_every==0:
-            selected=np.argsort(pc)[:min(c.local_top,len(pc))]
+            # Global budget regardless of islands; rotate the remainder.
+            cycle=(gen+1)//c.local_every-1
+            common,extra=divmod(c.local_top,c.islands)
+            quota=common+int((island_id-cycle)%c.islands<extra)
+            selected=np.argsort(pc)[:min(quota,len(pc))]
+            local_calls+=len(selected)
             better=[]
             for index in selected:
                 candidate,_=improve_swaps(a,pool[index],columns,c.local_passes)
@@ -171,7 +177,7 @@ def _evolve(state):
                     best=(int(pc[ib]),pool[ib].copy())
         selected=rss_indices(pc,len(pop),c.elitism,c.selection,c.rank_power,rng)
         pop=pool[selected].copy()
-    return pop,rng.bit_generator.state,best
+    return pop,rng.bit_generator.state,best,local_calls
 
 def run(a,c=Config(),seed=42,workers=2):
     a=validate(a,c)
@@ -189,20 +195,23 @@ def run(a,c=Config(),seed=42,workers=2):
     for i,size in enumerate(sizes):
         rg=np.random.default_rng(seed+1+i*107)
         states.append((initial[offsets[i]:offsets[i+1]].copy(),rg.bit_generator.state,best))
+    total_local_calls=0
     if c.islands==1:
-        _,_,best=_evolve((a,states[0][0],c,0,c.generations,
-                          states[0][1],columns,best))
+        _,_,best,local_calls=_evolve((a,states[0][0],c,0,c.generations,
+                          states[0][1],columns,best,0))
+        total_local_calls=local_calls
     else:
         actual_workers=max(1,min(workers,c.islands))
         with ProcessPoolExecutor(max_workers=actual_workers) as executor:
             for beginning in range(0,c.generations,c.migration_interval):
                 steps=min(c.migration_interval,c.generations-beginning)
-                tasks=[(a,pop,c,beginning,steps,rng_state,columns,island_best)
-                       for pop,rng_state,island_best in states]
+                tasks=[(a,pop,c,beginning,steps,rng_state,columns,island_best,i)
+                       for i,(pop,rng_state,island_best) in enumerate(states)]
                 outcomes=list(executor.map(_evolve,tasks))
-                for _,_,local_best in outcomes:
+                for _,_,local_best,local_calls in outcomes:
+                    total_local_calls+=local_calls
                     if local_best[0]<best[0]:best=local_best
-                states=outcomes
+                states=[(p,r,b) for p,r,b,_ in outcomes]
                 if beginning+steps<c.generations and c.migration_pct:
                     migrants=[]
                     for pop,_,_ in states:
@@ -220,4 +229,4 @@ def run(a,c=Config(),seed=42,workers=2):
     elapsed=time.perf_counter()-t0
     return {"cost":int(best[0]),"seconds":float(elapsed),"best":best[1],
             "generations":c.generations,"total_population":sum(sizes),
-            "num_islands":c.islands}
+            "num_islands":c.islands,"local_calls":total_local_calls}

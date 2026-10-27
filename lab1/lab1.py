@@ -41,9 +41,16 @@ class Employee( Vector ):
         return Employee(result, self.length, self.matrix, self.mutation_percent)
 
     def fitness(self, vector): # pyright: ignore[reportIncompatibleMethodOverride]
-        f = 1 / sum(self.matrix[i][self.vector[i]] for i in range(self.length))
-        self.fit = f
-        return f
+        """Evaluate the chromosome passed in, not a stale instance vector.
+
+        Zero-cost assignments are valid; map them to large finite fitness
+        so RSS remains numerically defined. Costs below zero are unsupported
+        by this non-negative assignment-cost formulation.
+        """
+        cost = sum(self.matrix[i][vector[i]] for i in range(self.length))
+        if cost < 0:
+            raise ValueError("Assignment costs must sum to a non-negative value")
+        return 1.0 / max(float(cost), 1e-12)
 
 
     

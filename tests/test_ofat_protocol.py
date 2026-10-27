@@ -57,8 +57,10 @@ class OFATProtocolTests(unittest.TestCase):
         for key, cases in groups.items():
             parameter,klass,size,repeat=key
             with self.subTest(key=key):
-                self.assertEqual(len(cases),len(HYPERPARAMETERS[parameter]))
-                self.assertEqual({float(x) for x in HYPERPARAMETERS[parameter]},
+                archived_levels = ((.005, .02, .05) if parameter == "plateau_diff"
+                                   else HYPERPARAMETERS[parameter])
+                self.assertEqual(len(cases),len(archived_levels))
+                self.assertEqual({float(x) for x in archived_levels},
                                  {float(r["value"]) for r in cases})
                 for common in ("matrix_seed","ga_seed","exact_cost"):
                     self.assertEqual(len({r[common] for r in cases}),1)

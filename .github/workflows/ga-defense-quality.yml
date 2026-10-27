@@ -31,6 +31,8 @@ jobs:
         run: python -m compileall -q lab1 tests
       - name: Critical lint for complete repository
         run: ruff check lab1 tests --select E9,F63,F7,F82
+      - name: Pyflakes lint of active GA, OFAT and graph scripts
+        run: ruff check lab1/hybrid_ga.py lab1/three_cycle.py lab1/staged_tuning.py lab1/staged_charts.py lab1/medium_three_cycle_study.py --select F
       - name: Strict lint of release evidence audit
         run: ruff check lab1/final_evidence_audit.py
       - name: Entire regression suite

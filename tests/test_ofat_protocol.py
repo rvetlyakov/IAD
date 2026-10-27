@@ -4,16 +4,19 @@ Run: python -m unittest discover -s tests -p test_ofat_protocol.py -v
 """
 import csv
 import json
-import os
 import sys
 import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT/"lab1"))
-from hyperparameter_curves import (HYPERPARAMETERS, REAL_SIZES,
-                                    PLATEAU_ONLY, ISLAND_ONLY,
-                                    _settings_for, _levels)
+from hyperparameter_curves import (
+    HYPERPARAMETERS,
+    ISLAND_ONLY,
+    PLATEAU_ONLY,
+    REAL_SIZES,
+    _settings_for,
+)
 
 
 class OFATProtocolTests(unittest.TestCase):
@@ -55,7 +58,7 @@ class OFATProtocolTests(unittest.TestCase):
             groups.setdefault(key,[]).append(row)
         self.assertEqual(len(self.rows),465)
         for key, cases in groups.items():
-            parameter,klass,size,repeat=key
+            parameter,_klass,size,_repeat=key
             with self.subTest(key=key):
                 archived_levels = ((.005, .02, .05) if parameter == "plateau_diff"
                                    else HYPERPARAMETERS[parameter])

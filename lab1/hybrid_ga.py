@@ -4,12 +4,18 @@ Rank-scaled RSS, adaptive inversion, cost-aware 2-swap and true
 multiprocess island evolution are independent, opt-in improvements.
 """
 from __future__ import annotations
+
 import math
+import os
 import time
 from concurrent.futures import ProcessPoolExecutor
+from contextlib import nullcontext
 from dataclasses import dataclass
+
 import numpy as np
+from acceleration import njit
 from three_cycle import improve_three_cycle
+
 
 @dataclass(frozen=True)
 class Config:
@@ -114,6 +120,7 @@ def mutate(parents,c,iteration,rng):
         output.append(vnew)
     return np.asarray(output,dtype=np.int32).reshape((-1,n))
 
+@njit(cache=True)
 def improve_swaps(a,perm,topcols,passes=2):
     """Accept only decreasing exact two-worker swap deltas."""
     v=np.asarray(perm,dtype=np.int32).copy()
@@ -170,6 +177,21 @@ def _evolve(state):
             cycle=(gen+1)//c.local_every-1
             common,extra=divmod(c.local_top,c.islands)
             quota=common+int((island_id-cycle)%c.islands<extra)
+            if c.local_top > (c.population//c.islands)*c.islands:
+                # When islands differ in size, a rotating extra may exceed a
+                # small island's capacity. Redistribute it from a simultaneous
+                # global quota snapshot, so no local calls disappear.
+                sizes=[c.population//c.islands+int(i<c.population%c.islands)
+                       for i in range(c.islands)]
+                quotas=[min(sizes[i],common+int((i-cycle)%c.islands<extra))
+                        for i in range(c.islands)]
+                missing=c.local_top-sum(quotas)
+                for offset in range(c.islands):
+                    target=(cycle+offset)%c.islands
+                    added=min(missing,sizes[target]-quotas[target])
+                    quotas[target]+=added
+                    missing-=added
+                quota=quotas[island_id]
             selected=np.argsort(pc)[:min(quota,len(pc))]
             local_calls+=len(selected)
             better=[]
@@ -188,7 +210,11 @@ def _evolve(state):
         pop=pool[selected].copy()
     return pop,rng.bit_generator.state,best,local_calls
 
-def run(a,c=Config(),seed=42,workers=2):
+def _evolve_observed(state):
+    return _evolve(state), os.getpid()
+
+def run(a,c=None,seed=42,workers=2,executor=None):
+    c=Config() if c is None else c
     a=validate(a,c)
     n=len(a)
     t0=time.perf_counter()
@@ -205,23 +231,29 @@ def run(a,c=Config(),seed=42,workers=2):
         rg=np.random.default_rng(seed+1+i*107)
         states.append((initial[offsets[i]:offsets[i+1]].copy(),rg.bit_generator.state,best))
     total_local_calls=0
+    worker_pids=set()
+    migration_rounds=0
     if c.islands==1:
         _,_,best,local_calls=_evolve((a,states[0][0],c,0,c.generations,
                           states[0][1],columns,best,0))
         total_local_calls=local_calls
     else:
         actual_workers=max(1,min(workers,c.islands))
-        with ProcessPoolExecutor(max_workers=actual_workers) as executor:
+        manager = nullcontext(executor) if executor is not None else ProcessPoolExecutor(max_workers=actual_workers)
+        with manager as pool:
             for beginning in range(0,c.generations,c.migration_interval):
                 steps=min(c.migration_interval,c.generations-beginning)
                 tasks=[(a,pop,c,beginning,steps,rng_state,columns,island_best,i)
                        for i,(pop,rng_state,island_best) in enumerate(states)]
-                outcomes=list(executor.map(_evolve,tasks))
+                observed=list(pool.map(_evolve_observed,tasks))
+                worker_pids.update(pid for _,pid in observed)
+                outcomes=[result for result,_ in observed]
                 for _,_,local_best,local_calls in outcomes:
                     total_local_calls+=local_calls
                     if local_best[0]<best[0]:best=local_best
                 states=[(p,r,b) for p,r,b,_ in outcomes]
                 if beginning+steps<c.generations and c.migration_pct:
+                    migration_rounds+=1
                     migrants=[]
                     for pop,_,_ in states:
                         number=min(len(pop),math.ceil(len(pop)*c.migration_pct))
@@ -238,4 +270,6 @@ def run(a,c=Config(),seed=42,workers=2):
     elapsed=time.perf_counter()-t0
     return {"cost":int(best[0]),"seconds":float(elapsed),"best":best[1],
             "generations":c.generations,"total_population":sum(sizes),
-            "num_islands":c.islands,"local_calls":total_local_calls}
+            "num_islands":c.islands,"local_calls":total_local_calls,
+            "worker_pids":sorted(worker_pids),"migration_rounds":migration_rounds,
+            "migration_edges":[(i,(i+1)%c.islands) for i in range(c.islands)] if migration_rounds else []}

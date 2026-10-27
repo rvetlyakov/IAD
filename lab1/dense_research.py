@@ -5,14 +5,19 @@ Run:
 Requirements: numpy, scipy, matplotlib.
 """
 from __future__ import annotations
-from dataclasses import asdict,replace
-from pathlib import Path
+
+import argparse
+import csv
+import json
+import time
 from collections import defaultdict
+from dataclasses import asdict, replace
+from pathlib import Path
 from statistics import mean
-import argparse,csv,json,time
+
 import numpy as np
+from hybrid_ga import Config, run
 from scipy.optimize import linear_sum_assignment
-from hybrid_ga import Config,run
 
 SIZES={
     "small":[5,10,20,30,40,50],
@@ -76,15 +81,15 @@ def experiment(directory,seed=20261028,workers=2):
                                  getattr(cfg,k)!=getattr(reference,k)}
                     assert differences <= {parameter},(parameter,differences)
                     ans=run(a,cfg,seed=ga_seed,workers=workers)
-                    rows.append(dict(class_name=cls,n=n,parameter=parameter,
-                         value=str(value),cost=ans["cost"],exact=exact,
-                         error_pct=100*(ans["cost"]-exact)/exact,
-                         seconds=ans["seconds"],total_population=ans["total_population"],
-                         generations=ans["generations"],
-                         num_islands=ans["num_islands"],local_calls=ans["local_calls"],
-                         matrix_seed=matrix_seed,ga_seed=ga_seed,
-                         context_json=json.dumps(asdict(reference),sort_keys=True),
-                         settings_json=json.dumps(asdict(cfg),sort_keys=True)))
+                    rows.append({"class_name": cls,"n": n,"parameter": parameter,
+                         "value": str(value),"cost": ans["cost"],"exact": exact,
+                         "error_pct": 100*(ans["cost"]-exact)/exact,
+                         "seconds": ans["seconds"],"total_population": ans["total_population"],
+                         "generations": ans["generations"],
+                         "num_islands": ans["num_islands"],"local_calls": ans["local_calls"],
+                         "matrix_seed": matrix_seed,"ga_seed": ga_seed,
+                         "context_json": json.dumps(asdict(reference),sort_keys=True),
+                         "settings_json": json.dumps(asdict(cfg),sort_keys=True)})
             save_csv(out/"sweep_raw.csv",rows)
             print(f"{cls} n={n}: {len(rows)}/{expected} measured",flush=True)
     assert len(rows)==expected
@@ -93,17 +98,17 @@ def experiment(directory,seed=20261028,workers=2):
         if row["class_name"]!="transition":
             grouped[(row["class_name"],row["parameter"],row["value"])].append(
                 float(row["error_pct"]))
-    ranked=[dict(class_name=cls,parameter=p,value=v,count=len(a),
-                 mean_error_pct=mean(a)) for (cls,p,v),a in grouped.items()]
+    ranked=[{"class_name": cls,"parameter": p,"value": v,"count": len(a),
+                 "mean_error_pct": mean(a)} for (cls,p,v),a in grouped.items()]
     ranked.sort(key=lambda x:(x["class_name"],x["parameter"],x["mean_error_pct"]))
     save_csv(out/"ofat_rankings.csv",ranked)
-    (out/"methodology.json").write_text(json.dumps(dict(
-        seed=seed,grid=SIZES,baseline=asdict(BASE),levels=LEVELS,
-        number_of_real_runs=len(rows),
-        note="Per level one measured matrix per dimension. 550–950: transition, not in training class.",
-        baseline_context="Four islands held constant ONLY in migration sweeps",
-        ofat="Exactly one dataclass field differs inside a sweep",
-        graph_curves="PCHIP between measured dots only; smoothing does not create measured rows"),
+    (out/"methodology.json").write_text(json.dumps({
+        "seed": seed,"grid": SIZES,"baseline": asdict(BASE),"levels": LEVELS,
+        "number_of_real_runs": len(rows),
+        "note": "Per level one measured matrix per dimension. 550–950: transition, not in training class.",
+        "baseline_context": "Four islands held constant ONLY in migration sweeps",
+        "ofat": "Exactly one dataclass field differs inside a sweep",
+        "graph_curves": "PCHIP between measured dots only; smoothing does not create measured rows"},
         ensure_ascii=False,indent=2),encoding="utf-8")
     print(f"OFAT done: {len(rows)} verified, {time.perf_counter()-start:.1f}s",flush=True)
 
@@ -112,11 +117,11 @@ def holdout(directory,seed=20261028,workers=2):
     configs={}
     for cls in ("small","medium","large"):
         c=BASE
-        for p in LEVELS:
+        for p, levels in LEVELS.items():
             if p in ("islands","migration_interval","migration_pct"):continue
             best=min((r for r in ranks if r["class_name"]==cls and r["parameter"]==p),
                      key=lambda r:float(r["mean_error_pct"]))
-            value=next(v for v in LEVELS[p] if str(v)==best["value"])
+            value=next(v for v in levels if str(v)==best["value"])
             c=replace(c,**{p:value})
         island_best=min((r for r in ranks
                          if r["class_name"]==cls and r["parameter"]=="islands"
@@ -144,13 +149,13 @@ def holdout(directory,seed=20261028,workers=2):
                 exact=int(a[rr,cc].sum())
                 for name,cfg in variants.items():
                     ans=run(a,cfg,seed=matrix_seed+41,workers=workers)
-                    rows.append(dict(class_name=cls,n=n,repeat=rep,
-                       variant=name,cost=ans["cost"],exact=exact,
-                       error_pct=100*(ans["cost"]-exact)/exact,
-                       seconds=ans["seconds"],population=ans["total_population"],
-                       generations=G,num_islands=ans["num_islands"],
-                       local_calls=ans["local_calls"],matrix_seed=matrix_seed,
-                       settings_json=json.dumps(asdict(cfg),sort_keys=True)))
+                    rows.append({"class_name": cls,"n": n,"repeat": rep,
+                       "variant": name,"cost": ans["cost"],"exact": exact,
+                       "error_pct": 100*(ans["cost"]-exact)/exact,
+                       "seconds": ans["seconds"],"population": ans["total_population"],
+                       "generations": G,"num_islands": ans["num_islands"],
+                       "local_calls": ans["local_calls"],"matrix_seed": matrix_seed,
+                       "settings_json": json.dumps(asdict(cfg),sort_keys=True)})
             save_csv(out/"holdout_raw.csv",rows)
             print(f"HOLDOUT {cls} n={n}, {len(rows)} observations",flush=True)
     (out/"best_observed_config.json").write_text(

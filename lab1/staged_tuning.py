@@ -12,13 +12,17 @@ Supports all classes, medium includes a real 1000-generation candidate.
 No claim of global optimality is made.
 """
 from __future__ import annotations
-import argparse, csv, json
+
+import argparse
+import csv
+import json
 from dataclasses import asdict, replace
 from pathlib import Path
 from statistics import mean
+
 import numpy as np
-from scipy.optimize import linear_sum_assignment
 from hybrid_ga import Config, run
+from scipy.optimize import linear_sum_assignment
 
 # Actual non-overlapping measured sizes, with NO transition category.
 CLASS_GRID={
@@ -141,9 +145,9 @@ def train(group,root,source,workers=2):
                         "ga_seed":ga_seed,
                         "context_json":json.dumps(asdict(context),sort_keys=True),
                         "settings_json":json.dumps(asdict(cfg),sort_keys=True)})
-            ranked.append(dict(parameter=parameter,value=value,
-                               mean_error_pct=mean(errors),
-                               mean_seconds=mean(times),samples=len(errors)))
+            ranked.append({"parameter": parameter,"value": value,
+                               "mean_error_pct": mean(errors),
+                               "mean_seconds": mean(times),"samples": len(errors)})
         ranked.sort(key=lambda x:(x["mean_error_pct"],x["mean_seconds"]))
         return ranked
 
@@ -330,13 +334,13 @@ def validate(group,root,workers=2):
     for name in ("before","after","after_islands"):
         sample=[r for r in rows if r["variant"]==name]
         if sample:
-            aggregate.append(dict(class_name=group,variant=name,
-                observed_runs=len(sample),
-                mean_error_pct=mean(r["error_pct"] for r in sample),
-                mean_seconds=mean(r["seconds"] for r in sample),
-                mean_local_calls=mean(r["local_calls"] for r in sample),
-                total_population=sample[0]["population"],
-                generations=sample[0]["generations"]))
+            aggregate.append({"class_name": group,"variant": name,
+                "observed_runs": len(sample),
+                "mean_error_pct": mean(r["error_pct"] for r in sample),
+                "mean_seconds": mean(r["seconds"] for r in sample),
+                "mean_local_calls": mean(r["local_calls"] for r in sample),
+                "total_population": sample[0]["population"],
+                "generations": sample[0]["generations"]})
     save(root/f"{group}_holdout_comparison.csv",aggregate)
     return rows
 
@@ -390,10 +394,10 @@ def transfer(group,root,workers=2):
             assert changed<={field}
             score=average(c)
             scores.append((score,value,origin))
-            trials.append(dict(target_class=group,parameter=field,
-                value=str(value),source_class=origin,mean_train_error_pct=score,
-                context_json=json.dumps(asdict(context),sort_keys=True),
-                settings_json=json.dumps(asdict(c),sort_keys=True)))
+            trials.append({"target_class": group,"parameter": field,
+                "value": str(value),"source_class": origin,"mean_train_error_pct": score,
+                "context_json": json.dumps(asdict(context),sort_keys=True),
+                "settings_json": json.dumps(asdict(c),sort_keys=True)})
         winner=min(scores,key=lambda z:z[0])
         # Require strict improvement, rather than moving on ties.
         baseline=next(score for score,value,_ in scores

@@ -5,13 +5,17 @@ CSV includes every run's full parameter snapshot and paired matrix seeds.
 Usage: python lab1/hybrid_experiments.py --output results/hybrid_ga_study --diagonal
 """
 from __future__ import annotations
-import argparse,csv,json,time
-from dataclasses import asdict,replace
-from pathlib import Path
+
+import argparse
+import csv
+import json
 from collections import defaultdict
+from dataclasses import asdict, replace
+from pathlib import Path
+
 import numpy as np
+from hybrid_ga import Config, run
 from scipy.optimize import linear_sum_assignment
-from hybrid_ga import Config,run
 
 SIZES={"small":[5,10,30,50],"medium":[100,200,300,400,500],
        "large":[1000,1250,1500,1750,2000]}

@@ -5,13 +5,18 @@ Training uses separate seeds from SURVEY and HOLDOUT. The original GA
 operators remain available (cycle3=False).
 """
 from __future__ import annotations
-import argparse,csv,json
+
+import argparse
+import csv
+import itertools
+import json
+from dataclasses import asdict, replace
 from pathlib import Path
-from dataclasses import asdict,replace
 from statistics import mean
+
 import numpy as np
+from hybrid_ga import Config, run
 from scipy.optimize import linear_sum_assignment
-from hybrid_ga import Config,run
 
 BASE=Config(population=120,generations=250,mutation_prob=.7,inversion_pct=2,
             elitism=.2,selection="rank",rank_power=2,adaptive=True,
@@ -75,10 +80,10 @@ def training(folder):
     for k in TRAIN_K:
         for passes in TRAIN_CYCLE_PASSES:
             selected=[r for r in rows if r["candidate_k"]==k and r["cycle_passes"]==passes]
-            ranking.append(dict(k=k,passes=passes,
-                mean_error_pct=mean(r["error_pct"] for r in selected),
-                mean_seconds=mean(r["seconds"] for r in selected),
-                count=len(selected)))
+            ranking.append({"k": k,"passes": passes,
+                "mean_error_pct": mean(r["error_pct"] for r in selected),
+                "mean_seconds": mean(r["seconds"] for r in selected),
+                "count": len(selected)})
     ranking.sort(key=lambda r:(r["mean_error_pct"],r["mean_seconds"]))
     winner=ranking[0]
     selected=replace(BASE,cycle3=True,local_candidates=int(winner["k"]),
@@ -169,11 +174,11 @@ def plot(folder):
     plt.rcParams.update({"font.family":"Montserrat" if fonts else "DejaVu Sans",
                          "font.size":11,"svg.fonttype":"none",
                          "axes.unicode_minus":False})
-    all_sizes=sorted(set(int(r["size"]) for r in rows))
+    all_sizes=sorted({int(r["size"]) for r in rows})
     expected=sorted(n for ns in SURVEY_SIZES.values() for n in ns)
     if all_sizes != expected:
         raise ValueError(f"Survey grid differs from expected: {all_sizes} vs {expected}")
-    assert all(a<b for a,b in zip(all_sizes,all_sizes[1:]))
+    assert all(a<b for a,b in itertools.pairwise(all_sizes))
     fills={"small":"#EAF7F2","medium":"#EAF0FA","large":"#FAEFED"}
     colors=("#1C5A98","#129080","#DC823D","#934A96")
     names={"small":"малые · n < 100","medium":"средние · 100–499",

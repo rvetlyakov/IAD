@@ -1,12 +1,13 @@
 """Regression tests: all previous lab requirements and fair island search budgets."""
 import sys
 import unittest
-from dataclasses import replace
 from pathlib import Path
+
 import numpy as np
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"lab1"))
-from hybrid_ga import Config, run, improve_swaps, costs, best_columns, rss_indices
+from hybrid_ga import Config, best_columns, costs, improve_swaps, rss_indices, run
+
 
 class LabAudit(unittest.TestCase):
     def test_equal_population_and_global_local_search_across_island_counts(self):
@@ -32,7 +33,8 @@ class LabAudit(unittest.TestCase):
     def test_rss_deterministic_under_fixed_seed(self):
         a=np.array([3,7,1,8,2,9],dtype=np.int64)
         for mode in ("rank","raw"):
-            f=lambda:rss_indices(a,5,.2,mode,2,np.random.default_rng(299))
+            def f(mode=mode):
+                return rss_indices(a,5,.2,mode,2,np.random.default_rng(299))
             self.assertEqual(f().tolist(),f().tolist())
 
     def test_diagonal_finds_optimum_with_local_swap(self):

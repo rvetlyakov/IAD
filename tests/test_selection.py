@@ -5,7 +5,7 @@ import sys
 import unittest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "lab1"))
-from lab1 import Employee, Employees
+from lab1 import Employees
 
 
 def matrix(size):

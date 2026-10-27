@@ -1,9 +1,7 @@
-import math
-from lab1 import Employees
-from itertools import permutations
 from scipy.optimize import linear_sum_assignment
 from termination import plateau_reached
 
+from lab1 import Employees
 
 matrices = {
     "ideal_matrice": [
@@ -136,7 +134,7 @@ def run_ga_with_migrations(
 
 
 if __name__ == "__main__":
-    for test_name, matrix in matrices.items():
+    for matrix in matrices.values():
         # print(f"\n{'=' * 10} {test_name} (Мультипопуляционный ГА) {'=' * 10}")
         run_ga_with_migrations(POPULATION_SIZE,
                               MUTATION_PROBABILITY,

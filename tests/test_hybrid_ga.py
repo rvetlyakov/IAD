@@ -5,9 +5,18 @@ from dataclasses import replace
 from pathlib import Path
 
 import numpy as np
+
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"lab1"))
-from hybrid_ga import (Config, costs, rss_indices, improve_swaps,
-                       best_columns, run, validate)
+from hybrid_ga import (
+    Config,
+    best_columns,
+    costs,
+    improve_swaps,
+    rss_indices,
+    run,
+    validate,
+)
+
 
 class HybridGAValidationTests(unittest.TestCase):
     def test_rss_preserves_exact_total_population(self):

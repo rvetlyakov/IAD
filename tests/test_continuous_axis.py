@@ -1,10 +1,16 @@
 """Regression tests for continuous numeric class axis and OFAT impact metrics."""
-import sys,unittest,tempfile,csv
+import csv
+import sys
+import tempfile
+import unittest
 from pathlib import Path
+
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"lab1"))
-from medium_three_cycle_study import SURVEY_SIZES,dimension_x,class_for as medium_class
-from staged_tuning import CLASS_GRID,class_for
-from staged_charts import x_value,sensitivity
+from medium_three_cycle_study import SURVEY_SIZES, dimension_x
+from medium_three_cycle_study import class_for as medium_class
+from staged_charts import sensitivity, x_value
+from staged_tuning import CLASS_GRID, class_for
+
 
 class ContinuousAxisTests(unittest.TestCase):
     def test_real_survey_has_no_transition_group_and_all_35_sizes(self):
@@ -43,9 +49,9 @@ class ContinuousAxisTests(unittest.TestCase):
                 w.writeheader()
                 for n in (10,20):
                     for value,error in (("0.3",50),("0.7",20)):
-                        w.writerow(dict(class_name="small",n=n,
-                                        parameter="mutation_prob",value=value,
-                                        error_pct=error,seconds=.2))
+                        w.writerow({"class_name": "small","n": n,
+                                        "parameter": "mutation_prob","value": value,
+                                        "error_pct": error,"seconds": .2})
             report=sensitivity(root)
             r=[r for r in report if r["parameter"]=="mutation_prob"]
             self.assertEqual(len(r),1)

@@ -1,0 +1,7 @@
+class_name,variant,train_recommended_islands,population,generations,mutation_prob,inversion_pct,elitism,selection,rank_power,adaptive,adaptive_horizon,adaptive_long_pct,adaptive_long_prob,local_every,local_top,local_passes,local_candidates,cycle3,cycle3_passes,islands,migration_interval,migration_pct
+small,single,8,64,100,1.0,1.0,0.2,rank,2.0,False,500,20.0,0.05,5,2,2,16,True,3,1,15,0.1
+small,parallel,8,64,100,1.0,1.0,0.2,rank,2.0,False,500,20.0,0.05,5,2,2,16,True,3,8,30,0.0
+medium,single,1,32,100,1.0,1.0,0.2,rank,4.0,False,500,20.0,0.05,20,2,2,16,True,3,1,15,0.1
+medium,parallel,1,32,100,1.0,1.0,0.2,rank,4.0,False,500,20.0,0.05,20,2,2,16,True,3,4,15,0.2
+large,single,8,64,100,1.0,1.0,0.2,rank,2.0,False,500,20.0,0.05,5,4,2,8,True,3,1,15,0.1
+large,parallel,8,64,100,1.0,1.0,0.2,rank,2.0,False,500,20.0,0.05,5,4,2,8,True,3,8,15,0.1

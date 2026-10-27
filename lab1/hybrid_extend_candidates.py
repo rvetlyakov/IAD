@@ -3,13 +3,17 @@
 Only local_candidates is changed; all other settings are BASE.
 Reloads previous result artifact; adds real measurements without re-running them.
 """
-import argparse,csv,json
-from dataclasses import asdict,replace
+import argparse
+import csv
+import json
+from dataclasses import asdict, replace
 from pathlib import Path
+
 import numpy as np
-from scipy.optimize import linear_sum_assignment
+from hybrid_experiments import BASE, SIZES, SWEEPS, draw_all, save_csv, summarize
 from hybrid_ga import run
-from hybrid_experiments import BASE,SWEEPS,SIZES,save_csv,summarize,draw_all
+from scipy.optimize import linear_sum_assignment
+
 
 def extend(root="results/hybrid_ga_study",seed=20261101):
     root=Path(root)

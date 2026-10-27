@@ -4,8 +4,10 @@ Not an exact assignment solver. Examines at most K cheap target columns
 for each of two affected workers and only accepts strict cost decreases.
 """
 import numpy as np
+from acceleration import njit
 
 
+@njit(cache=True)
 def improve_three_cycle(matrix, permutation, candidate_columns, passes=2):
     a = np.asarray(matrix)
     v = np.asarray(permutation, dtype=np.int32).copy()

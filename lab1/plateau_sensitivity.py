@@ -6,6 +6,7 @@ study holds a looser baseline threshold fixed and varies one stopping
 parameter at a time, on the same deterministic matrices and GA seeds.
 """
 from pathlib import Path
+
 from experiments import BASELINE, save_study
 
 BASELINE_PLATEAU = {**BASELINE, "plateau_diff": 0.05}

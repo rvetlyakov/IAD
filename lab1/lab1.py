@@ -2,12 +2,12 @@
 # В презентации код и его тестирование
 # прийти в 16.10
 
-import math
 import copy
-from GA_abstract import Vector, Population
-import random
 import math
-from itertools import combinations
+import random
+
+from GA_abstract import Population, Vector
+
 
 class Employee( Vector ):
 

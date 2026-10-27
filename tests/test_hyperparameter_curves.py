@@ -1,5 +1,4 @@
 """All-class, per-hyperparameter plots with measured (not invented) points."""
-import json
 import os
 import sys
 import tempfile
@@ -8,10 +7,14 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "lab1"))
 from hyperparameter_curves import (
-    REAL_SIZES, HYPERPARAMETERS, axis_position, run_experiment,
-    render_parameter, run_plateau_variant
+    HYPERPARAMETERS,
+    REAL_SIZES,
+    axis_position,
+    run_experiment,
+    run_plateau_variant,
 )
 from scale_benchmark import generate_matrix
+
 
 class HyperparameterCurvesTests(unittest.TestCase):
     def test_every_chart_contains_all_requested_size_classes(self):
@@ -48,9 +51,9 @@ class HyperparameterCurvesTests(unittest.TestCase):
 
     def test_plateau_is_not_silent_noop(self):
         matrix=generate_matrix(7,42)
-        settings=dict(total_population=12,mutation_probability=.7,mutation_percent=30,
-                      elitist_percent=.2,max_generations=20,
-                      plateau_limit=2,plateau_diff=2.0)
+        settings={"total_population": 12,"mutation_probability": .7,"mutation_percent": 30,
+                      "elitist_percent": .2,"max_generations": 20,
+                      "plateau_limit": 2,"plateau_diff": 2.0}
         early=run_plateau_variant(matrix,settings,seed=101)
         self.assertLess(early["generations"],20)
         settings["plateau_diff"]=0.

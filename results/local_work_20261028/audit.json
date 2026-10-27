@@ -1,0 +1,34 @@
+{
+  "status": "passed",
+  "archived_inactive_runs": 27,
+  "research_calls_including_archive": 3697,
+  "actual_runs": {
+    "train": 616,
+    "survey": 2898,
+    "holdout": 144,
+    "diagonal": 12
+  },
+  "unique_matrices": {
+    "train": 12,
+    "survey": 46,
+    "holdout": 36,
+    "diagonal": 6
+  },
+  "survey_sizes": {
+    "small": 9,
+    "medium": 16,
+    "large": 21
+  },
+  "checks": [
+    "strict one-factor contexts",
+    "all declared parameter levels and sizes present",
+    "disjoint stage matrix seeds",
+    "SciPy exact costs regenerated",
+    "relative error recomputed",
+    "equal N/G/global local calls",
+    "identical local passes/candidates and mutation settings in paired comparison",
+    "worker PIDs and migration counts",
+    "runtime permutation assertions",
+    "diagonal solutions exact"
+  ]
+}

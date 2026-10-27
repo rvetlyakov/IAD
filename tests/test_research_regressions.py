@@ -15,9 +15,10 @@ from pathlib import Path
 from unittest.mock import patch
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "lab1"))
-from lab1 import Employee, Employees
+from hyperparameter_curves import HYPERPARAMETERS, _settings_for, run_experiment
 from lab1_test import run_ga
-from hyperparameter_curves import HYPERPARAMETERS, run_experiment, _settings_for
+
+from lab1 import Employee, Employees
 
 ROOT = Path(__file__).resolve().parents[1]
 PARAMS = ROOT / "results" / "scale_benchmark_full" / "best_parameters.json"
@@ -44,7 +45,7 @@ class GAResearchRegressions(unittest.TestCase):
     def test_run_ga_plateau_counts_changes_including_initial_population(self):
         matrix = [[1, 40, 90], [90, 1, 40], [40, 90, 1]]
         random.seed(100)
-        found, generations, error = run_ga(
+        _found, generations, _error = run_ga(
             population_size=15, mutation_probability=0,
             mutation_percent=45, tournament_size=2, max_iterations=25,
             plateau_limit=2, plateau_diff=1000.0, elitist_percent=.2,
@@ -61,15 +62,13 @@ class GAResearchRegressions(unittest.TestCase):
         def discard_all(self):
             self.population = [Employee([0, 1], 2, matrix, 45)
                                for _ in range(self.n)]
-        with patch("random.sample", return_value=[0, 1]):
-            with patch.object(Employee, "mutate", optimum_mutant):
-                with patch.object(Employees, "select", discard_all):
-                    found, _, error = run_ga(
-                        population_size=4, mutation_probability=1,
-                        mutation_percent=45, tournament_size=2,
-                        max_iterations=1, plateau_limit=2,
-                        plateau_diff=0, elitist_percent=0, matrix=matrix
-                    )
+        with patch("random.sample", return_value=[0, 1]), patch.object(Employee, "mutate", optimum_mutant), patch.object(Employees, "select", discard_all):
+            found, _, error = run_ga(
+                population_size=4, mutation_probability=1,
+                mutation_percent=45, tournament_size=2,
+                max_iterations=1, plateau_limit=2,
+                plateau_diff=0, elitist_percent=0, matrix=matrix
+            )
         self.assertTrue(found)
         self.assertEqual(error, 0)
 
@@ -88,7 +87,7 @@ class GAResearchRegressions(unittest.TestCase):
         self.assertEqual(gap, float("inf"))
 
     def test_scale_benchmark_zero_optimum_uses_finite_or_infinite_gap(self):
-        from scale_benchmark import evaluate_pair, BASELINE
+        from scale_benchmark import BASELINE, evaluate_pair
         matrix = [[0, 100], [100, 0]]
         settings = dict(BASELINE, total_population=2, max_generations=1,
                         mutation_probability=0.0, elitist_percent=0.0)

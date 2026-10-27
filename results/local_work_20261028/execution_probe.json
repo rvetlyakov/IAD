@@ -1,0 +1,209 @@
+{
+  "kernels": [
+    {
+      "kernel": "improve_swaps",
+      "n": 300,
+      "k": 16,
+      "passes": 3,
+      "python_seconds": 0.006133749964646995,
+      "compiled_seconds": 3.870902583003044e-05,
+      "speed_ratio": 158.45787469775163,
+      "identical": true
+    },
+    {
+      "kernel": "improve_three_cycle",
+      "n": 300,
+      "k": 16,
+      "passes": 3,
+      "python_seconds": 0.08904295798856765,
+      "compiled_seconds": 0.000647915992885828,
+      "speed_ratio": 137.42978868598215,
+      "identical": true
+    }
+  ],
+  "worker_warmup_seconds": 0.6444841249613091,
+  "warmup_worker_pids": [
+    90728,
+    90729,
+    90730,
+    90731
+  ],
+  "independent_probe_matrix_seed": 918292,
+  "n": 400,
+  "ga_seed": 9101,
+  "settings": {
+    "population": 32,
+    "generations": 100,
+    "mutation_prob": 1.0,
+    "inversion_pct": 1.0,
+    "elitism": 0.2,
+    "selection": "rank",
+    "rank_power": 4.0,
+    "adaptive": false,
+    "adaptive_horizon": 500,
+    "adaptive_long_pct": 20.0,
+    "adaptive_long_prob": 0.05,
+    "local_every": 20,
+    "local_top": 2,
+    "local_passes": 2,
+    "local_candidates": 16,
+    "cycle3": true,
+    "cycle3_passes": 3,
+    "islands": 4,
+    "migration_interval": 15,
+    "migration_pct": 0.2
+  },
+  "warm_parallel_seconds": 0.02863854099996388,
+  "warm_single_seconds": 0.02748645795509219,
+  "cold_parallel_wall_seconds": 0.8123380000470206,
+  "warm_parallel_cost": 534,
+  "cold_parallel_cost": 534,
+  "simultaneous_distinct_process_pairs": 42,
+  "events": [
+    {
+      "pid": 90729,
+      "start": 554594.468919083,
+      "end": 554594.470974166
+    },
+    {
+      "pid": 90730,
+      "start": 554594.469318333,
+      "end": 554594.47116475
+    },
+    {
+      "pid": 90728,
+      "start": 554594.47002875,
+      "end": 554594.471738458
+    },
+    {
+      "pid": 90731,
+      "start": 554594.470575125,
+      "end": 554594.47227675
+    },
+    {
+      "pid": 90729,
+      "start": 554594.473985625,
+      "end": 554594.477346541
+    },
+    {
+      "pid": 90730,
+      "start": 554594.474557333,
+      "end": 554594.477450291
+    },
+    {
+      "pid": 90728,
+      "start": 554594.475258375,
+      "end": 554594.477209916
+    },
+    {
+      "pid": 90731,
+      "start": 554594.4760865,
+      "end": 554594.477338958
+    },
+    {
+      "pid": 90728,
+      "start": 554594.478492791,
+      "end": 554594.479712875
+    },
+    {
+      "pid": 90731,
+      "start": 554594.478799083,
+      "end": 554594.481107666
+    },
+    {
+      "pid": 90729,
+      "start": 554594.478988833,
+      "end": 554594.480809416
+    },
+    {
+      "pid": 90730,
+      "start": 554594.479292583,
+      "end": 554594.480767583
+    },
+    {
+      "pid": 90728,
+      "start": 554594.482479625,
+      "end": 554594.483981541
+    },
+    {
+      "pid": 90730,
+      "start": 554594.482726708,
+      "end": 554594.484138833
+    },
+    {
+      "pid": 90729,
+      "start": 554594.482991541,
+      "end": 554594.484685791
+    },
+    {
+      "pid": 90731,
+      "start": 554594.483250083,
+      "end": 554594.485064875
+    },
+    {
+      "pid": 90728,
+      "start": 554594.486087083,
+      "end": 554594.487307458
+    },
+    {
+      "pid": 90730,
+      "start": 554594.486327541,
+      "end": 554594.487535291
+    },
+    {
+      "pid": 90729,
+      "start": 554594.48655775,
+      "end": 554594.487826833
+    },
+    {
+      "pid": 90731,
+      "start": 554594.486872583,
+      "end": 554594.488204541
+    },
+    {
+      "pid": 90728,
+      "start": 554594.489631958,
+      "end": 554594.491435
+    },
+    {
+      "pid": 90730,
+      "start": 554594.489906791,
+      "end": 554594.491182333
+    },
+    {
+      "pid": 90729,
+      "start": 554594.49016375,
+      "end": 554594.491382833
+    },
+    {
+      "pid": 90731,
+      "start": 554594.490566083,
+      "end": 554594.492070791
+    },
+    {
+      "pid": 90730,
+      "start": 554594.493146875,
+      "end": 554594.494473166
+    },
+    {
+      "pid": 90729,
+      "start": 554594.493379833,
+      "end": 554594.494706541
+    },
+    {
+      "pid": 90728,
+      "start": 554594.493622125,
+      "end": 554594.494502041
+    },
+    {
+      "pid": 90731,
+      "start": 554594.493821958,
+      "end": 554594.494688708
+    }
+  ],
+  "total_population": 32,
+  "generations": 100,
+  "single_local_calls": 10,
+  "parallel_local_calls": 10,
+  "note": "One performance probe; ratios are hardware/load dependent, not a statistical speed claim"
+}

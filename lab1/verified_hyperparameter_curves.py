@@ -5,15 +5,18 @@ run or evidence that the new 3cycle hybrid has already been fully tuned.
 No interpolation or invented measurements are used.
 """
 from __future__ import annotations
-import argparse,csv
-from pathlib import Path
+
+import argparse
 from collections import defaultdict
+from pathlib import Path
 from statistics import mean
+
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
+from dense_research import LEVELS, SIZES, load_csv, save_csv
 from matplotlib import font_manager
-from dense_research import LEVELS,SIZES,load_csv,save_csv
 from staged_charts import x_value
 from staged_tuning import class_for
 
@@ -56,10 +59,10 @@ def analyze(rows,out):
         groups[(r["three_class"],r["parameter"],r["value"])].append(r)
     summaries=[]
     for (cls,par,value),items in groups.items():
-        summaries.append(dict(class_name=cls,parameter=par,value=value,
-            measured_sizes=len(items),mean_error_pct=mean(
+        summaries.append({"class_name": cls,"parameter": par,"value": value,
+            "measured_sizes": len(items),"mean_error_pct": mean(
                float(r["error_pct"]) for r in items),
-            mean_seconds=mean(float(r["seconds"]) for r in items)))
+            "mean_seconds": mean(float(r["seconds"]) for r in items)})
     best=[];influence=[]
     for cls in ("small","medium","large"):
         for par,values in LEVELS.items():
@@ -69,15 +72,15 @@ def analyze(rows,out):
             winner=min(pairs,key=lambda r:(r["mean_error_pct"],r["mean_seconds"]))
             lo=min(r["mean_error_pct"] for r in pairs)
             hi=max(r["mean_error_pct"] for r in pairs)
-            best.append(dict(class_name=cls,parameter=par,
-                best_observed_value=winner["value"],
-                mean_error_pct=winner["mean_error_pct"],
-                mean_seconds=winner["mean_seconds"],
-                measured_sizes=winner["measured_sizes"]))
-            influence.append(dict(class_name=cls,parameter=par,
-                error_spread_percentage_points=hi-lo,
-                lowest_mean_error_pct=lo,highest_mean_error_pct=hi,
-                number_of_levels=len(pairs)))
+            best.append({"class_name": cls,"parameter": par,
+                "best_observed_value": winner["value"],
+                "mean_error_pct": winner["mean_error_pct"],
+                "mean_seconds": winner["mean_seconds"],
+                "measured_sizes": winner["measured_sizes"]})
+            influence.append({"class_name": cls,"parameter": par,
+                "error_spread_percentage_points": hi-lo,
+                "lowest_mean_error_pct": lo,"highest_mean_error_pct": hi,
+                "number_of_levels": len(pairs)})
     influence.sort(key=lambda r:(r["class_name"],-r["error_spread_percentage_points"]))
     transfer=[]
     for par in LEVELS:
@@ -87,13 +90,13 @@ def analyze(rows,out):
             on_target=next(r for r in summaries if
                     r["class_name"]==target and r["parameter"]==par and
                     r["value"]==donor["best_observed_value"])
-            transfer.append(dict(parameter=par,source_class="large",
-                target_class=target,large_winner_value=donor["best_observed_value"],
-                target_error_using_large_winner_pct=on_target["mean_error_pct"],
-                target_best_observed_value=own["best_observed_value"],
-                target_best_observed_error_pct=own["mean_error_pct"],
-                extra_error_pp=on_target["mean_error_pct"]-own["mean_error_pct"],
-                source="already measured one-factor comparison, not combined retune"))
+            transfer.append({"parameter": par,"source_class": "large",
+                "target_class": target,"large_winner_value": donor["best_observed_value"],
+                "target_error_using_large_winner_pct": on_target["mean_error_pct"],
+                "target_best_observed_value": own["best_observed_value"],
+                "target_best_observed_error_pct": own["mean_error_pct"],
+                "extra_error_pp": on_target["mean_error_pct"]-own["mean_error_pct"],
+                "source": "already measured one-factor comparison, not combined retune"})
     out=Path(out);out.mkdir(parents=True,exist_ok=True)
     save_csv(out/"three_class_mean_by_value.csv",summaries)
     save_csv(out/"three_class_best_levels.csv",best)

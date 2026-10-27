@@ -1,0 +1,921 @@
+{
+  "small": {
+    "single": {
+      "population": 64,
+      "generations": 100,
+      "mutation_prob": 1.0,
+      "inversion_pct": 1.0,
+      "elitism": 0.2,
+      "selection": "rank",
+      "rank_power": 2.0,
+      "adaptive": false,
+      "adaptive_horizon": 500,
+      "adaptive_long_pct": 20.0,
+      "adaptive_long_prob": 0.05,
+      "local_every": 5,
+      "local_top": 2,
+      "local_passes": 2,
+      "local_candidates": 16,
+      "cycle3": true,
+      "cycle3_passes": 3,
+      "islands": 1,
+      "migration_interval": 15,
+      "migration_pct": 0.1
+    },
+    "parallel": {
+      "population": 64,
+      "generations": 100,
+      "mutation_prob": 1.0,
+      "inversion_pct": 1.0,
+      "elitism": 0.2,
+      "selection": "rank",
+      "rank_power": 2.0,
+      "adaptive": false,
+      "adaptive_horizon": 500,
+      "adaptive_long_pct": 20.0,
+      "adaptive_long_prob": 0.05,
+      "local_every": 5,
+      "local_top": 2,
+      "local_passes": 2,
+      "local_candidates": 16,
+      "cycle3": true,
+      "cycle3_passes": 3,
+      "islands": 8,
+      "migration_interval": 30,
+      "migration_pct": 0.0
+    },
+    "starting": {
+      "population": 64,
+      "generations": 100,
+      "mutation_prob": 1.0,
+      "inversion_pct": 1.0,
+      "elitism": 0.2,
+      "selection": "rank",
+      "rank_power": 2.0,
+      "adaptive": false,
+      "adaptive_horizon": 500,
+      "adaptive_long_pct": 20.0,
+      "adaptive_long_prob": 0.05,
+      "local_every": 5,
+      "local_top": 2,
+      "local_passes": 2,
+      "local_candidates": 16,
+      "cycle3": true,
+      "cycle3_passes": 3,
+      "islands": 1,
+      "migration_interval": 15,
+      "migration_pct": 0.1
+    },
+    "recommended_islands": 8,
+    "coordinate_history": [
+      {
+        "parameter": "population",
+        "scores": [
+          [
+            13.057643952227457,
+            64
+          ],
+          [
+            15.292307125522411,
+            32
+          ],
+          [
+            16.71678929312991,
+            96
+          ]
+        ]
+      },
+      {
+        "parameter": "selection",
+        "scores": [
+          [
+            13.057643952227457,
+            "rank"
+          ],
+          [
+            17.38366030035739,
+            "raw"
+          ]
+        ]
+      },
+      {
+        "parameter": "rank_power",
+        "scores": [
+          [
+            13.057643952227457,
+            2.0
+          ],
+          [
+            14.124875868917577,
+            1.0
+          ],
+          [
+            19.747330186024037,
+            4.0
+          ]
+        ]
+      },
+      {
+        "parameter": "mutation_prob",
+        "scores": [
+          [
+            13.057643952227457,
+            1.0
+          ],
+          [
+            19.656450634329744,
+            0.3
+          ],
+          [
+            20.16002952593875,
+            0.7
+          ]
+        ]
+      },
+      {
+        "parameter": "inversion_pct",
+        "scores": [
+          [
+            13.057643952227457,
+            1.0
+          ],
+          [
+            16.446555262892375,
+            5.0
+          ],
+          [
+            17.099659004614754,
+            20.0
+          ]
+        ]
+      },
+      {
+        "parameter": "elitism",
+        "scores": [
+          [
+            13.057643952227457,
+            0.2
+          ],
+          [
+            17.19959282349755,
+            0.0
+          ],
+          [
+            22.785539658221328,
+            0.4
+          ]
+        ]
+      },
+      {
+        "parameter": "local_every",
+        "scores": [
+          [
+            13.057643952227457,
+            5
+          ],
+          [
+            703.1771665852402,
+            0
+          ],
+          [
+            15.144216088981409,
+            10
+          ],
+          [
+            15.740347314785804,
+            20
+          ]
+        ]
+      },
+      {
+        "parameter": "local_candidates",
+        "scores": [
+          [
+            13.057643952227457,
+            16
+          ],
+          [
+            19.528944115788413,
+            8
+          ],
+          [
+            19.066240527537186,
+            32
+          ]
+        ]
+      },
+      {
+        "parameter": "local_passes",
+        "scores": [
+          [
+            13.057643952227457,
+            2
+          ],
+          [
+            17.98978507400071,
+            1
+          ],
+          [
+            14.646900174712838,
+            4
+          ]
+        ]
+      },
+      {
+        "parameter": "local_top",
+        "scores": [
+          [
+            13.057643952227457,
+            2
+          ],
+          [
+            14.051962134045638,
+            1
+          ],
+          [
+            14.63659132064851,
+            4
+          ]
+        ]
+      },
+      {
+        "parameter": "cycle3",
+        "scores": [
+          [
+            13.057643952227457,
+            true
+          ],
+          [
+            77.04489529178106,
+            false
+          ]
+        ]
+      },
+      {
+        "parameter": "cycle3_passes",
+        "scores": [
+          [
+            13.057643952227457,
+            3
+          ],
+          [
+            14.453031652762215,
+            1
+          ],
+          [
+            13.057643952227457,
+            6
+          ]
+        ]
+      },
+      {
+        "parameter": "adaptive",
+        "scores": [
+          [
+            13.057643952227457,
+            false
+          ],
+          [
+            20.889296316161204,
+            true
+          ]
+        ]
+      },
+      {
+        "parameter": "generations",
+        "scores": [
+          [
+            13.057643952227457,
+            100
+          ],
+          [
+            13.057643952227457,
+            40
+          ],
+          [
+            13.057643952227457,
+            250
+          ],
+          [
+            13.057643952227457,
+            500
+          ]
+        ]
+      }
+    ]
+  },
+  "medium": {
+    "single": {
+      "population": 32,
+      "generations": 100,
+      "mutation_prob": 1.0,
+      "inversion_pct": 1.0,
+      "elitism": 0.2,
+      "selection": "rank",
+      "rank_power": 4.0,
+      "adaptive": false,
+      "adaptive_horizon": 500,
+      "adaptive_long_pct": 20.0,
+      "adaptive_long_prob": 0.05,
+      "local_every": 20,
+      "local_top": 2,
+      "local_passes": 2,
+      "local_candidates": 16,
+      "cycle3": true,
+      "cycle3_passes": 3,
+      "islands": 1,
+      "migration_interval": 15,
+      "migration_pct": 0.1
+    },
+    "parallel": {
+      "population": 32,
+      "generations": 100,
+      "mutation_prob": 1.0,
+      "inversion_pct": 1.0,
+      "elitism": 0.2,
+      "selection": "rank",
+      "rank_power": 4.0,
+      "adaptive": false,
+      "adaptive_horizon": 500,
+      "adaptive_long_pct": 20.0,
+      "adaptive_long_prob": 0.05,
+      "local_every": 20,
+      "local_top": 2,
+      "local_passes": 2,
+      "local_candidates": 16,
+      "cycle3": true,
+      "cycle3_passes": 3,
+      "islands": 4,
+      "migration_interval": 15,
+      "migration_pct": 0.2
+    },
+    "starting": {
+      "population": 64,
+      "generations": 100,
+      "mutation_prob": 1.0,
+      "inversion_pct": 1.0,
+      "elitism": 0.2,
+      "selection": "rank",
+      "rank_power": 2.0,
+      "adaptive": false,
+      "adaptive_horizon": 500,
+      "adaptive_long_pct": 20.0,
+      "adaptive_long_prob": 0.05,
+      "local_every": 5,
+      "local_top": 2,
+      "local_passes": 2,
+      "local_candidates": 16,
+      "cycle3": true,
+      "cycle3_passes": 3,
+      "islands": 1,
+      "migration_interval": 15,
+      "migration_pct": 0.1
+    },
+    "recommended_islands": 1,
+    "coordinate_history": [
+      {
+        "parameter": "population",
+        "scores": [
+          [
+            33.77323019725967,
+            64
+          ],
+          [
+            32.853650554653605,
+            32
+          ],
+          [
+            32.94126969189659,
+            96
+          ]
+        ]
+      },
+      {
+        "parameter": "selection",
+        "scores": [
+          [
+            32.853650554653605,
+            "rank"
+          ],
+          [
+            33.29290383956892,
+            "raw"
+          ]
+        ]
+      },
+      {
+        "parameter": "rank_power",
+        "scores": [
+          [
+            32.853650554653605,
+            2.0
+          ],
+          [
+            31.356542086745964,
+            1.0
+          ],
+          [
+            28.915611041564688,
+            4.0
+          ]
+        ]
+      },
+      {
+        "parameter": "mutation_prob",
+        "scores": [
+          [
+            28.915611041564688,
+            1.0
+          ],
+          [
+            31.660462264496605,
+            0.3
+          ],
+          [
+            31.41270914999859,
+            0.7
+          ]
+        ]
+      },
+      {
+        "parameter": "inversion_pct",
+        "scores": [
+          [
+            28.915611041564688,
+            1.0
+          ],
+          [
+            32.33925012171723,
+            5.0
+          ],
+          [
+            33.34644842708657,
+            20.0
+          ]
+        ]
+      },
+      {
+        "parameter": "elitism",
+        "scores": [
+          [
+            28.915611041564688,
+            0.2
+          ],
+          [
+            33.29648268188587,
+            0.0
+          ],
+          [
+            33.742549969962795,
+            0.4
+          ]
+        ]
+      },
+      {
+        "parameter": "local_every",
+        "scores": [
+          [
+            28.915611041564688,
+            5
+          ],
+          [
+            2504.4853035180827,
+            0
+          ],
+          [
+            33.14929651792519,
+            10
+          ],
+          [
+            28.492197629235754,
+            20
+          ]
+        ]
+      },
+      {
+        "parameter": "local_candidates",
+        "scores": [
+          [
+            28.492197629235754,
+            16
+          ],
+          [
+            33.86485921527909,
+            8
+          ],
+          [
+            34.3922357721327,
+            32
+          ]
+        ]
+      },
+      {
+        "parameter": "local_passes",
+        "scores": [
+          [
+            28.492197629235754,
+            2
+          ],
+          [
+            30.440555415408305,
+            1
+          ],
+          [
+            32.4747686977298,
+            4
+          ]
+        ]
+      },
+      {
+        "parameter": "local_top",
+        "scores": [
+          [
+            28.492197629235754,
+            2
+          ],
+          [
+            31.446141649591986,
+            1
+          ],
+          [
+            28.492197629235754,
+            4
+          ]
+        ]
+      },
+      {
+        "parameter": "cycle3",
+        "scores": [
+          [
+            28.492197629235754,
+            true
+          ],
+          [
+            134.90984969800684,
+            false
+          ]
+        ]
+      },
+      {
+        "parameter": "cycle3_passes",
+        "scores": [
+          [
+            28.492197629235754,
+            3
+          ],
+          [
+            28.77242392442698,
+            1
+          ],
+          [
+            28.492197629235754,
+            6
+          ]
+        ]
+      },
+      {
+        "parameter": "adaptive",
+        "scores": [
+          [
+            28.492197629235754,
+            false
+          ],
+          [
+            32.33740284039372,
+            true
+          ]
+        ]
+      },
+      {
+        "parameter": "generations",
+        "scores": [
+          [
+            28.492197629235754,
+            100
+          ],
+          [
+            28.492197629235754,
+            40
+          ],
+          [
+            28.492197629235754,
+            250
+          ],
+          [
+            28.492197629235754,
+            500
+          ],
+          [
+            28.492197629235754,
+            1000
+          ]
+        ]
+      }
+    ]
+  },
+  "large": {
+    "single": {
+      "population": 64,
+      "generations": 100,
+      "mutation_prob": 1.0,
+      "inversion_pct": 1.0,
+      "elitism": 0.2,
+      "selection": "rank",
+      "rank_power": 2.0,
+      "adaptive": false,
+      "adaptive_horizon": 500,
+      "adaptive_long_pct": 20.0,
+      "adaptive_long_prob": 0.05,
+      "local_every": 5,
+      "local_top": 4,
+      "local_passes": 2,
+      "local_candidates": 8,
+      "cycle3": true,
+      "cycle3_passes": 3,
+      "islands": 1,
+      "migration_interval": 15,
+      "migration_pct": 0.1
+    },
+    "parallel": {
+      "population": 64,
+      "generations": 100,
+      "mutation_prob": 1.0,
+      "inversion_pct": 1.0,
+      "elitism": 0.2,
+      "selection": "rank",
+      "rank_power": 2.0,
+      "adaptive": false,
+      "adaptive_horizon": 500,
+      "adaptive_long_pct": 20.0,
+      "adaptive_long_prob": 0.05,
+      "local_every": 5,
+      "local_top": 4,
+      "local_passes": 2,
+      "local_candidates": 8,
+      "cycle3": true,
+      "cycle3_passes": 3,
+      "islands": 8,
+      "migration_interval": 15,
+      "migration_pct": 0.1
+    },
+    "starting": {
+      "population": 64,
+      "generations": 100,
+      "mutation_prob": 1.0,
+      "inversion_pct": 1.0,
+      "elitism": 0.2,
+      "selection": "rank",
+      "rank_power": 2.0,
+      "adaptive": false,
+      "adaptive_horizon": 500,
+      "adaptive_long_pct": 20.0,
+      "adaptive_long_prob": 0.05,
+      "local_every": 5,
+      "local_top": 2,
+      "local_passes": 2,
+      "local_candidates": 16,
+      "cycle3": true,
+      "cycle3_passes": 3,
+      "islands": 1,
+      "migration_interval": 15,
+      "migration_pct": 0.1
+    },
+    "recommended_islands": 8,
+    "coordinate_history": [
+      {
+        "parameter": "population",
+        "scores": [
+          [
+            7.267716656409501,
+            64
+          ],
+          [
+            8.425229938303367,
+            32
+          ],
+          [
+            7.909810019709412,
+            96
+          ]
+        ]
+      },
+      {
+        "parameter": "selection",
+        "scores": [
+          [
+            7.267716656409501,
+            "rank"
+          ],
+          [
+            8.01598878543469,
+            "raw"
+          ]
+        ]
+      },
+      {
+        "parameter": "rank_power",
+        "scores": [
+          [
+            7.267716656409501,
+            2.0
+          ],
+          [
+            7.660420521558745,
+            1.0
+          ],
+          [
+            7.980883697078607,
+            4.0
+          ]
+        ]
+      },
+      {
+        "parameter": "mutation_prob",
+        "scores": [
+          [
+            7.267716656409501,
+            1.0
+          ],
+          [
+            7.766040167890908,
+            0.3
+          ],
+          [
+            7.980731289031462,
+            0.7
+          ]
+        ]
+      },
+      {
+        "parameter": "inversion_pct",
+        "scores": [
+          [
+            7.267716656409501,
+            1.0
+          ],
+          [
+            7.695272176276756,
+            5.0
+          ],
+          [
+            7.677972413491221,
+            20.0
+          ]
+        ]
+      },
+      {
+        "parameter": "elitism",
+        "scores": [
+          [
+            7.267716656409501,
+            0.2
+          ],
+          [
+            8.319152632999394,
+            0.0
+          ],
+          [
+            7.873741274766127,
+            0.4
+          ]
+        ]
+      },
+      {
+        "parameter": "local_every",
+        "scores": [
+          [
+            7.267716656409501,
+            5
+          ],
+          [
+            3831.9886862933636,
+            0
+          ],
+          [
+            7.660216731055383,
+            10
+          ],
+          [
+            8.407168570112486,
+            20
+          ]
+        ]
+      },
+      {
+        "parameter": "local_candidates",
+        "scores": [
+          [
+            7.267716656409501,
+            16
+          ],
+          [
+            7.232259282976304,
+            8
+          ],
+          [
+            7.571389110571857,
+            32
+          ]
+        ]
+      },
+      {
+        "parameter": "local_passes",
+        "scores": [
+          [
+            7.232259282976304,
+            2
+          ],
+          [
+            7.356799884682984,
+            1
+          ],
+          [
+            7.375775266326358,
+            4
+          ]
+        ]
+      },
+      {
+        "parameter": "local_top",
+        "scores": [
+          [
+            7.232259282976304,
+            2
+          ],
+          [
+            8.248893682813272,
+            1
+          ],
+          [
+            7.125116425833447,
+            4
+          ]
+        ]
+      },
+      {
+        "parameter": "cycle3",
+        "scores": [
+          [
+            7.125116425833447,
+            true
+          ],
+          [
+            72.02648196714944,
+            false
+          ]
+        ]
+      },
+      {
+        "parameter": "cycle3_passes",
+        "scores": [
+          [
+            7.125116425833447,
+            3
+          ],
+          [
+            7.2323102306021445,
+            1
+          ],
+          [
+            7.125116425833447,
+            6
+          ]
+        ]
+      },
+      {
+        "parameter": "adaptive",
+        "scores": [
+          [
+            7.125116425833447,
+            false
+          ],
+          [
+            8.051754453605193,
+            true
+          ]
+        ]
+      },
+      {
+        "parameter": "generations",
+        "scores": [
+          [
+            7.125116425833447,
+            100
+          ],
+          [
+            7.125116425833447,
+            40
+          ],
+          [
+            7.125116425833447,
+            250
+          ],
+          [
+            7.125116425833447,
+            500
+          ]
+        ]
+      }
+    ]
+  }
+}

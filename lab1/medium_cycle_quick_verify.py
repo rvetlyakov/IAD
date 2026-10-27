@@ -4,12 +4,16 @@ For diagnostic fair N/G comparison, toggle only cycle3, keep ALL other
 parameters including the exact matrix and random seed identical.
 """
 from __future__ import annotations
-import argparse,csv,json
-from dataclasses import asdict,replace
+
+import argparse
+import csv
+import json
+from dataclasses import asdict, replace
 from pathlib import Path
+
 import numpy as np
+from hybrid_ga import Config, run
 from scipy.optimize import linear_sum_assignment
-from hybrid_ga import Config,run
 
 BASE=Config(population=120,generations=250,mutation_prob=.7,
             inversion_pct=2,elitism=.2,selection="rank",rank_power=2,

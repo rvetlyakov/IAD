@@ -18,7 +18,7 @@ import random
 import statistics
 import time
 from concurrent.futures import ProcessPoolExecutor
-from dataclasses import asdict, dataclass
+from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
@@ -373,7 +373,7 @@ def plot_comparison(summary, output_dir):
 
     plots = output_dir / "plots"
     plots.mkdir(exist_ok=True)
-    classes = sorted(set(row["class"] for row in summary))
+    classes = sorted({row["class"] for row in summary})
     for name in classes:
         for key, y_label, multiplier in (
             ("mean_relative_gap", "Mean relative error (%)", 100),

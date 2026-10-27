@@ -5,14 +5,16 @@ a visible third of the figure. Every vertex is a measured average;
 there is no PCHIP, fictitious point or blank transition interval.
 """
 import argparse
-from pathlib import Path
 from collections import defaultdict
+from pathlib import Path
 from statistics import mean
+
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 from matplotlib import font_manager
-from staged_tuning import CLASS_GRID,LEVELS,read,save,class_for
+from staged_tuning import CLASS_GRID, LEVELS, class_for, read, save
 
 COLORS=("#155A9D","#17907C","#E07F39","#914992","#C6535B")
 AREAS={"small":"#E9F6F2","medium":"#EAF1FA","large":"#FAEFED"}
@@ -54,15 +56,15 @@ def sensitivity(out):
             winner=min(sub,key=lambda z:(z[1][0],z[1][1]))
             lo=min(v[1][0] for v in sub)
             hi=max(v[1][0] for v in sub)
-            best.append(dict(class_name=group,parameter=factor,
-                best_observed_value=winner[0],mean_error_pct=winner[1][0],
-                mean_seconds=winner[1][1],observations=winner[1][2],
-                note="strict frozen-context OFAT; combinations not optimized"))
-            effects.append(dict(class_name=group,parameter=factor,
-                error_spread_percentage_points=hi-lo,
-                lowest_mean_error_pct=lo,highest_mean_error_pct=hi,
-                n_levels=len(sub),
-                n_per_level=min(v[1][2] for v in sub)))
+            best.append({"class_name": group,"parameter": factor,
+                "best_observed_value": winner[0],"mean_error_pct": winner[1][0],
+                "mean_seconds": winner[1][1],"observations": winner[1][2],
+                "note": "strict frozen-context OFAT; combinations not optimized"})
+            effects.append({"class_name": group,"parameter": factor,
+                "error_spread_percentage_points": hi-lo,
+                "lowest_mean_error_pct": lo,"highest_mean_error_pct": hi,
+                "n_levels": len(sub),
+                "n_per_level": min(v[1][2] for v in sub)})
     effects.sort(key=lambda x:(x["class_name"],-x["error_spread_percentage_points"]))
     save(out/"parameter_effects.csv",effects)
     save(out/"best_observed_levels.csv",best)
@@ -130,7 +132,7 @@ def render(out):
                           fontsize=12,labelpad=48)
             for spine in ax.spines.values():spine.set_visible(False)
             ax.tick_params(axis="both",length=0,pad=8,colors="#44556B")
-            handles,labels=ax.get_legend_handles_labels()
+            handles,_labels=ax.get_legend_handles_labels()
             if handles:
                 ax.legend(title="Значение параметра",loc="upper left",
                     ncol=2,fontsize=9.5,edgecolor="#CDD8E0",

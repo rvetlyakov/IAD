@@ -6,8 +6,8 @@ import unittest
 from unittest.mock import patch
 
 sys.path.insert(0,os.path.join(os.path.dirname(__file__),"..","lab1"))
-from lab1_test import run_ga
 import experiments
+from lab1_test import run_ga
 from scipy.optimize import linear_sum_assignment
 
 

@@ -40,9 +40,8 @@ class InversionMutationTests(unittest.TestCase):
 
     def test_invalid_percent_is_rejected(self):
         for invalid in (0, -1, 101):
-            with self.subTest(invalid=invalid):
-                with self.assertRaises(ValueError):
-                    individual(4, invalid).mutate()
+            with self.subTest(invalid=invalid), self.assertRaises(ValueError):
+                individual(4, invalid).mutate()
 
 
 if __name__ == "__main__":

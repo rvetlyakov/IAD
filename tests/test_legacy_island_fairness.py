@@ -6,9 +6,10 @@ import unittest
 from unittest.mock import patch
 
 sys.path.insert(0,os.path.join(os.path.dirname(__file__),"..","lab1"))
-from lab1 import Employees
-from lab1_test import run_ga
 import lab1_test_migrations as islands
+from lab1_test import run_ga
+
+from lab1 import Employees
 
 
 class LegacyIslandsTests(unittest.TestCase):
@@ -28,9 +29,9 @@ class LegacyIslandsTests(unittest.TestCase):
 
     def test_one_island_same_result_as_simple_ga_for_same_seed(self):
         matrix=[[1,4,6],[3,1,2],[8,5,1]]
-        params=dict(population_size=12, mutation_probability=0.8,
-                    mutation_percent=45,tournament_size=2,max_iterations=8,
-                    plateau_limit=3,plateau_diff=0,elitist_percent=.2,matrix=matrix)
+        params={"population_size": 12, "mutation_probability": 0.8,
+                    "mutation_percent": 45,"tournament_size": 2,"max_iterations": 8,
+                    "plateau_limit": 3,"plateau_diff": 0,"elitist_percent": .2,"matrix": matrix}
         random.seed(777)
         expected=run_ga(**params)
         random.seed(777)
@@ -52,11 +53,11 @@ class LegacyIslandsTests(unittest.TestCase):
 
     def test_invalid_migration_configuration_rejected(self):
         matrix=[[1,10],[10,1]]
-        params=dict(population_size=5,mutation_probability=.7,
-            mutation_percent=40,tournament_size=2,max_iterations=4,
-            plateau_limit=2,plateau_diff=1e-6,
-            migration_interval=0,migration_percent=20,
-            num_islands=2,elitist_percent=.2,matrix=matrix)
+        params={"population_size": 5,"mutation_probability": .7,
+            "mutation_percent": 40,"tournament_size": 2,"max_iterations": 4,
+            "plateau_limit": 2,"plateau_diff": 1e-6,
+            "migration_interval": 0,"migration_percent": 20,
+            "num_islands": 2,"elitist_percent": .2,"matrix": matrix}
         with self.assertRaises(ValueError):
             islands.run_ga_with_migrations(**params)
 

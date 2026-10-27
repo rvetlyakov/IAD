@@ -3,9 +3,9 @@ import sys
 import unittest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "lab1"))
-from termination import plateau_reached
 from lab1_test import run_ga
 from lab1_test_migrations import run_ga_with_migrations
+from termination import plateau_reached
 
 
 class ConvergenceTests(unittest.TestCase):

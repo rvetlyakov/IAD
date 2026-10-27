@@ -1,14 +1,15 @@
 """Regression tests for real-dimension presentation curves."""
-import csv
 import json
 import os
 import sys
 import tempfile
 import unittest
 from pathlib import Path
+
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "lab1"))
 
 from scale_curve_research import GRIDS, build_summary, collect_curves, plot_curves
+
 
 class CurveResearchTests(unittest.TestCase):
     def test_grids_have_measurements_inside_each_class(self):

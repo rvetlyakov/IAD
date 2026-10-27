@@ -1,4 +1,5 @@
 """Scale-independent convergence detection for assignment GAs."""
+import itertools
 
 
 def plateau_reached(fitness_history, plateau_limit, plateau_diff):
@@ -14,6 +15,6 @@ def plateau_reached(fitness_history, plateau_limit, plateau_diff):
     window = fitness_history[-(plateau_limit + 1):]
     differences = [
         abs(after - before) / max(abs(before), 1e-12)
-        for before, after in zip(window, window[1:])
+        for before, after in itertools.pairwise(window)
     ]
     return max(differences) <= plateau_diff

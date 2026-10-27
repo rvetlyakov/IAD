@@ -9,7 +9,6 @@ from __future__ import annotations
 import argparse
 import csv
 import json
-import math
 from pathlib import Path
 from statistics import mean, stdev
 
@@ -140,7 +139,7 @@ def plot_curves(summary, output_dir, *, mode="full", only_class=None, repeats=2)
     })
     out = Path(output_dir)
     out.mkdir(parents=True, exist_ok=True)
-    class_names = [only_class] if only_class else sorted(set(r["class"] for r in summary))
+    class_names = [only_class] if only_class else sorted({r["class"] for r in summary})
     for name in class_names:
         rows = [r for r in summary if r["class"]==name]
         if not rows:

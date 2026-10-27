@@ -6,9 +6,11 @@ rank RSS, and optional local search, including true multiprocess islands.
 import csv
 from dataclasses import replace
 from pathlib import Path
+
 import numpy as np
+from hybrid_ga import Config, run
 from scipy.optimize import linear_sum_assignment
-from hybrid_ga import Config,run
+
 
 def validate_repeats(path="results/hybrid_ga_study/validation.csv"):
     base=Config(population=120,generations=250,mutation_prob=1,

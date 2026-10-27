@@ -1,9 +1,7 @@
-import math
-from lab1 import Employees
-from itertools import permutations
 from scipy.optimize import linear_sum_assignment
 from termination import plateau_reached
 
+from lab1 import Employees
 
 matrices = {
     "ideal_matrice": [
@@ -113,7 +111,7 @@ distance - integer - разность между нашим и оптималь�
         # print(f"-> Достигнут лимит в {max_iterations} итераций.")
 
     # 2. Ищем наилучшее решение
-    best_vector, _ = evolution.get_best()
+    _best_vector, _ = evolution.get_best()
 
     # === НАХОЖДЕНИЕ ЭТАЛОНА ===
     # reference_cost may be calculated once per matrix, outside a GA timer.

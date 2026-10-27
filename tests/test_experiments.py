@@ -1,13 +1,19 @@
 import csv
 import os
-from pathlib import Path
 import sys
 import tempfile
 import unittest
+from pathlib import Path
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "lab1"))
-from experiments import (BASELINE, generate_cases, parameter_settings,
-                         run_study, save_study, summarize)
+from experiments import (
+    BASELINE,
+    generate_cases,
+    parameter_settings,
+    run_study,
+    save_study,
+    summarize,
+)
 
 
 class ExperimentsTests(unittest.TestCase):

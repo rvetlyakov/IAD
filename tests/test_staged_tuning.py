@@ -1,13 +1,28 @@
 """Methodology tests for independent train, OFAT and holdout partitions."""
-import sys,unittest,json,tempfile
+import json
+import sys
+import tempfile
+import unittest
+from dataclasses import asdict
 from pathlib import Path
 from unittest.mock import patch
-from dataclasses import asdict
+
 import numpy as np
+
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"lab1"))
-from staged_tuning import (class_for,CLASS_GRID,TRAIN,HOLDOUT,SEEDS,LEVELS,
-    ACTIVE_CONTEXT,_seed,train,ofat,transfer)
 from hybrid_ga import Config
+from staged_tuning import (
+    ACTIVE_CONTEXT,
+    CLASS_GRID,
+    LEVELS,
+    SEEDS,
+    _seed,
+    class_for,
+    ofat,
+    train,
+    transfer,
+)
+
 
 class StagedTuningTests(unittest.TestCase):
     def test_nonoverlapping_user_classes(self):
@@ -32,9 +47,9 @@ class StagedTuningTests(unittest.TestCase):
         for n in (20,100,150,300,450,500,1000):
             keys={stage:{_seed(n,x,stage) for x in values}
                   for stage,values in SEEDS.items()}
-            for first in keys:
-                for second in keys:
-                    if first!=second:self.assertFalse(keys[first]&keys[second])
+            for first, first_values in keys.items():
+                for second, second_values in keys.items():
+                    if first!=second:self.assertFalse(first_values & second_values)
 
     def test_adaptive_mutation_does_not_change_when_generation_budget_changes(self):
         from hybrid_ga import _evolve

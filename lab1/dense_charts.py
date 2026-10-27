@@ -3,15 +3,17 @@
 Every plotted marker is an actual measurement; the PCHIP connecting curve
 is for presentation smoothness only, and never enters CSV or optimization.
 """
-from pathlib import Path
 import argparse
+from pathlib import Path
+
+import matplotlib
 import numpy as np
 from scipy.interpolate import PchipInterpolator
-import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-from matplotlib import font_manager,ticker
-from dense_research import SIZES,LEVELS,load_csv
+from dense_research import LEVELS, SIZES, load_csv
+from matplotlib import font_manager, ticker
 
 COLORS=("#14599B","#17967F","#D77C33","#914E94","#BF5862")
 NAMES={"small":"малые","medium":"средние",

@@ -3,10 +3,12 @@ import sys
 import unittest
 from dataclasses import replace
 from pathlib import Path
+
 import numpy as np
+
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "lab1"))
-from three_cycle import improve_three_cycle
 from hybrid_ga import Config, best_columns, costs, run
+from three_cycle import improve_three_cycle
 
 
 class TestThreeCycle(unittest.TestCase):

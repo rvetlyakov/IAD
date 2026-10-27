@@ -1,0 +1,23 @@
+{
+  "ruff": "all checks passed; lab1 and tests",
+  "compileall": "passed; lab1 and tests",
+  "unittest": {
+    "passed": 95,
+    "failed": 0,
+    "seconds": 17.91
+  },
+  "plots": {
+    "png": 43,
+    "svg": 43,
+    "single_axis": true,
+    "font": "Montserrat",
+    "technical_footers": false,
+    "visually_inspected": true
+  },
+  "ga_replay": "6 control costs exactly reproduced",
+  "old_actions_run": {
+    "id": 40591351661,
+    "status": "cancelled"
+  },
+  "scheduled_checks_reenabled": false
+}

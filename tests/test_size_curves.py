@@ -1,7 +1,7 @@
-import tempfile
 import sys
-from pathlib import Path
+import tempfile
 import unittest
+from pathlib import Path
 
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"lab1"))
 from size_curves import DIMENSIONS, LEVELS, running_mean, save_curves

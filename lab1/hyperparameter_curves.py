@@ -10,6 +10,7 @@ Usage:
 Results: results/hyperparameter_curves_10_2000/{raw.csv,summary.csv,plots/*.png}
 """
 from __future__ import annotations
+
 import argparse
 import csv
 import json
@@ -19,11 +20,10 @@ import time
 from collections import defaultdict
 from pathlib import Path
 
-import numpy as np
+from scale_benchmark import exact_cost, generate_matrix, run_variant
+from termination import plateau_reached
 
 from lab1 import Employee, Employees
-from termination import plateau_reached
-from scale_benchmark import generate_matrix, exact_cost, run_variant
 
 # All chart X coordinates (independent experiments, never interpolated).
 REAL_SIZES = {

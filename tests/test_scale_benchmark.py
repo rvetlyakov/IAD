@@ -1,15 +1,19 @@
 """Scale study: fairness, exact references, and real multiprocessing islands."""
-import json
 import os
 import sys
 import tempfile
-from pathlib import Path
 import unittest
+from pathlib import Path
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "lab1"))
 from scale_benchmark import (
-    SIZE_CLASSES, BASELINE, generate_matrix, split_population,
-    run_variant, evaluate_pair, run_study
+    BASELINE,
+    SIZE_CLASSES,
+    evaluate_pair,
+    generate_matrix,
+    run_study,
+    run_variant,
+    split_population,
 )
 
 

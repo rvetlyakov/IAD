@@ -3,8 +3,8 @@ import sys
 import unittest
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "lab1"))
-from plateau_sensitivity import BASELINE_PLATEAU, PLATEAU_SWEEPS
 from experiments import parameter_settings, run_study
+from plateau_sensitivity import BASELINE_PLATEAU, PLATEAU_SWEEPS
 
 
 class PlateauSensitivityTests(unittest.TestCase):

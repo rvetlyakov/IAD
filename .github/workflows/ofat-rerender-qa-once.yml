@@ -1,0 +1,53 @@
+name: Re-render real OFAT plots after visual QA
+on:
+  push:
+    branches:
+      - "fix/scale-island-benchmark-20261026"
+    paths:
+      - ".github/workflows/ofat-rerender-qa-once.yml"
+permissions:
+  contents: write
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install scientific stack and Montserrat
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y fonts-montserrat
+          python -m pip install 'numpy>=2.1,<3' 'scipy>=1.14,<2' 'matplotlib>=3.9,<4'
+      - name: Plot ten parameters from 465 verified measurements (no new GA runs)
+        run: |
+          python - <<'PY'
+          import sys,csv,json
+          from pathlib import Path
+          sys.path.insert(0,'lab1')
+          from hyperparameter_curves import render_parameter,HYPERPARAMETERS
+          d=Path('results/hyperparameter_curves_10_2000')
+          meta=json.loads((d/'metadata.json').read_text())
+          assert meta['mode']=='full' and len(meta['completed_parameters'])==10
+          s=list(csv.DictReader((d/'summary.csv').open()))
+          for p in HYPERPARAMETERS:
+              render_parameter(p,s,d/'plots',mode='full',repeats=meta['repeats'])
+          assert len(list((d/'plots').glob('*.png')))==10
+          assert len(list((d/'plots').glob('*.svg')))==10
+          print('Refreshed 10 graphs from existing measured values')
+          PY
+      - name: Commit ten corrected images
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f results/hyperparameter_curves_10_2000/plots
+          git commit -m "viz: fix sidebar text collision across all ten hyperparameter charts"
+          git push origin HEAD:fix/scale-island-benchmark-20261026
+      - name: Export checked visuals
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: iad-ofat-10-polished-charts
+          path: results/hyperparameter_curves_10_2000/plots
+          retention-days: 90

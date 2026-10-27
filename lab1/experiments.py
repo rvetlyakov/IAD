@@ -16,6 +16,7 @@ from collections import defaultdict
 from pathlib import Path
 
 from lab1_test import run_ga
+from scipy.optimize import linear_sum_assignment
 
 # Two representative instance sizes per class; sizes are defined before trials.
 SIZE_CLASSES = {
@@ -91,6 +92,12 @@ def run_study(matrix_count=6, repeats=2, seed=20261021,
     if repeats < 1:
         raise ValueError("repeats must be >= 1")
     cases = generate_cases(matrix_count, seed, classes)
+    # Precompute exact references ONCE per matrix, outside all GA timers.
+    references = {}
+    for class_name, size, matrix_id, matrix in cases:
+        rows, cols = linear_sum_assignment(matrix)
+        references[(class_name, size, matrix_id)] = sum(
+            matrix[int(i)][int(j)] for i, j in zip(rows, cols))
     sweeps = SWEEPS if sweeps is None else sweeps
     baseline = BASELINE if baseline is None else baseline
     rows = []
@@ -105,7 +112,8 @@ def run_study(matrix_count=6, repeats=2, seed=20261021,
                     random.seed(ga_seed)
                     start = time.perf_counter()
                     optimal, generations, relative_gap = run_ga(
-                        **settings, matrix=matrix
+                        **settings, matrix=matrix,
+                        reference_cost=references[(class_name, size, matrix_id)]
                     )
                     elapsed = time.perf_counter() - start
                     if relative_gap < -1e-10:
@@ -121,7 +129,7 @@ def run_study(matrix_count=6, repeats=2, seed=20261021,
                         "relative_gap": relative_gap,
                         "optimal": int(optimal),
                         "generations": generations,
-                        # Includes the exact SciPy comparison performed by run_ga.
+                        # Only the GA; the exact SciPy reference was cached.
                         "elapsed_seconds": elapsed,
                     })
     return rows
@@ -213,7 +221,7 @@ def save_study(output_dir, matrix_count=6, repeats=2, seed=20261021,
             "seed": seed, "matrix_count": matrix_count, "repeats": repeats,
             "classes": classes, "baseline": baseline, "sweeps": sweeps,
             "raw_trials": len(rows),
-            "timing": "full run_ga call, including SciPy exact-reference calculation",
+            "timing": "only GA evolution; each SciPy exact reference computed once outside timers",
             "fitness_plateau": "relative mean-fitness change",
             "sampling": "same random matrices and GA seeds across parameter levels",
         }, f, ensure_ascii=False, indent=2)

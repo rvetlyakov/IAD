@@ -20,6 +20,7 @@ class Config:
     selection: str = "raw"
     rank_power: float = 2.0
     adaptive: bool = False
+    adaptive_horizon: int = 500  # fixed decay time, independent of max_generations
     adaptive_long_pct: float = 20.0
     adaptive_long_prob: float = .05
     local_every: int = 0
@@ -40,7 +41,7 @@ def validate(A, c):
         raise ValueError("mutation/elitism/inversion outside valid range")
     if c.selection not in ("raw","rank") or c.rank_power<=0:
         raise ValueError("selection must be raw or positive-power rank RSS")
-    if not 0<=c.adaptive_long_prob<=1 or not 0<c.adaptive_long_pct<=100:
+    if not 0<=c.adaptive_long_prob<=1 or not 0<c.adaptive_long_pct<=100 or c.adaptive_horizon<1:
         raise ValueError("invalid adaptive mutation controls")
     if c.local_every<0 or c.local_top<0 or c.local_top>c.population or c.local_passes<1 or c.local_candidates<1:
         raise ValueError("invalid local search controls")
@@ -97,7 +98,10 @@ def mutate(parents,c,iteration,rng):
         if rng.random()>=c.mutation_prob:continue
         pct=c.inversion_pct
         if c.adaptive:
-            progress=iteration/max(1,c.generations)
+            # Decouple adaptive mutation schedule from the number of
+            # generations, otherwise a generations-only sweep changes
+            # both search horizon AND mutation behavior at each step.
+            progress=min(1.,iteration/c.adaptive_horizon)
             pct=max(.2,c.inversion_pct*(.1+.9*(1-progress)**2))
             if rng.random()<c.adaptive_long_prob:pct=c.adaptive_long_pct
         length=mutation_length(n,pct,rng)

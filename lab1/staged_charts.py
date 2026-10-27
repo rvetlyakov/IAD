@@ -4,7 +4,7 @@ Piecewise-linear X retains continuous numeric order and gives each class
 a visible third of the figure. Every vertex is a measured average;
 there is no PCHIP, fictitious point or blank transition interval.
 """
-import argparse,csv
+import argparse
 from pathlib import Path
 from collections import defaultdict
 from statistics import mean

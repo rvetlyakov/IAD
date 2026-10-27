@@ -46,7 +46,7 @@ HYPERPARAMETERS = {
     "migration_interval": (5, 10, 20),
     "migration_percent": (5, 10, 20),
     "plateau_limit": (3, 5, 10),
-    "plateau_diff": (0.005, 0.02, 0.05),
+    "plateau_diff": (0.0, 1e-7, 1e-6, 1e-5, 1e-4),
 }
 LABELS = {
     "total_population": ("Размер популяции", "особей"),
@@ -60,7 +60,7 @@ LABELS = {
     "plateau_limit": ("Длина окна плато", "поколений"),
     "plateau_diff": ("Порог плато", "отн. величина"),
 }
-COLORS = ("#1761B0", "#008E81", "#E07B34", "#933D9C")
+COLORS = ("#1761B0", "#008E81", "#E07B34", "#933D9C", "#C54A52")
 BANDS = (
     ("small", 0.0, 4.0, "#EDF8F4", "МАЛЫЕ"),
     ("medium", 5.5, 9.5, "#ECF4FE", "СРЕДНИЕ"),
@@ -125,19 +125,19 @@ def _settings_for(group, parameter, full_settings, mode):
     if parameter in PLATEAU_ONLY:
         cfg["num_islands"]=1
         cfg["plateau_limit"]=5
-        cfg["plateau_diff"]=0.02
+        cfg["plateau_diff"]=1e-5
     if mode=="smoke":
         cfg.update(total_population=12,max_generations=6,
                    migration_interval=3,mutation_percent=40)
         if parameter in PLATEAU_ONLY:
-            cfg.update(plateau_limit=2,plateau_diff=.02)
+            cfg.update(plateau_limit=2,plateau_diff=1e-5)
     return cfg
 
 
 def _levels(parameter, mode):
     if mode=="smoke":
         if parameter=="num_islands": return (1,2,3)
-        if parameter=="plateau_diff": return (.005,.05)
+        if parameter=="plateau_diff": return (0.0,1e-6)
         return HYPERPARAMETERS[parameter][:2]
     return HYPERPARAMETERS[parameter]
 
@@ -321,7 +321,10 @@ def run_experiment(*, mode, parameters=None, output_dir="results/hyperparameter_
                             "cost":int(cost),"exact_cost":int(optimal),
                             "error_percent":100*(cost-optimal)/optimal,
                             "generations":int(generations),
-                            "seconds":float(elapsed)
+                            "seconds":float(elapsed),
+                            # Full configuration snapshot makes every row
+                            # auditable independent of future code changes.
+                            "settings_json":json.dumps(settings,sort_keys=True)
                         })
                 print(f"{parameter}: {group} n={size}; {repeats} shared matrices",flush=True)
         _csv(output/"raw.csv",results)

@@ -1,0 +1,93 @@
+{
+  "seed": 20261101,
+  "sizes": {
+    "small": [
+      5,
+      10,
+      30,
+      50
+    ],
+    "medium": [
+      100,
+      200,
+      300,
+      400,
+      500
+    ],
+    "large": [
+      1000,
+      1250,
+      1500,
+      1750,
+      2000
+    ]
+  },
+  "repeats": 1,
+  "factors": {
+    "generations": [
+      "40",
+      "100",
+      "250",
+      "500",
+      "1000"
+    ],
+    "selection": [
+      "1/C",
+      "rank 1",
+      "rank 2",
+      "rank 4"
+    ],
+    "inversion": [
+      "2%",
+      "5%",
+      "20%",
+      "adaptive"
+    ],
+    "local_search": [
+      "off",
+      "every 5",
+      "every 10",
+      "every 25"
+    ],
+    "islands": [
+      "1",
+      "2",
+      "4",
+      "8"
+    ],
+    "population": [
+      "60",
+      "120",
+      "240"
+    ],
+    "elitism": [
+      "0%",
+      "10%",
+      "20%",
+      "40%"
+    ],
+    "mutation_probability": [
+      "0.3",
+      "0.7",
+      "1.0"
+    ],
+    "migration_interval": [
+      "5",
+      "25",
+      "50"
+    ],
+    "migration_fraction": [
+      "5%",
+      "10%",
+      "20%"
+    ],
+    "local_candidates": [
+      "4",
+      "8",
+      "16",
+      "32"
+    ]
+  },
+  "method": "paired test matrices/seeds, one factor at a time",
+  "note": "Migration sweeps fix islands=4; other sweeps use one island unless varying islands."
+}

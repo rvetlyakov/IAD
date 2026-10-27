@@ -21,20 +21,31 @@ from local_research import CLASS_GRID, HOLDOUT, LEVELS, TRAIN, problem, seed_for
 CLASS_LABELS = {'small':'Малые · n < 100', 'medium':'Средние · 100–499',
                 'large':'Большие · 500–2000'}
 LABELS = {
+ 'local_on_offspring':'Локальный поиск по потомкам',
  'generations':'Число поколений', 'population':'Общая популяция',
  'selection':'RSS: исходный / ранговый', 'rank_power':'Степень рангового RSS',
  'mutation_prob':'Вероятность мутации', 'inversion_pct':'Максимальная длина инверсии, %',
- 'elitism':'Доля элиты', 'local_every':'Период локального поиска (0 = выключен)',
- 'local_candidates':'Число кандидатов K', 'local_passes':'Проходы 2-swap',
- 'local_top':'Общее число локальных улучшений за событие',
- 'cycle3':'Тройные циклы 3-cycle', 'cycle3_passes':'Проходы 3-cycle',
+ 'elitism':'Доля элиты', 'local_every':'Период локального поиска',
+ 'local_candidates':'Число кандидатов локального поиска', 'local_passes':'Число проходов парных обменов',
+ 'local_top':'Число особей для локального поиска',
+ 'cycle3':'Тройные обмены', 'cycle3_passes':'Число проходов тройных обменов',
  'adaptive':'Адаптивная инверсия', 'adaptive_horizon':'Горизонт адаптации',
- 'adaptive_long_prob':'Вероятность длинной инверсии',
+ 'adaptive_long_prob':'Вероятность дополнительной инверсии',
  'adaptive_long_pct':'Длина дополнительной инверсии, %',
- 'islands':'Число островов при равной общей популяции',
+ 'islands':'Число островов',
  'migration_interval':'Интервал кольцевой миграции',
  'migration_pct':'Доля мигрантов'}
 COLORS = ['#1565c0','#d45b20','#13866d','#9a45aa','#666b74','#c39112']
+
+def value_key(value):
+    """CSV levels 2 and 2.0 denote the same numeric hyperparameter."""
+    if isinstance(value,bool):
+        return str(value)
+    try:
+        return format(float(value),'.12g')
+    except (ValueError,TypeError):
+        return str(value)
+
 
 def read(path):
     with Path(path).open(newline='',encoding='utf-8') as f:
@@ -75,7 +86,19 @@ def audit_row(row):
 
 def audit(root):
     root=Path(root)
+    metadata=json.loads((root/'metadata.json').read_text()) if (root/'metadata.json').exists() else {}
+    if metadata:
+        assert metadata.get('status')=='completed', 'Research is not completed'
+    if metadata.get('profile')=='final_offspring':
+        from final_research import configure
+        configure()
+    repeat_counts=metadata.get('repeats',{'survey':1,'holdout':3})
     selected=json.loads((root/'selected.json').read_text())
+    if (root/'frozen_before_holdout.json').exists():
+        frozen=json.loads((root/'frozen_before_holdout.json').read_text())
+        assert hashlib.sha256((root/'selected.json').read_bytes()).hexdigest()==frozen['selected_sha256']
+        assert hashlib.sha256((Path(__file__).parent/'hybrid_ga.py').read_bytes()).hexdigest()==frozen['algorithm_sha256']
+
     data={stage:read(root/f'{stage}.csv') for stage in ('train','survey','holdout','diagonal')}
     seed_sets={}
     for stage, rows in data.items():
@@ -94,11 +117,14 @@ def audit(root):
             for n in sizes:
                 rows=[r for r in survey if r['class_name']==group and r['parameter']==parameter and int(r['n'])==n]
                 assert rows, (group,parameter,n)
-                expected_values=set(map(str,LEVELS[parameter]))
-                assert expected_values <= {r['value'] for r in rows}
+                expected_values={value_key(v) for v in LEVELS[parameter]}
+                context=json.loads(rows[0]['context_json'])
+                assert expected_values | {value_key(context[parameter])} == {value_key(r['value']) for r in rows}
                 assert len({r['context_json'] for r in rows}) == 1
-                assert len(rows) == len({r['value'] for r in rows})
-        for stage,repeats,stage_sizes in [('survey',(0,),sizes),('holdout',(0,1,2),HOLDOUT[group])]:
+                assert len(rows) == len({(r['value'],r['repeat']) for r in rows})
+                for value in {r['value'] for r in rows}:
+                    assert {int(r['repeat']) for r in rows if r['value']==value}==set(range(repeat_counts['survey']))
+        for stage,repeats,stage_sizes in [('survey',tuple(range(repeat_counts['survey'])),sizes),('holdout',tuple(range(repeat_counts['holdout'])),HOLDOUT[group])]:
             for n in stage_sizes:
                 for rep in repeats:
                     pair=[r for r in data[stage] if r['class_name']==group and int(r['n'])==n and int(r['repeat'])==rep and r['variant'] in ('single','parallel')]
@@ -229,32 +255,41 @@ def finish_unified(fig,ax,path,maximum,metric,legend_title,footnote):
     export(fig,path)
 
 
+def measured_series(rows,metric):
+    grouped=defaultdict(list)
+    for row in rows:
+        grouped[int(row['n'])].append(float(row[metric]))
+    ns=sorted(grouped)
+    return ns,[mean(grouped[n]) for n in ns]
+
+
 def plots(root,data):
     root=Path(root)
     out=root/'plots'
     out.mkdir(exist_ok=True)
-    colors=('#14599B','#17967F','#D77C33','#914E94','#BF5862','#6D7481')
+    colors=('#14599B','#17967F','#D77C33','#914E94','#BF5862','#6D7481','#758323')
     symbols={'raw':'RSS · 1/C','rank':'Ранговый RSS','True':'Да','False':'Нет'}
     note='Точки — реальные измерения; плавная линия — PCHIP для отображения. Базовые настройки зафиксированы отдельно для каждого класса.'
     for parameter in LEVELS:
-        values=list(dict.fromkeys([str(v) for v in LEVELS[parameter]]+
-                    [r['value'] for r in data['survey'] if r['parameter']==parameter]))
+        values=list(dict.fromkeys([value_key(v) for v in LEVELS[parameter]]+
+                    [value_key(r['value']) for r in data['survey'] if r['parameter']==parameter]))
         for metric,ylabel in [('error_pct','Отклонение от точного решения, %'),('seconds','Время работы ГА, с')]:
             title=LABELS[parameter]+(' — зависимость от размерности' if metric=='error_pct' else ' — время работы')
             fig,ax=unified_axes(ylabel,title)
             maximum=0.
             for i,value in enumerate(values):
-                rows=sorted((r for r in data['survey'] if r['parameter']==parameter and r['value']==value),key=lambda r:int(r['n']))
-                maximum=max(maximum,draw_series(ax,[int(r['n']) for r in rows],
-                              [float(r[metric]) for r in rows],colors[i%len(colors)],symbols.get(value,value)))
+                rows=sorted((r for r in data['survey'] if r['parameter']==parameter and value_key(r['value'])==value),key=lambda r:int(r['n']))
+                ns,ys=measured_series(rows,metric)
+                label='Без поиска' if parameter=='local_every' and value=='0' else symbols.get(value,value)
+                maximum=max(maximum,draw_series(ax,ns,ys,colors[i%len(colors)],label))
             finish_unified(fig,ax,out/f'ofat_{parameter}_{metric}',maximum,metric,'Значение параметра',note)
     for metric,ylabel in [('error_pct','Отклонение от точного решения, %'),('seconds','Время работы ГА, с')]:
         fig,ax=unified_axes(ylabel,'Обычный и островной ГА — '+('ошибка решения' if metric=='error_pct' else 'время работы'))
         maximum=0.
         for i,(variant,label) in enumerate([('single','Обычный ГА'),('parallel','Островной ГА')]):
             rows=sorted((r for r in data['survey'] if r['variant']==variant),key=lambda r:int(r['n']))
-            maximum=max(maximum,draw_series(ax,[int(r['n']) for r in rows],
-                            [float(r[metric]) for r in rows],colors[i],label))
+            ns,ys=measured_series(rows,metric)
+            maximum=max(maximum,draw_series(ax,ns,ys,colors[i],label))
         finish_unified(fig,ax,out/f'paired_survey_{metric}',maximum,metric,'Алгоритм',note)
     fig,ax=unified_axes('Отклонение от точного решения, %','Влияние локального поиска на точность решения')
     maximum=0.
@@ -281,7 +316,7 @@ def tables(root,data,selected):
     save(root/'best_parameters.csv',rows)
     stats=[]
     for group in CLASS_GRID:
-        for variant in ('single','parallel','without_cycle3','original_rss_inversion'):
+        for variant in dict.fromkeys(['single','parallel','without_cycle3','original_rss_inversion']+[r['variant'] for r in data['holdout']]):
             rows=[r for r in data['holdout'] if r['class_name']==group and r['variant']==variant]
             stats.append({'class_name':group,'variant':variant,'runs':len(rows),
                           'mean_error_pct':mean(float(r['error_pct']) for r in rows),

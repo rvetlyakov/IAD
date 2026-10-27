@@ -1,0 +1,7 @@
+class,variant,population,generations,mutation_prob,inversion_pct,elitism,selection,rank_power,adaptive,adaptive_horizon,adaptive_long_pct,adaptive_long_prob,local_on_offspring,local_every,local_top,local_passes,local_candidates,cycle3,cycle3_passes,islands,migration_interval,migration_pct
+small,single,96,100,1.0,50.0,0.2,raw,2,False,500,20.0,0.05,True,5,2,2,16,True,3,1,15,0.1
+small,parallel,96,100,1.0,50.0,0.2,raw,2,False,500,20.0,0.05,True,5,2,2,16,True,3,2,5,0.1
+medium,single,96,100,0.7,5.0,0.2,rank,2,False,500,20.0,0.05,True,5,2,4,16,True,3,1,15,0.1
+medium,parallel,96,100,0.7,5.0,0.2,rank,2,False,500,20.0,0.05,True,5,2,4,16,True,3,2,15,0.1
+large,single,64,100,1.0,5.0,0.2,rank,2,False,500,20.0,0.05,True,5,4,2,32,True,3,1,15,0.1
+large,parallel,64,100,1.0,5.0,0.2,rank,2,False,500,20.0,0.05,True,5,4,2,32,True,3,2,5,0.1

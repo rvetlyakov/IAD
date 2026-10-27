@@ -1,0 +1,255 @@
+{
+  "status": "completed",
+  "profile": "final_offspring",
+  "python": "3.13.18 (main, Oct 26 2026, 13:59:02) [Clang 23.1.3 ]",
+  "platform": "macOS-27.0.1-arm64-arm-64bit-Mach-O",
+  "repeats": {
+    "train": 2,
+    "survey": 2,
+    "holdout": 5
+  },
+  "train_sizes": {
+    "small": [
+      20,
+      55,
+      85
+    ],
+    "medium": [
+      150,
+      300,
+      450
+    ],
+    "large": [
+      650,
+      1100,
+      1700
+    ]
+  },
+  "survey_sizes": {
+    "small": [
+      10,
+      20,
+      30,
+      40,
+      50,
+      60,
+      70,
+      80,
+      90
+    ],
+    "medium": [
+      100,
+      125,
+      150,
+      175,
+      200,
+      225,
+      250,
+      275,
+      300,
+      325,
+      350,
+      375,
+      400,
+      425,
+      450,
+      475
+    ],
+    "large": [
+      500,
+      550,
+      600,
+      650,
+      700,
+      750,
+      800,
+      850,
+      900,
+      950,
+      1000,
+      1100,
+      1200,
+      1300,
+      1400,
+      1500,
+      1600,
+      1700,
+      1800,
+      1900,
+      2000
+    ]
+  },
+  "holdout_sizes": {
+    "small": [
+      25,
+      65,
+      95
+    ],
+    "medium": [
+      125,
+      275,
+      475
+    ],
+    "large": [
+      525,
+      875,
+      1150,
+      1550,
+      1950,
+      2000
+    ]
+  },
+  "stage_offsets": {
+    "train": 1100000000,
+    "survey": 1300000000,
+    "holdout": 1500000000,
+    "diagonal": 1700000000
+  },
+  "levels": {
+    "generations": [
+      1,
+      2,
+      5,
+      10,
+      20,
+      40,
+      100
+    ],
+    "population": [
+      32,
+      64,
+      96
+    ],
+    "selection": [
+      "raw",
+      "rank"
+    ],
+    "rank_power": [
+      1.0,
+      2.0,
+      4.0
+    ],
+    "mutation_prob": [
+      0.3,
+      0.7,
+      1.0
+    ],
+    "inversion_pct": [
+      1.0,
+      5.0,
+      20.0,
+      50.0,
+      100.0
+    ],
+    "elitism": [
+      0.0,
+      0.2,
+      0.4
+    ],
+    "local_every": [
+      0,
+      5,
+      10,
+      20
+    ],
+    "local_candidates": [
+      8,
+      16,
+      32
+    ],
+    "local_passes": [
+      1,
+      2,
+      4
+    ],
+    "local_top": [
+      1,
+      2,
+      4
+    ],
+    "cycle3": [
+      false,
+      true
+    ],
+    "cycle3_passes": [
+      1,
+      3,
+      6
+    ],
+    "adaptive": [
+      false,
+      true
+    ],
+    "adaptive_horizon": [
+      100,
+      500,
+      1000
+    ],
+    "adaptive_long_prob": [
+      0.0,
+      0.05,
+      0.15
+    ],
+    "adaptive_long_pct": [
+      5.0,
+      20.0,
+      40.0
+    ],
+    "islands": [
+      1,
+      2,
+      4,
+      8
+    ],
+    "migration_interval": [
+      5,
+      15,
+      30
+    ],
+    "migration_pct": [
+      0.0,
+      0.1,
+      0.2
+    ],
+    "local_on_offspring": [
+      false,
+      true
+    ]
+  },
+  "workers": 4,
+  "worker_pids": [
+    93130,
+    93131,
+    93132,
+    93133
+  ],
+  "pool_warmup_seconds": 0.661004833993502,
+  "selection": "one coordinate TRAIN pass; minimum mean error; retain current on ties",
+  "timings": "warm persistent workers, includes serialization and migration, excludes SciPy and pool startup",
+  "common_settings": {
+    "population": 64,
+    "generations": 100,
+    "mutation_prob": 1.0,
+    "inversion_pct": 5.0,
+    "elitism": 0.2,
+    "selection": "rank",
+    "rank_power": 2,
+    "adaptive": false,
+    "adaptive_horizon": 500,
+    "adaptive_long_pct": 20.0,
+    "adaptive_long_prob": 0.05,
+    "local_on_offspring": true,
+    "local_every": 5,
+    "local_top": 2,
+    "local_passes": 2,
+    "local_candidates": 16,
+    "cycle3": true,
+    "cycle3_passes": 3,
+    "islands": 1,
+    "migration_interval": 15,
+    "migration_pct": 0.1
+  },
+  "stage": "all",
+  "actual_runs": 7838,
+  "wall_seconds": 2178.012054834049
+}

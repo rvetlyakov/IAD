@@ -146,13 +146,19 @@ class Study:
         print('TRAIN', group, phase, parameter, value, 'error', best_error, flush=True)
         return replace(cfg, **{parameter:value}), trials
 
+    def initial_config(self, group):
+        return Config(population=64, generations=100, selection='rank',
+                      inversion_pct=1., elitism=.2, local_every=5,
+                      local_top=2, local_passes=2, local_candidates=16,
+                      cycle3=True, cycle3_passes=3, migration_interval=15)
+
+    def generation_levels(self, group):
+        return LEVELS['generations'] if group=='medium' else (40,100,250,500)
+
     def train(self):
         selected = {}
         for group in TRAIN:
-            cfg = Config(population=64, generations=100, selection='rank',
-                         inversion_pct=1., elitism=.2, local_every=5,
-                         local_top=2, local_passes=2, local_candidates=16,
-                         cycle3=True, cycle3_passes=3, migration_interval=15)
+            cfg = self.initial_config(group)
             starting = asdict(cfg)
             history = []
             # G selected last: local-search settings are tested with fixed G first.
@@ -165,8 +171,8 @@ class Study:
                 if parameter == 'cycle3_passes' and not cfg.cycle3:
                     continue
                 levels = LEVELS[parameter]
-                if parameter == 'generations' and group != 'medium':
-                    levels = (40,100,250,500)
+                if parameter == 'generations':
+                    levels = self.generation_levels(group)
                 cfg, scores = self.tune_factor(group,cfg,parameter,levels,'single')
                 history.append({'parameter': parameter,'scores': scores})
             # Include 1 to identify whether islands improve quality at all.

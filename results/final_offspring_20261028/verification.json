@@ -1,0 +1,21 @@
+{
+  "ruff": "passed: lab1 tests",
+  "compileall": "passed: lab1 tests",
+  "unit_tests": {
+    "passed": 100,
+    "failed": 0,
+    "seconds": 16.799
+  },
+  "plots": {
+    "png": 48,
+    "svg": 48,
+    "dimensions": "2240x1200",
+    "font": "Montserrat",
+    "single_axis": true,
+    "technical_footers": false,
+    "visually_reviewed": true
+  },
+  "replayed_control_cases": 6,
+  "research_runs": 7838,
+  "scheduled_github_checks_reenabled": false
+}

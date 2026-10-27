@@ -1,0 +1,16 @@
+{
+  "recorded_at_utc": "2026-10-27T23:15:22.766220+00:00",
+  "selected_sha256": "ea33e65f36eb0a8f95d0905f71b2248e90c18857f8c26b5567abe2bf06bd654a",
+  "algorithm_sha256": "a84a0966766e68561fd8f60b9e5978f6e347c7ed4a0249124f121c9a57aa556f",
+  "rule": "No changes to selected settings after TRAIN; no SURVEY or HOLDOUT retuning",
+  "control_repeats_per_size": 5,
+  "survey_repeats_per_size": 2,
+  "profiles": [
+    "ordinary hybrid",
+    "parallel with matched budget",
+    "without cycle3",
+    "without offspring repair",
+    "RSS inversion without local search",
+    "common configuration"
+  ]
+}

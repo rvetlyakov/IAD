@@ -1,4 +1,5 @@
 """Replay six independent control rows after final source changes."""
+import argparse
 import json
 from concurrent.futures import ProcessPoolExecutor
 from pathlib import Path
@@ -10,7 +11,14 @@ from local_research import problem, warm_worker
 
 
 def main():
-    root=Path('results/local_work_20261028')
+    parser=argparse.ArgumentParser()
+    parser.add_argument('--output',default='results/local_work_20261028')
+    args=parser.parse_args()
+    root=Path(args.output)
+    metadata=json.loads((root/'metadata.json').read_text())
+    if metadata.get('profile')=='final_offspring':
+        from final_research import configure
+        configure()
     rows=read(root/'holdout.csv')
     selected=[]
     for group in ('small','medium','large'):

@@ -119,7 +119,8 @@ def holdout(directory,seed=20261028,workers=2):
             value=next(v for v in LEVELS[p] if str(v)==best["value"])
             c=replace(c,**{p:value})
         island_best=min((r for r in ranks
-                         if r["class_name"]==cls and r["parameter"]=="islands"),
+                         if r["class_name"]==cls and r["parameter"]=="islands"
+                         and int(r["value"])>=2),
                         key=lambda r:float(r["mean_error_pct"]))
         k=int(island_best["value"])
         configs[cls]={"single":c,"islands":replace(c,islands=max(2,k))}

@@ -1,0 +1,127 @@
+{
+  "mode": "full",
+  "seed": 20261104,
+  "repeats": 1,
+  "sizes": {
+    "small": [
+      10,
+      20,
+      30,
+      40,
+      50
+    ],
+    "medium": [
+      100,
+      140,
+      180,
+      220,
+      260,
+      300,
+      340,
+      380,
+      420,
+      460,
+      500
+    ],
+    "transition": [
+      550,
+      600,
+      650,
+      700,
+      750,
+      800,
+      850,
+      900,
+      950
+    ],
+    "large": [
+      1000,
+      1100,
+      1200,
+      1300,
+      1400,
+      1500,
+      1600,
+      1700,
+      1800,
+      1900,
+      2000
+    ]
+  },
+  "factors": {
+    "population": [
+      "60",
+      "120",
+      "240"
+    ],
+    "generations": [
+      "40",
+      "100",
+      "250",
+      "500",
+      "1000"
+    ],
+    "mutation_prob": [
+      "0.3",
+      "0.7",
+      "1.0"
+    ],
+    "inversion_pct": [
+      "1.0%",
+      "2.0%",
+      "5.0%",
+      "20.0%"
+    ],
+    "elitism": [
+      "0%",
+      "10%",
+      "20%",
+      "40%"
+    ],
+    "selection": [
+      "1/C",
+      "ранговый RSS"
+    ],
+    "rank_power": [
+      "1.0",
+      "2.0",
+      "4.0"
+    ],
+    "adaptive": [
+      "выключена",
+      "включена"
+    ],
+    "local_every": [
+      "без поиска",
+      "каждые 5",
+      "каждые 10",
+      "каждые 25"
+    ],
+    "local_candidates": [
+      "4",
+      "8",
+      "16",
+      "32"
+    ],
+    "islands": [
+      "1",
+      "2",
+      "4",
+      "8"
+    ],
+    "migration_interval": [
+      "5",
+      "25",
+      "50"
+    ],
+    "migration_pct": [
+      "5%",
+      "10%",
+      "20%"
+    ]
+  },
+  "x_axis": "piecewise equal-width labeled classes, with genuine transition measurements",
+  "curves": "PCHIP is visualization only, every raw dot is a measured n; no intermediate data",
+  "experiment": "one-factor-at-a-time, constant named baseline per factor, common matrix/GA seeds",
+  "local_search": "optional, SciPy optimal assignment used only for exact benchmark reference"
+}

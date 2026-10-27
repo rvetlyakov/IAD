@@ -1,0 +1,99 @@
+{
+  "method": "one-pass sequential coordinate descent, best observed on paired training matrices",
+  "objective": "minimum mean gap; when within max(0.5 pp, 1% of best gap), choose shorter time",
+  "classes": {
+    "small": {
+      "population": 120,
+      "generations": 1000,
+      "mutation_prob": 1.0,
+      "inversion_pct": 5.0,
+      "elitism": 0.2,
+      "selection": "rank",
+      "rank_power": 1.0,
+      "adaptive": false,
+      "adaptive_long_pct": 20.0,
+      "adaptive_long_prob": 0.05,
+      "local_every": 25,
+      "local_top": 1,
+      "local_passes": 2,
+      "local_candidates": 8,
+      "islands": 4,
+      "migration_interval": 50,
+      "migration_pct": 0.05
+    },
+    "medium": {
+      "population": 60,
+      "generations": 1000,
+      "mutation_prob": 1.0,
+      "inversion_pct": 2.0,
+      "elitism": 0.0,
+      "selection": "raw",
+      "rank_power": 2.0,
+      "adaptive": false,
+      "adaptive_long_pct": 20.0,
+      "adaptive_long_prob": 0.05,
+      "local_every": 25,
+      "local_top": 1,
+      "local_passes": 2,
+      "local_candidates": 8,
+      "islands": 8,
+      "migration_interval": 5,
+      "migration_pct": 0.1
+    },
+    "large": {
+      "population": 120,
+      "generations": 40,
+      "mutation_prob": 1.0,
+      "inversion_pct": 1.0,
+      "elitism": 0.2,
+      "selection": "rank",
+      "rank_power": 1.0,
+      "adaptive": false,
+      "adaptive_long_pct": 20.0,
+      "adaptive_long_prob": 0.05,
+      "local_every": 5,
+      "local_top": 1,
+      "local_passes": 2,
+      "local_candidates": 16,
+      "islands": 4,
+      "migration_interval": 25,
+      "migration_pct": 0.1
+    }
+  },
+  "train_dimensions": {
+    "small": [
+      10,
+      30,
+      50
+    ],
+    "medium": [
+      100,
+      300,
+      500
+    ],
+    "large": [
+      1000,
+      1500,
+      2000
+    ]
+  },
+  "holdout_dimensions": {
+    "small": [
+      20,
+      40
+    ],
+    "medium": [
+      200,
+      400
+    ],
+    "large": [
+      1250,
+      1750
+    ]
+  },
+  "training_repeats": 2,
+  "holdout_repeats": 3,
+  "training_seed": 20261105,
+  "holdout_seed_offset": 3000000,
+  "scientific_caveat": "local optimum within tested discrete levels, not global hyperparameter optimum"
+}

@@ -57,7 +57,8 @@ def run_ga(
         plateau_limit,
         plateau_diff,
         elitist_percent,
-        matrix
+        matrix,
+        reference_cost=None
 ):
     """Функция ГА.\n
 **Параметры**:
@@ -115,14 +116,14 @@ distance - integer - разность между нашим и оптималь�
     best_vector, _ = evolution.get_best()
 
     # === НАХОЖДЕНИЕ ЭТАЛОНА ===
-    n_size = len(matrix)
-    best_exact_cost = float('inf')
-    best_exact_vector = None
+    # reference_cost may be calculated once per matrix, outside a GA timer.
+    if reference_cost is None:
+        rows, cols = linear_sum_assignment(matrix)
+        best_exact_cost = sum(matrix[int(i)][int(j)]
+                              for i, j in zip(rows, cols))
+    else:
+        best_exact_cost = reference_cost
 
-    _, best_exact_vector = linear_sum_assignment(matrix)
-    best_exact_vector = [int(i) for i in best_exact_vector]
-    best_exact_cost = sum(matrix[i][best_exact_vector[i]] for i in range(len(matrix)))
-    
     # Печатаем результаты сравнения
     # print(f"Результат Генетического Алгоритма (Лучший остров):")
     # print(f"  - Распределение задач (индексы): {best_vector}")

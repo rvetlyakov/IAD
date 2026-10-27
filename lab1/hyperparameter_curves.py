@@ -262,15 +262,15 @@ def render_parameter(parameter, summaries, output, *, mode, repeats=1):
         transform=fig.transFigure,facecolor="#F8FBFE",
         edgecolor="#D5E3F0",linewidth=1.3,zorder=1)
     fig.patches.append(card)
-    fig.text(.808,.694,"КАК ЧИТАТЬ",color="#1C4B8D",
-             fontsize=14,fontweight="bold",zorder=2)
-    fig.text(.808,.626,"Ось X — размеры\nматриц всех классов:\n10–50, 100–500,\n1000–2000.",
-             color="#2E435C",fontsize=10.5,linespacing=1.45,zorder=2)
-    fig.text(.808,.474,"Ось Y — отклонение\nот точного решения.\nМеньше — лучше.",
-             color="#2E435C",fontsize=10.5,linespacing=1.48,zorder=2)
-    fig.text(.808,.354,"Каждая линия —\nодно значение\nпараметра.",
+    fig.text(.808,.705,"КАК ЧИТАТЬ",color="#1C4B8D",
+             fontsize=14,fontweight="bold",va="top",zorder=2)
+    fig.text(.808,.648,"Ось X — размеры\nматриц всех классов:\n10–50, 100–500,\n1000–2000.",
+             color="#2E435C",fontsize=10.5,linespacing=1.45,va="top",zorder=2)
+    fig.text(.808,.462,"Ось Y — отклонение\nот точного решения.\nМеньше — лучше.",
+             color="#2E435C",fontsize=10.5,linespacing=1.48,va="top",zorder=2)
+    fig.text(.808,.344,"Каждая линия —\nодно значение\nпараметра.",
              color="#008C80",fontsize=11,fontweight="bold",
-             linespacing=1.45,zorder=2)
+             linespacing=1.45,va="top",zorder=2)
 
     fig.text(.063,.124,
              f"Измерения: {sum(1 for r in rows if r['value']==str(_levels(parameter,mode)[0]))} размеров"

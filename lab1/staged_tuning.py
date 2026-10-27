@@ -46,6 +46,7 @@ LEVELS={
  "selection":("raw","rank"),
  "rank_power":(.5,1.,2.,4.),
  "adaptive":(False,True),
+ "adaptive_horizon":(100,250,500,1000),
  "local_every":(0,5,15,30),
  "local_candidates":(4,8,16,32),
  "local_passes":(1,2,4),
@@ -62,7 +63,8 @@ ACTIVE_CONTEXT={
  "migration_interval":{"islands":4},
  "migration_pct":{"islands":4},
  "adaptive_long_prob":{"adaptive":True},
- "adaptive_long_pct":{"adaptive":True}
+ "adaptive_long_pct":{"adaptive":True},
+ "adaptive_horizon":{"adaptive":True}
 }
 
 def _seed(n,repeat,stage):
@@ -162,7 +164,8 @@ def refine(group,root,workers=2,rounds=1,parameters=None):
     meta=json.loads((root/f"{group}_frozen_baseline.json").read_text())
     current=Config(**meta["selected_settings"])
     order=list(parameters) if parameters is not None else [
-      "selection","rank_power","adaptive","mutation_prob","inversion_pct",
+      "selection","rank_power","adaptive","adaptive_horizon",
+      "mutation_prob","inversion_pct",
       "elitism","population","local_every","local_candidates",
       "local_passes","local_top","generations"]
     history=[]
@@ -191,6 +194,8 @@ def refine(group,root,workers=2,rounds=1,parameters=None):
     for round_index in range(rounds):
         for parameter in order:
             if parameter=="rank_power" and current.selection!="rank":
+                continue
+            if parameter=="adaptive_horizon" and not current.adaptive:
                 continue
             candidates=LEVELS[parameter]
             context=current

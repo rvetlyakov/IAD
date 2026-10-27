@@ -41,7 +41,7 @@ def render(root):
         zones[cls]=(min(idx),max(idx))
     for parameter,values in LEVELS.items():
         for field,label,unit in (
-            ("error_pct","error","Среднее отклонение от оптимума, %"),
+            ("error_pct","error","Относительная ошибка, %"),
             ("seconds","runtime","Продолжительность, с")
         ):
             fig,ax=plt.subplots(figsize=(13.8,7.2),dpi=165,facecolor="white")

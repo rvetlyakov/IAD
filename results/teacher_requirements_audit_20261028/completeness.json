@@ -1,0 +1,28 @@
+{
+  "status": "passed",
+  "audited_research_commit": "69c6ae9d6ee55615efec103a5b3b58be36aff25f",
+  "counts": {
+    "train": 1026,
+    "survey": 6440,
+    "holdout": 360,
+    "diagonal": 12
+  },
+  "training_candidate_evaluations": 171,
+  "parameters": 21,
+  "sizes": 46,
+  "holdout_variants_complete": [
+    "common",
+    "original_rss_inversion",
+    "parallel",
+    "single",
+    "without_cycle3",
+    "without_offspring"
+  ],
+  "graphs_png": 48,
+  "graphs_svg": 48,
+  "all_research_files_identical_to_github_main": 120,
+  "manifest_files_verified": 119,
+  "zip_matches_research_manifest": true,
+  "all_diagonal_cases_exact": true,
+  "source_spreadsheet": "ИАД, группа 2, первая версия; текущая версия проверена по коду"
+}

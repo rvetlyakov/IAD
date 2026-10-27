@@ -1,0 +1,140 @@
+{
+  "kernels": [
+    {
+      "kernel": "improve_swaps",
+      "n": 300,
+      "k": 16,
+      "passes": 3,
+      "python_seconds": 0.005494624958373606,
+      "compiled_seconds": 3.445800393819809e-05,
+      "speed_ratio": 159.45859685396903,
+      "identical": true
+    },
+    {
+      "kernel": "improve_three_cycle",
+      "n": 300,
+      "k": 16,
+      "passes": 3,
+      "python_seconds": 0.07561120903119445,
+      "compiled_seconds": 0.0006203330121934414,
+      "speed_ratio": 121.88809485382707,
+      "identical": true
+    }
+  ],
+  "worker_warmup_seconds": 0.5904133330332115,
+  "warmup_worker_pids": [
+    95860,
+    95861,
+    95862,
+    95863
+  ],
+  "independent_probe_matrix_seed": 918292,
+  "n": 400,
+  "ga_seed": 9101,
+  "settings": {
+    "population": 96,
+    "generations": 100,
+    "mutation_prob": 0.7,
+    "inversion_pct": 5.0,
+    "elitism": 0.2,
+    "selection": "rank",
+    "rank_power": 2,
+    "adaptive": false,
+    "adaptive_horizon": 500,
+    "adaptive_long_pct": 20.0,
+    "adaptive_long_prob": 0.05,
+    "local_on_offspring": true,
+    "local_every": 5,
+    "local_top": 2,
+    "local_passes": 4,
+    "local_candidates": 16,
+    "cycle3": true,
+    "cycle3_passes": 3,
+    "islands": 2,
+    "migration_interval": 15,
+    "migration_pct": 0.1
+  },
+  "warm_parallel_seconds": 0.06328241701703519,
+  "warm_single_seconds": 0.08067037502769381,
+  "cold_parallel_wall_seconds": 0.49674991704523563,
+  "warm_parallel_cost": 512,
+  "cold_parallel_cost": 512,
+  "simultaneous_distinct_process_pairs": 7,
+  "events": [
+    {
+      "pid": 95862,
+      "start": 558671.957595416,
+      "end": 558671.966380125
+    },
+    {
+      "pid": 95863,
+      "start": 558671.957829333,
+      "end": 558671.966269958
+    },
+    {
+      "pid": 95861,
+      "start": 558671.968409958,
+      "end": 558671.976053791
+    },
+    {
+      "pid": 95860,
+      "start": 558671.968755541,
+      "end": 558671.976038791
+    },
+    {
+      "pid": 95863,
+      "start": 558671.977330958,
+      "end": 558671.984540833
+    },
+    {
+      "pid": 95862,
+      "start": 558671.977579166,
+      "end": 558671.985209875
+    },
+    {
+      "pid": 95860,
+      "start": 558671.986285791,
+      "end": 558671.993438
+    },
+    {
+      "pid": 95861,
+      "start": 558671.986511791,
+      "end": 558671.994228125
+    },
+    {
+      "pid": 95863,
+      "start": 558671.995447833,
+      "end": 558672.001340125
+    },
+    {
+      "pid": 95862,
+      "start": 558671.995700666,
+      "end": 558672.002496375
+    },
+    {
+      "pid": 95860,
+      "start": 558672.003602708,
+      "end": 558672.010072916
+    },
+    {
+      "pid": 95861,
+      "start": 558672.0038425,
+      "end": 558672.010612583
+    },
+    {
+      "pid": 95863,
+      "start": 558672.011657416,
+      "end": 558672.016049708
+    },
+    {
+      "pid": 95862,
+      "start": 558672.011911333,
+      "end": 558672.016499666
+    }
+  ],
+  "total_population": 96,
+  "generations": 100,
+  "single_local_calls": 40,
+  "parallel_local_calls": 40,
+  "note": "One performance probe; ratios are hardware/load dependent, not a statistical speed claim"
+}

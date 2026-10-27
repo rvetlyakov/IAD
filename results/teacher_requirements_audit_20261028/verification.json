@@ -1,0 +1,21 @@
+{
+  "ruff": "passed",
+  "compileall": "passed",
+  "unit_tests": 103,
+  "new_direct_fitness_tests": 3,
+  "replayed_control_cases": 6,
+  "known_diagonal_optimum": 5,
+  "demonstration_diagonal_costs": [
+    5,
+    5
+  ],
+  "simultaneous_distinct_process_pairs": 7,
+  "parallel_total_population": 96,
+  "local_calls_single": 40,
+  "local_calls_parallel": 40,
+  "actions_in_progress_at_audit": [],
+  "actions_queued_at_audit": [],
+  "historical_research_40591351661": "cancelled; not counted as completed final research",
+  "research_algorithm_modified": false,
+  "research_measurements_modified": false
+}

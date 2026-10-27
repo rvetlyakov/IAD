@@ -1,0 +1,1008 @@
+{
+  "small": {
+    "single": {
+      "population": 96,
+      "generations": 100,
+      "mutation_prob": 1.0,
+      "inversion_pct": 50.0,
+      "elitism": 0.2,
+      "selection": "raw",
+      "rank_power": 2,
+      "adaptive": false,
+      "adaptive_horizon": 500,
+      "adaptive_long_pct": 20.0,
+      "adaptive_long_prob": 0.05,
+      "local_on_offspring": true,
+      "local_every": 5,
+      "local_top": 2,
+      "local_passes": 2,
+      "local_candidates": 16,
+      "cycle3": true,
+      "cycle3_passes": 3,
+      "islands": 1,
+      "migration_interval": 15,
+      "migration_pct": 0.1
+    },
+    "parallel": {
+      "population": 96,
+      "generations": 100,
+      "mutation_prob": 1.0,
+      "inversion_pct": 50.0,
+      "elitism": 0.2,
+      "selection": "raw",
+      "rank_power": 2,
+      "adaptive": false,
+      "adaptive_horizon": 500,
+      "adaptive_long_pct": 20.0,
+      "adaptive_long_prob": 0.05,
+      "local_on_offspring": true,
+      "local_every": 5,
+      "local_top": 2,
+      "local_passes": 2,
+      "local_candidates": 16,
+      "cycle3": true,
+      "cycle3_passes": 3,
+      "islands": 2,
+      "migration_interval": 5,
+      "migration_pct": 0.1
+    },
+    "starting": {
+      "population": 64,
+      "generations": 100,
+      "mutation_prob": 1.0,
+      "inversion_pct": 50.0,
+      "elitism": 0.2,
+      "selection": "rank",
+      "rank_power": 2,
+      "adaptive": false,
+      "adaptive_horizon": 500,
+      "adaptive_long_pct": 20.0,
+      "adaptive_long_prob": 0.05,
+      "local_on_offspring": true,
+      "local_every": 5,
+      "local_top": 2,
+      "local_passes": 2,
+      "local_candidates": 16,
+      "cycle3": true,
+      "cycle3_passes": 3,
+      "islands": 1,
+      "migration_interval": 15,
+      "migration_pct": 0.1
+    },
+    "recommended_islands": 1,
+    "coordinate_history": [
+      {
+        "parameter": "population",
+        "scores": [
+          [
+            5.877738154377498,
+            64
+          ],
+          [
+            5.252438590553345,
+            32
+          ],
+          [
+            5.170979293930114,
+            96
+          ]
+        ]
+      },
+      {
+        "parameter": "selection",
+        "scores": [
+          [
+            5.170979293930114,
+            "rank"
+          ],
+          [
+            3.7016596791186953,
+            "raw"
+          ]
+        ]
+      },
+      {
+        "parameter": "mutation_prob",
+        "scores": [
+          [
+            3.7016596791186953,
+            1.0
+          ],
+          [
+            6.602579342333441,
+            0.3
+          ],
+          [
+            5.657367905318725,
+            0.7
+          ]
+        ]
+      },
+      {
+        "parameter": "inversion_pct",
+        "scores": [
+          [
+            3.7016596791186953,
+            50.0
+          ],
+          [
+            5.40436544329987,
+            1.0
+          ],
+          [
+            3.7688443159754637,
+            5.0
+          ],
+          [
+            6.804995408735163,
+            20.0
+          ],
+          [
+            4.876518290452717,
+            100.0
+          ]
+        ]
+      },
+      {
+        "parameter": "elitism",
+        "scores": [
+          [
+            3.7016596791186953,
+            0.2
+          ],
+          [
+            4.394795323074011,
+            0.0
+          ],
+          [
+            6.000267719530014,
+            0.4
+          ]
+        ]
+      },
+      {
+        "parameter": "local_every",
+        "scores": [
+          [
+            3.7016596791186953,
+            5
+          ],
+          [
+            574.204626190664,
+            0
+          ],
+          [
+            8.388036456940146,
+            10
+          ],
+          [
+            6.910031907982727,
+            20
+          ]
+        ]
+      },
+      {
+        "parameter": "local_candidates",
+        "scores": [
+          [
+            3.7016596791186953,
+            16
+          ],
+          [
+            5.6633193764341305,
+            8
+          ],
+          [
+            7.494732498830859,
+            32
+          ]
+        ]
+      },
+      {
+        "parameter": "local_passes",
+        "scores": [
+          [
+            3.7016596791186953,
+            2
+          ],
+          [
+            5.113245361196181,
+            1
+          ],
+          [
+            6.691289584732208,
+            4
+          ]
+        ]
+      },
+      {
+        "parameter": "local_top",
+        "scores": [
+          [
+            3.7016596791186953,
+            2
+          ],
+          [
+            7.480704859803221,
+            1
+          ],
+          [
+            4.517220029515111,
+            4
+          ]
+        ]
+      },
+      {
+        "parameter": "cycle3",
+        "scores": [
+          [
+            3.7016596791186953,
+            true
+          ],
+          [
+            43.74174177288302,
+            false
+          ]
+        ]
+      },
+      {
+        "parameter": "cycle3_passes",
+        "scores": [
+          [
+            3.7016596791186953,
+            3
+          ],
+          [
+            6.492025961288256,
+            1
+          ],
+          [
+            3.7016596791186953,
+            6
+          ]
+        ]
+      },
+      {
+        "parameter": "adaptive",
+        "scores": [
+          [
+            3.7016596791186953,
+            false
+          ],
+          [
+            5.164104793203154,
+            true
+          ]
+        ]
+      },
+      {
+        "parameter": "local_on_offspring",
+        "scores": [
+          [
+            3.7016596791186953,
+            true
+          ],
+          [
+            14.26141933846394,
+            false
+          ]
+        ]
+      },
+      {
+        "parameter": "generations",
+        "scores": [
+          [
+            3.7016596791186953,
+            100
+          ],
+          [
+            1045.9619912177338,
+            1
+          ],
+          [
+            1023.3171824745643,
+            2
+          ],
+          [
+            19.747268925291465,
+            5
+          ],
+          [
+            12.108758187395482,
+            10
+          ],
+          [
+            8.968133187395482,
+            20
+          ],
+          [
+            5.9534811727434676,
+            40
+          ]
+        ]
+      }
+    ]
+  },
+  "medium": {
+    "single": {
+      "population": 96,
+      "generations": 100,
+      "mutation_prob": 0.7,
+      "inversion_pct": 5.0,
+      "elitism": 0.2,
+      "selection": "rank",
+      "rank_power": 2,
+      "adaptive": false,
+      "adaptive_horizon": 500,
+      "adaptive_long_pct": 20.0,
+      "adaptive_long_prob": 0.05,
+      "local_on_offspring": true,
+      "local_every": 5,
+      "local_top": 2,
+      "local_passes": 4,
+      "local_candidates": 16,
+      "cycle3": true,
+      "cycle3_passes": 3,
+      "islands": 1,
+      "migration_interval": 15,
+      "migration_pct": 0.1
+    },
+    "parallel": {
+      "population": 96,
+      "generations": 100,
+      "mutation_prob": 0.7,
+      "inversion_pct": 5.0,
+      "elitism": 0.2,
+      "selection": "rank",
+      "rank_power": 2,
+      "adaptive": false,
+      "adaptive_horizon": 500,
+      "adaptive_long_pct": 20.0,
+      "adaptive_long_prob": 0.05,
+      "local_on_offspring": true,
+      "local_every": 5,
+      "local_top": 2,
+      "local_passes": 4,
+      "local_candidates": 16,
+      "cycle3": true,
+      "cycle3_passes": 3,
+      "islands": 2,
+      "migration_interval": 15,
+      "migration_pct": 0.1
+    },
+    "starting": {
+      "population": 64,
+      "generations": 100,
+      "mutation_prob": 1.0,
+      "inversion_pct": 5.0,
+      "elitism": 0.2,
+      "selection": "rank",
+      "rank_power": 2,
+      "adaptive": false,
+      "adaptive_horizon": 500,
+      "adaptive_long_pct": 20.0,
+      "adaptive_long_prob": 0.05,
+      "local_on_offspring": true,
+      "local_every": 5,
+      "local_top": 2,
+      "local_passes": 2,
+      "local_candidates": 16,
+      "cycle3": true,
+      "cycle3_passes": 3,
+      "islands": 1,
+      "migration_interval": 15,
+      "migration_pct": 0.1
+    },
+    "recommended_islands": 1,
+    "coordinate_history": [
+      {
+        "parameter": "population",
+        "scores": [
+          [
+            18.85330185426394,
+            64
+          ],
+          [
+            20.2582769944528,
+            32
+          ],
+          [
+            18.628156919393106,
+            96
+          ]
+        ]
+      },
+      {
+        "parameter": "selection",
+        "scores": [
+          [
+            18.628156919393106,
+            "rank"
+          ],
+          [
+            19.079798989102926,
+            "raw"
+          ]
+        ]
+      },
+      {
+        "parameter": "rank_power",
+        "scores": [
+          [
+            18.628156919393106,
+            2
+          ],
+          [
+            19.45657165630069,
+            1.0
+          ],
+          [
+            20.081168916824655,
+            4.0
+          ]
+        ]
+      },
+      {
+        "parameter": "mutation_prob",
+        "scores": [
+          [
+            18.628156919393106,
+            1.0
+          ],
+          [
+            18.500008476378515,
+            0.3
+          ],
+          [
+            18.122550043228227,
+            0.7
+          ]
+        ]
+      },
+      {
+        "parameter": "inversion_pct",
+        "scores": [
+          [
+            18.122550043228227,
+            5.0
+          ],
+          [
+            20.749275208704784,
+            1.0
+          ],
+          [
+            19.87231054638105,
+            20.0
+          ],
+          [
+            21.126926953810244,
+            50.0
+          ],
+          [
+            20.620323619303747,
+            100.0
+          ]
+        ]
+      },
+      {
+        "parameter": "elitism",
+        "scores": [
+          [
+            18.122550043228227,
+            0.2
+          ],
+          [
+            19.843869449563616,
+            0.0
+          ],
+          [
+            19.092958737844846,
+            0.4
+          ]
+        ]
+      },
+      {
+        "parameter": "local_every",
+        "scores": [
+          [
+            18.122550043228227,
+            5
+          ],
+          [
+            2446.8257370517517,
+            0
+          ],
+          [
+            23.47225335981865,
+            10
+          ],
+          [
+            21.92463262190372,
+            20
+          ]
+        ]
+      },
+      {
+        "parameter": "local_candidates",
+        "scores": [
+          [
+            18.122550043228227,
+            16
+          ],
+          [
+            20.58781440756631,
+            8
+          ],
+          [
+            18.441098727646256,
+            32
+          ]
+        ]
+      },
+      {
+        "parameter": "local_passes",
+        "scores": [
+          [
+            18.122550043228227,
+            2
+          ],
+          [
+            18.37217846320774,
+            1
+          ],
+          [
+            17.58436792214928,
+            4
+          ]
+        ]
+      },
+      {
+        "parameter": "local_top",
+        "scores": [
+          [
+            17.58436792214928,
+            2
+          ],
+          [
+            20.850110434480715,
+            1
+          ],
+          [
+            18.084792112506246,
+            4
+          ]
+        ]
+      },
+      {
+        "parameter": "cycle3",
+        "scores": [
+          [
+            17.58436792214928,
+            true
+          ],
+          [
+            96.12257546228565,
+            false
+          ]
+        ]
+      },
+      {
+        "parameter": "cycle3_passes",
+        "scores": [
+          [
+            17.58436792214928,
+            3
+          ],
+          [
+            19.978841267003016,
+            1
+          ],
+          [
+            17.58436792214928,
+            6
+          ]
+        ]
+      },
+      {
+        "parameter": "adaptive",
+        "scores": [
+          [
+            17.58436792214928,
+            false
+          ],
+          [
+            20.144329218362387,
+            true
+          ]
+        ]
+      },
+      {
+        "parameter": "local_on_offspring",
+        "scores": [
+          [
+            17.58436792214928,
+            true
+          ],
+          [
+            30.68955919295709,
+            false
+          ]
+        ]
+      },
+      {
+        "parameter": "generations",
+        "scores": [
+          [
+            17.58436792214928,
+            100
+          ],
+          [
+            3773.6165908215116,
+            1
+          ],
+          [
+            3759.271163361453,
+            2
+          ],
+          [
+            31.132167707713364,
+            5
+          ],
+          [
+            28.421702014442566,
+            10
+          ],
+          [
+            26.19379851020079,
+            20
+          ],
+          [
+            21.63427198684365,
+            40
+          ]
+        ]
+      }
+    ]
+  },
+  "large": {
+    "single": {
+      "population": 64,
+      "generations": 100,
+      "mutation_prob": 1.0,
+      "inversion_pct": 5.0,
+      "elitism": 0.2,
+      "selection": "rank",
+      "rank_power": 2,
+      "adaptive": false,
+      "adaptive_horizon": 500,
+      "adaptive_long_pct": 20.0,
+      "adaptive_long_prob": 0.05,
+      "local_on_offspring": true,
+      "local_every": 5,
+      "local_top": 4,
+      "local_passes": 2,
+      "local_candidates": 32,
+      "cycle3": true,
+      "cycle3_passes": 3,
+      "islands": 1,
+      "migration_interval": 15,
+      "migration_pct": 0.1
+    },
+    "parallel": {
+      "population": 64,
+      "generations": 100,
+      "mutation_prob": 1.0,
+      "inversion_pct": 5.0,
+      "elitism": 0.2,
+      "selection": "rank",
+      "rank_power": 2,
+      "adaptive": false,
+      "adaptive_horizon": 500,
+      "adaptive_long_pct": 20.0,
+      "adaptive_long_prob": 0.05,
+      "local_on_offspring": true,
+      "local_every": 5,
+      "local_top": 4,
+      "local_passes": 2,
+      "local_candidates": 32,
+      "cycle3": true,
+      "cycle3_passes": 3,
+      "islands": 2,
+      "migration_interval": 5,
+      "migration_pct": 0.1
+    },
+    "starting": {
+      "population": 64,
+      "generations": 100,
+      "mutation_prob": 1.0,
+      "inversion_pct": 5.0,
+      "elitism": 0.2,
+      "selection": "rank",
+      "rank_power": 2,
+      "adaptive": false,
+      "adaptive_horizon": 500,
+      "adaptive_long_pct": 20.0,
+      "adaptive_long_prob": 0.05,
+      "local_on_offspring": true,
+      "local_every": 5,
+      "local_top": 2,
+      "local_passes": 2,
+      "local_candidates": 16,
+      "cycle3": true,
+      "cycle3_passes": 3,
+      "islands": 1,
+      "migration_interval": 15,
+      "migration_pct": 0.1
+    },
+    "recommended_islands": 1,
+    "coordinate_history": [
+      {
+        "parameter": "population",
+        "scores": [
+          [
+            3.7649502658291847,
+            64
+          ],
+          [
+            4.2606748568728054,
+            32
+          ],
+          [
+            4.341456429767392,
+            96
+          ]
+        ]
+      },
+      {
+        "parameter": "selection",
+        "scores": [
+          [
+            3.7649502658291847,
+            "rank"
+          ],
+          [
+            3.840825640536936,
+            "raw"
+          ]
+        ]
+      },
+      {
+        "parameter": "rank_power",
+        "scores": [
+          [
+            3.7649502658291847,
+            2
+          ],
+          [
+            4.050466414129235,
+            1.0
+          ],
+          [
+            3.9483441902389296,
+            4.0
+          ]
+        ]
+      },
+      {
+        "parameter": "mutation_prob",
+        "scores": [
+          [
+            3.7649502658291847,
+            1.0
+          ],
+          [
+            3.9184020404844375,
+            0.3
+          ],
+          [
+            4.04190517279422,
+            0.7
+          ]
+        ]
+      },
+      {
+        "parameter": "inversion_pct",
+        "scores": [
+          [
+            3.7649502658291847,
+            5.0
+          ],
+          [
+            4.711085597664334,
+            1.0
+          ],
+          [
+            4.4842045424518275,
+            20.0
+          ],
+          [
+            4.77925073921046,
+            50.0
+          ],
+          [
+            5.3808216640139435,
+            100.0
+          ]
+        ]
+      },
+      {
+        "parameter": "elitism",
+        "scores": [
+          [
+            3.7649502658291847,
+            0.2
+          ],
+          [
+            4.530149215531225,
+            0.0
+          ],
+          [
+            4.425626076852488,
+            0.4
+          ]
+        ]
+      },
+      {
+        "parameter": "local_every",
+        "scores": [
+          [
+            3.7649502658291847,
+            5
+          ],
+          [
+            3824.0089152009327,
+            0
+          ],
+          [
+            4.369361518603087,
+            10
+          ],
+          [
+            5.670433259751196,
+            20
+          ]
+        ]
+      },
+      {
+        "parameter": "local_candidates",
+        "scores": [
+          [
+            3.7649502658291847,
+            16
+          ],
+          [
+            4.244230938151847,
+            8
+          ],
+          [
+            3.4159206444453414,
+            32
+          ]
+        ]
+      },
+      {
+        "parameter": "local_passes",
+        "scores": [
+          [
+            3.4159206444453414,
+            2
+          ],
+          [
+            3.47003034282577,
+            1
+          ],
+          [
+            3.795898506809905,
+            4
+          ]
+        ]
+      },
+      {
+        "parameter": "local_top",
+        "scores": [
+          [
+            3.4159206444453414,
+            2
+          ],
+          [
+            3.7619061225771273,
+            1
+          ],
+          [
+            3.0720989125489653,
+            4
+          ]
+        ]
+      },
+      {
+        "parameter": "cycle3",
+        "scores": [
+          [
+            3.0720989125489653,
+            true
+          ],
+          [
+            52.15443502842369,
+            false
+          ]
+        ]
+      },
+      {
+        "parameter": "cycle3_passes",
+        "scores": [
+          [
+            3.0720989125489653,
+            3
+          ],
+          [
+            3.353921742491142,
+            1
+          ],
+          [
+            3.0720989125489653,
+            6
+          ]
+        ]
+      },
+      {
+        "parameter": "adaptive",
+        "scores": [
+          [
+            3.0720989125489653,
+            false
+          ],
+          [
+            3.3434810850498677,
+            true
+          ]
+        ]
+      },
+      {
+        "parameter": "local_on_offspring",
+        "scores": [
+          [
+            3.0720989125489653,
+            true
+          ],
+          [
+            6.730583503513969,
+            false
+          ]
+        ]
+      },
+      {
+        "parameter": "generations",
+        "scores": [
+          [
+            3.0720989125489653,
+            100
+          ],
+          [
+            4745.429883167127,
+            1
+          ],
+          [
+            4736.425483903389,
+            2
+          ],
+          [
+            6.444319724543471,
+            5
+          ],
+          [
+            5.811985442216755,
+            10
+          ],
+          [
+            4.536966200881638,
+            20
+          ],
+          [
+            4.008223534212754,
+            40
+          ]
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,155 @@
+test_compiled_kernels_match_python (test_accelerated_local.AccelerationTests.test_compiled_kernels_match_python) ... ok
+test_axis_continuous_at_100_and_500_and_monotonic (test_continuous_axis.ContinuousAxisTests.test_axis_continuous_at_100_and_500_and_monotonic) ... ok
+test_large_staged_class_covers_transition_without_gap (test_continuous_axis.ContinuousAxisTests.test_large_staged_class_covers_transition_without_gap) ... ok
+test_real_survey_has_no_transition_group_and_all_35_sizes (test_continuous_axis.ContinuousAxisTests.test_real_survey_has_no_transition_group_and_all_35_sizes) ... ok
+test_sensitivity_reports_actual_error_spread (test_continuous_axis.ContinuousAxisTests.test_sensitivity_reports_actual_error_spread) ... ok
+test_diagonal_finds_optimum_with_local_swap (test_dense_ofat_requirements.LabAudit.test_diagonal_finds_optimum_with_local_swap) ... ok
+test_equal_population_and_global_local_search_across_island_counts (test_dense_ofat_requirements.LabAudit.test_equal_population_and_global_local_search_across_island_counts) ... ok
+test_exact_diagonal_and_valid_permutations (test_dense_ofat_requirements.LabAudit.test_exact_diagonal_and_valid_permutations) ... ok
+test_rss_deterministic_under_fixed_seed (test_dense_ofat_requirements.LabAudit.test_rss_deterministic_under_fixed_seed) ... ok
+test_cases_reproducible (test_experiments.ExperimentsTests.test_cases_reproducible) ... ok
+test_paired_experiment_same_matrix_and_seed (test_experiments.ExperimentsTests.test_paired_experiment_same_matrix_and_seed) ... ok
+test_single_parameter_changes_only (test_experiments.ExperimentsTests.test_single_parameter_changes_only) ... ok
+test_smoke_creates_csv_and_plots (test_experiments.ExperimentsTests.test_smoke_creates_csv_and_plots) ... ok
+test_csv_level_matching_preserves_booleans_and_numeric_equivalence (test_final_research.FinalResearchTests.test_csv_level_matching_preserves_booleans_and_numeric_equivalence) ... ok
+test_new_profile_starts_with_offspring_repair_and_separate_seeds (test_final_research.FinalResearchTests.test_new_profile_starts_with_offspring_repair_and_separate_seeds) ... ok
+test_plot_points_are_means_of_actual_repeated_runs (test_final_research.FinalResearchTests.test_plot_points_are_means_of_actual_repeated_runs) ... ok
+test_bad_population_and_matrix_dimensions_are_rejected (test_ga_config_validation.ConfigurationValidationTests.test_bad_population_and_matrix_dimensions_are_rejected) ... ok
+test_invalid_elitism_and_segment_percent_rejected_before_run (test_ga_config_validation.ConfigurationValidationTests.test_invalid_elitism_and_segment_percent_rejected_before_run) ... ok
+test_invalid_mutation_probabilities_are_rejected (test_ga_config_validation.ConfigurationValidationTests.test_invalid_mutation_probabilities_are_rejected) ... ok
+test_small_valid_scenarios_remain_supported (test_ga_config_validation.ConfigurationValidationTests.test_small_valid_scenarios_remain_supported) ... ok
+test_diagonal_120_exact_under_local_swap (test_hybrid_ga.HybridGAValidationTests.test_diagonal_120_exact_under_local_swap) ... ok
+test_invalid_configuration_fails (test_hybrid_ga.HybridGAValidationTests.test_invalid_configuration_fails) ... ok
+test_island_partition_does_not_multiply_total_n (test_hybrid_ga.HybridGAValidationTests.test_island_partition_does_not_multiply_total_n) ... ok
+test_pair_swap_is_valid_and_monotonic (test_hybrid_ga.HybridGAValidationTests.test_pair_swap_is_valid_and_monotonic) ... ok
+test_rss_preserves_exact_total_population (test_hybrid_ga.HybridGAValidationTests.test_rss_preserves_exact_total_population) ... ok
+test_rss_supports_zero_cost (test_hybrid_ga.HybridGAValidationTests.test_rss_supports_zero_cost) ... ok
+test_axis_uses_equal_space_for_three_disparate_size_ranges (test_hyperparameter_curves.HyperparameterCurvesTests.test_axis_uses_equal_space_for_three_disparate_size_ranges) ... ok
+test_every_chart_contains_all_requested_size_classes (test_hyperparameter_curves.HyperparameterCurvesTests.test_every_chart_contains_all_requested_size_classes) ... ok
+test_plateau_is_not_silent_noop (test_hyperparameter_curves.HyperparameterCurvesTests.test_plateau_is_not_silent_noop) ... ok
+test_smoke_honestly_labels_tiny_matrix_sizes (test_hyperparameter_curves.HyperparameterCurvesTests.test_smoke_honestly_labels_tiny_matrix_sizes) ... mutation_probability: small n=4; 1 shared matrices
+mutation_probability: small n=5; 1 shared matrices
+mutation_probability: medium n=7; 1 shared matrices
+mutation_probability: medium n=8; 1 shared matrices
+mutation_probability: large n=10; 1 shared matrices
+mutation_probability: large n=11; 1 shared matrices
+Finished mutation_probability: 12 real trials total
+num_islands: small n=4; 1 shared matrices
+num_islands: small n=5; 1 shared matrices
+num_islands: medium n=7; 1 shared matrices
+num_islands: medium n=8; 1 shared matrices
+num_islands: large n=10; 1 shared matrices
+num_islands: large n=11; 1 shared matrices
+Finished num_islands: 30 real trials total
+plateau_diff: small n=4; 1 shared matrices
+plateau_diff: small n=5; 1 shared matrices
+plateau_diff: medium n=7; 1 shared matrices
+plateau_diff: medium n=8; 1 shared matrices
+plateau_diff: large n=10; 1 shared matrices
+plateau_diff: large n=11; 1 shared matrices
+Finished plateau_diff: 42 real trials total
+ok
+test_legacy_ofat_evaluates_reference_once_per_test_matrix (test_legacy_experiment_timing.LegacyTimingRegressions.test_legacy_ofat_evaluates_reference_once_per_test_matrix) ... ok
+test_run_ga_does_not_run_exact_solver_when_reference_precomputed (test_legacy_experiment_timing.LegacyTimingRegressions.test_run_ga_does_not_run_exact_solver_when_reference_precomputed) ... ok
+test_invalid_migration_configuration_rejected (test_legacy_island_fairness.LegacyIslandsTests.test_invalid_migration_configuration_rejected) ... ok
+test_num_islands_partitions_total_population_instead_of_multiplying (test_legacy_island_fairness.LegacyIslandsTests.test_num_islands_partitions_total_population_instead_of_multiplying) ... ok
+test_one_island_same_result_as_simple_ga_for_same_seed (test_legacy_island_fairness.LegacyIslandsTests.test_one_island_same_result_as_simple_ga_for_same_seed) ... ok
+test_plateau_population_mean_is_weighted_by_number_of_individuals (test_legacy_island_fairness.LegacyIslandsTests.test_plateau_population_mean_is_weighted_by_number_of_individuals) ... ok
+test_interval_scan_activates_migration_without_changing_frozen_winner (test_local_evidence.ActiveContextTests.test_interval_scan_activates_migration_without_changing_frozen_winner) ... ok
+test_audit_accepts_real_run_and_rejects_bad_error_or_budget (test_local_evidence.LocalEvidenceTests.test_audit_accepts_real_run_and_rejects_bad_error_or_budget) ... ok
+test_distinct_stages_have_distinct_matrices_even_at_same_size (test_local_evidence.LocalEvidenceTests.test_distinct_stages_have_distinct_matrices_even_at_same_size) ... ok
+test_measure_rejects_two_factor_sweep_before_running (test_local_evidence.LocalEvidenceTests.test_measure_rejects_two_factor_sweep_before_running) ... ok
+test_holdout_domain_contains_every_observed_size (test_local_plots.LocalPlotTests.test_holdout_domain_contains_every_observed_size) ... ok
+test_y_limits_follow_measured_values_before_zero_floor (test_local_plots.LocalPlotTests.test_y_limits_follow_measured_values_before_zero_floor) ... ok
+test_all_three_classes_share_one_axis (test_local_plots.UnifiedChartTests.test_all_three_classes_share_one_axis) ... ok
+test_smooth_connector_passes_through_real_values_without_overshoot (test_local_plots.UnifiedChartTests.test_smooth_connector_passes_through_real_values_without_overshoot) ... ok
+test_invalid_percent_is_rejected (test_mutation.InversionMutationTests.test_invalid_percent_is_rejected) ... ok
+test_inversion_preserves_valid_permutations (test_mutation.InversionMutationTests.test_inversion_preserves_valid_permutations) ... ok
+test_one_gene_is_unchanged (test_mutation.InversionMutationTests.test_one_gene_is_unchanged) ... ok
+test_segment_length_does_not_exceed_percentage_maximum (test_mutation.InversionMutationTests.test_segment_length_does_not_exceed_percentage_maximum) ... ok
+test_two_genes_always_swap (test_mutation.InversionMutationTests.test_two_genes_always_swap) ... ok
+test_code_cells_are_valid_python (test_notebook.NotebookStructureTests.test_code_cells_are_valid_python) ... ok
+/Users/rvetlyakov/Documents/IAD/tests/test_ofat_protocol.py:27: ResourceWarning: unclosed file <_io.TextIOWrapper name='/Users/rvetlyakov/Documents/IAD/results/hyperparameter_curves_10_2000/raw.csv' mode='r' encoding='utf-8'>
+  cls.rows = list(csv.DictReader(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+test_compared_levels_have_same_matrix_seed_and_reference (test_ofat_protocol.OFATProtocolTests.test_compared_levels_have_same_matrix_seed_and_reference) ... ok
+test_observed_run_metadata_matches_each_changed_setting (test_ofat_protocol.OFATProtocolTests.test_observed_run_metadata_matches_each_changed_setting) ... ok
+test_only_one_parameter_changes_within_each_sweep (test_ofat_protocol.OFATProtocolTests.test_only_one_parameter_changes_within_each_sweep) ... ok
+test_plateau_diff_is_currently_noninformative_for_large_n (test_ofat_protocol.OFATProtocolTests.test_plateau_diff_is_currently_noninformative_for_large_n) ... ok
+test_equal_island_budget_and_diagonal_correctness (test_offspring_repair.OffspringRepairTests.test_equal_island_budget_and_diagonal_correctness) ... ok
+test_seeded_trial_matches_measured_experimental_repair (test_offspring_repair.OffspringRepairTests.test_seeded_trial_matches_measured_experimental_repair) ... ok
+test_persistent_executor_and_ring_trace (test_parallel_evidence.ParallelEvidenceTests.test_persistent_executor_and_ring_trace) ... ok
+test_every_receiver_gets_predecessor_snapshot_without_aliases (test_parallel_evidence.RingPayloadTests.test_every_receiver_gets_predecessor_snapshot_without_aliases) ... ok
+test_all_individuals_local_budget_with_uneven_islands_without_mutants (test_parallel_evidence.UnevenBudgetTests.test_all_individuals_local_budget_with_uneven_islands_without_mutants) ... ok
+test_plateau_can_stop_before_iteration_limit (test_plateau_sensitivity.PlateauSensitivityTests.test_plateau_can_stop_before_iteration_limit) ... ok
+test_plateau_study_varies_one_parameter_per_sweep (test_plateau_sensitivity.PlateauSensitivityTests.test_plateau_study_varies_one_parameter_per_sweep) ... ok
+test_employee_fitness_uses_supplied_chromosome (test_research_regressions.GAResearchRegressions.test_employee_fitness_uses_supplied_chromosome) ... ok
+test_new_research_persists_exact_settings_per_trial (test_research_regressions.GAResearchRegressions.test_new_research_persists_exact_settings_per_trial) ... mutation_probability: small n=4; 1 shared matrices
+mutation_probability: small n=5; 1 shared matrices
+mutation_probability: medium n=7; 1 shared matrices
+mutation_probability: medium n=8; 1 shared matrices
+mutation_probability: large n=10; 1 shared matrices
+mutation_probability: large n=11; 1 shared matrices
+Finished mutation_probability: 12 real trials total
+/Users/rvetlyakov/Documents/IAD/tests/test_research_regressions.py:116: ResourceWarning: unclosed file <_io.TextIOWrapper name='/var/folders/5k/6n49rbvj3s5fkcxz99fm4v1h0000gn/T/tmp6d48lj56/raw.csv' mode='r' encoding='UTF-8'>
+  rows = list(csv.DictReader((output / "raw.csv").open()))
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_plateau_sweep_contains_strict_thresholds (test_research_regressions.GAResearchRegressions.test_plateau_sweep_contains_strict_thresholds) ... ok
+test_run_ga_plateau_counts_changes_including_initial_population (test_research_regressions.GAResearchRegressions.test_run_ga_plateau_counts_changes_including_initial_population) ... ok
+test_run_ga_remembers_good_mutant_even_when_not_selected (test_research_regressions.GAResearchRegressions.test_run_ga_remembers_good_mutant_even_when_not_selected) ... ok
+test_scale_benchmark_zero_optimum_uses_finite_or_infinite_gap (test_research_regressions.GAResearchRegressions.test_scale_benchmark_zero_optimum_uses_finite_or_infinite_gap) ... ok
+test_zero_cost_assignments_do_not_crash_rss (test_research_regressions.GAResearchRegressions.test_zero_cost_assignments_do_not_crash_rss) ... ok
+test_zero_optimum_reports_infinite_relative_gap_without_division_error (test_research_regressions.GAResearchRegressions.test_zero_optimum_reports_infinite_relative_gap_without_division_error) ... ok
+test_comparison_uses_same_reference_and_matrix (test_scale_benchmark.ScaleBenchmarkTests.test_comparison_uses_same_reference_and_matrix) ... ok
+test_equal_budget_and_valid_costs_with_actual_workers (test_scale_benchmark.ScaleBenchmarkTests.test_equal_budget_and_valid_costs_with_actual_workers) ... ok
+test_matrix_seed_reproducible (test_scale_benchmark.ScaleBenchmarkTests.test_matrix_seed_reproducible) ... ok
+test_population_is_conserved_across_islands (test_scale_benchmark.ScaleBenchmarkTests.test_population_is_conserved_across_islands) ... ok
+test_requested_classes (test_scale_benchmark.ScaleBenchmarkTests.test_requested_classes) ... ok
+test_same_initial_budget_preserves_optimal_initial_chromosome (test_scale_benchmark.ScaleBenchmarkTests.test_same_initial_budget_preserves_optimal_initial_chromosome) ... ok
+test_smoke_writes_no_fabricated_full_results (test_scale_benchmark.ScaleBenchmarkTests.test_smoke_writes_no_fabricated_full_results) ... small: tuned n=4; validated (5,)
+medium: tuned n=7; validated (8,)
+large: tuned n=10; validated (12,)
+ok
+test_grids_have_measurements_inside_each_class (test_scale_curve_research.CurveResearchTests.test_grids_have_measurements_inside_each_class) ... ok
+test_smoke_has_actual_paired_runs_not_fictitious_interpolation (test_scale_curve_research.CurveResearchTests.test_smoke_has_actual_paired_runs_not_fictitious_interpolation) ... small: measured 4x4; 1 paired cases
+small: measured 5x5; 1 paired cases
+medium: measured 7x7; 1 paired cases
+medium: measured 8x8; 1 paired cases
+large: measured 10x10; 1 paired cases
+large: measured 11x11; 1 paired cases
+ok
+test_elitism_preserves_best_cost (test_selection.SelectionTests.test_elitism_preserves_best_cost) ... ok
+test_fractional_sampling_selects_low_ranked_candidates (test_selection.SelectionTests.test_fractional_sampling_selects_low_ranked_candidates) ... ok
+test_population_size_is_exact_after_selection (test_selection.SelectionTests.test_population_size_is_exact_after_selection) ... ok
+test_contiguous_dimensions_cover_all_three_classes (test_size_curves.DimensionCurvesTests.test_contiguous_dimensions_cover_all_three_classes) ... ok
+test_display_mean_never_invents_new_dimensions (test_size_curves.DimensionCurvesTests.test_display_mean_never_invents_new_dimensions) ... ok
+test_one_factor_and_paired_matrices (test_size_curves.DimensionCurvesTests.test_one_factor_and_paired_matrices) ... ok
+test_adaptive_mutation_does_not_change_when_generation_budget_changes (test_staged_tuning.StagedTuningTests.test_adaptive_mutation_does_not_change_when_generation_budget_changes) ... ok
+test_all_matrix_seeds_are_disjoint_across_stages (test_staged_tuning.StagedTuningTests.test_all_matrix_seeds_are_disjoint_across_stages) ... ok
+test_conditional_controls_are_active (test_staged_tuning.StagedTuningTests.test_conditional_controls_are_active) ... ok
+test_large_class_parameter_transfers_only_if_it_helps_small_train (test_staged_tuning.StagedTuningTests.test_large_class_parameter_transfers_only_if_it_helps_small_train) ... /Users/rvetlyakov/Documents/IAD/tests/test_staged_tuning.py:128: ResourceWarning: unclosed file <_io.TextIOWrapper name='/var/folders/5k/6n49rbvj3s5fkcxz99fm4v1h0000gn/T/tmp179w624r/small_transfer.csv' mode='r' encoding='UTF-8'>
+  rows=list(__import__("csv").DictReader(
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_nonoverlapping_user_classes (test_staged_tuning.StagedTuningTests.test_nonoverlapping_user_classes) ... ok
+test_ofat_proves_only_one_field_changed_for_all_factors (test_staged_tuning.StagedTuningTests.test_ofat_proves_only_one_field_changed_for_all_factors) ... OFAT medium n=4, samples=68
+ok
+test_training_selects_best_from_real_candidate_grid (test_staged_tuning.StagedTuningTests.test_training_selects_best_from_real_candidate_grid) ... ok
+test_generated_population_is_valid_and_evaluated (test_teacher_fitness_contract.TeacherFitnessContractTests.test_generated_population_is_valid_and_evaluated) ... ok
+test_individual_fitness_matches_assignment_objective (test_teacher_fitness_contract.TeacherFitnessContractTests.test_individual_fitness_matches_assignment_objective) ... ok
+test_population_fitness_is_the_arithmetic_mean (test_teacher_fitness_contract.TeacherFitnessContractTests.test_population_fitness_is_the_arithmetic_mean) ... ok
+test_identical_mean_fitness_counts_as_plateau (test_termination.ConvergenceTests.test_identical_mean_fitness_counts_as_plateau) ... ok
+test_invalid_termination_parameters (test_termination.ConvergenceTests.test_invalid_termination_parameters) ... ok
+test_one_generation_is_executed_for_limit_one (test_termination.ConvergenceTests.test_one_generation_is_executed_for_limit_one) ... ok
+test_relative_changes_do_not_depend_on_scale (test_termination.ConvergenceTests.test_relative_changes_do_not_depend_on_scale) ... ok
+test_diagonal_preserved (test_three_cycle.TestThreeCycle.test_diagonal_preserved) ... ok
+test_disabled_operator_matches_unmodified_baseline (test_three_cycle.TestThreeCycle.test_disabled_operator_matches_unmodified_baseline) ... ok
+test_equal_local_search_calls_with_islands_and_cycle3 (test_three_cycle.TestThreeCycle.test_equal_local_search_calls_with_islands_and_cycle3) ... ok
+test_permutation_validity_and_nonincreasing_cost (test_three_cycle.TestThreeCycle.test_permutation_validity_and_nonincreasing_cost) ... ok
+test_three_cycle_escapes_a_strict_two_swap_local_minimum (test_three_cycle.TestThreeCycle.test_three_cycle_escapes_a_strict_two_swap_local_minimum) ... ok
+
+----------------------------------------------------------------------
+Ran 103 tests in 16.812s
+
+OK

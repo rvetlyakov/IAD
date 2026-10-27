@@ -9,6 +9,7 @@ import time
 from concurrent.futures import ProcessPoolExecutor
 from dataclasses import dataclass
 import numpy as np
+from three_cycle import improve_three_cycle
 
 @dataclass(frozen=True)
 class Config:
@@ -27,6 +28,8 @@ class Config:
     local_top: int = 1
     local_passes: int = 2
     local_candidates: int = 8
+    cycle3: bool = False
+    cycle3_passes: int = 2
     islands: int = 1
     migration_interval: int = 25
     migration_pct: float = .1
@@ -43,7 +46,7 @@ def validate(A, c):
         raise ValueError("selection must be raw or positive-power rank RSS")
     if not 0<=c.adaptive_long_prob<=1 or not 0<c.adaptive_long_pct<=100 or c.adaptive_horizon<1:
         raise ValueError("invalid adaptive mutation controls")
-    if c.local_every<0 or c.local_top<0 or c.local_top>c.population or c.local_passes<1 or c.local_candidates<1:
+    if c.local_every<0 or c.local_top<0 or c.local_top>c.population or c.local_passes<1 or c.local_candidates<1 or c.cycle3_passes<1:
         raise ValueError("invalid local search controls")
     if c.migration_interval<1 or not 0<=c.migration_pct<=1:
         raise ValueError("invalid migration controls")
@@ -172,6 +175,8 @@ def _evolve(state):
             better=[]
             for index in selected:
                 candidate,_=improve_swaps(a,pool[index],columns,c.local_passes)
+                if c.cycle3:
+                    candidate,_=improve_three_cycle(a,candidate,columns,c.cycle3_passes)
                 better.append(candidate)
             if better:
                 pool=np.concatenate((pool,np.asarray(better,dtype=np.int32)),axis=0)

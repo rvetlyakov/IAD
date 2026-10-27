@@ -1,0 +1,78 @@
+name: "Three-cycle medium GA: 35 size curves and five-seed validation"
+on:
+  push:
+    branches:
+      - "fix/medium-3cycle-improvement-20261028"
+    paths:
+      - ".github/workflows/ga-medium-3cycle-once.yml"
+permissions:
+  contents: write
+jobs:
+  measured-experiment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 110
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install scientific stack and Montserrat
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y fonts-montserrat
+          python -m pip install 'numpy>=2,<3' 'scipy>=1.14,<2' 'matplotlib>=3.9,<4'
+      - name: Run all previous homework regression tests including three-cycle
+        run: |
+          python -m unittest discover -s tests -v
+      - name: Run reproducible parameter training, dense OFAT and holdout
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+          OMP_NUM_THREADS: '1'
+        run: |
+          python -u lab1/medium_three_cycle_study.py --stage all --output results/medium_3cycle_20261028
+      - name: Verify exact measured data and class sizes
+        run: |
+          python - <<'PY'
+          import csv,json
+          from pathlib import Path
+          d=Path('results/medium_3cycle_20261028')
+          load=lambda x:list(csv.DictReader((d/x).open()))
+          train=load('train.csv');survey=load('survey.csv');holdout=load('holdout.csv')
+          assert len(train)==3*2*3*3,len(train)
+          assert len(survey)==35*(2+4+4+3),len(survey)
+          assert len(holdout)==3*5*2,len(holdout)
+          assert len(list((d/'plots').glob('*.png')))==4*2
+          assert len(list((d/'plots').glob('*.svg')))==4*2
+          meta=json.loads((d/'selected.json').read_text())
+          assert meta['selection']['k'] in (8,16,32)
+          assert meta['selection']['passes'] in (1,2,3)
+          for row in survey:
+              b=json.loads(row['baseline_json']);c=json.loads(row['settings_json'])
+              changed={k for k in b if b[k]!=c[k]}
+              assert changed <= {row['parameter']},(row['parameter'],changed)
+              assert int(row['population'])==c['population']
+              assert int(row['islands'])==c['islands']
+              assert int(row['generations'])==c['generations']
+              assert float(row['error_pct'])>=-1e-9
+          a={r['matrix_seed'] for r in train}
+          b={r['matrix_seed'] for r in survey}
+          c={r['matrix_seed'] for r in holdout}
+          assert not (a&b or b&c or a&c)
+          print('PASS: training 54, dense OFAT 455, holdout 30, 16 clean chart files')
+          PY
+      - name: Publish verifiable measurements and plots in review branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f results/medium_3cycle_20261028
+          git commit -m "results: 35-size calibrated 3cycle GA + medium holdout and 8 clean graphs"
+          git fetch origin fix/medium-3cycle-improvement-20261028
+          git rebase origin/fix/medium-3cycle-improvement-20261028
+          git push origin HEAD:fix/medium-3cycle-improvement-20261028
+      - name: Preserve data if interrupted
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: medium-3cycle-real-experiment
+          path: results/medium_3cycle_20261028
+          if-no-files-found: warn
+          retention-days: 90

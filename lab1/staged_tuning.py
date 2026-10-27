@@ -22,14 +22,14 @@ from hybrid_ga import Config, run
 
 CLASS_GRID={
  "small":tuple(range(10,100,10)),
- "medium":tuple(range(100,500,25)),
- "large":tuple(range(500,2001,125)),
+ "medium":tuple(range(100,501,25)),
+ "large":tuple(range(1000,2001,125)),
 }
-# Boundaries are [2,100), [100,500), [500,2000] -- no overlap at 500.
+# Assignment: small 2–99, medium 100–500, transition 501–999, large 1000–2000.
 TRAIN={"small":(20,60,90),"medium":(150,300,450),
-       "large":(500,1000,1500,2000)}
+       "large":(1000,1250,1500,2000)}
 HOLDOUT={"small":(30,70),"medium":(200,400),
-         "large":(625,1250,1750)}
+         "large":(1125,1625,1875)}
 GENERATIONS={
  "small":(100,250,500),
  "medium":(100,250,500,750,1000),
@@ -90,8 +90,9 @@ def read(path):
 
 def class_for(n):
     if 2<=n<100:return "small"
-    if 100<=n<500:return "medium"
-    if 500<=n<=2000:return "large"
+    if 100<=n<=500:return "medium"
+    if 501<=n<1000:return "transition"
+    if 1000<=n<=2000:return "large"
     raise ValueError(f"n outside research classes: {n}")
 
 def evaluate(a,opt,cfg,seed,workers):

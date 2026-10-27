@@ -1,0 +1,157 @@
+{
+  "seed": 20261028,
+  "grid": {
+    "small": [
+      5,
+      10,
+      20,
+      30,
+      40,
+      50
+    ],
+    "medium": [
+      100,
+      150,
+      200,
+      250,
+      300,
+      350,
+      400,
+      450,
+      500
+    ],
+    "transition": [
+      550,
+      600,
+      650,
+      700,
+      750,
+      800,
+      850,
+      900,
+      950
+    ],
+    "large": [
+      1000,
+      1100,
+      1200,
+      1300,
+      1400,
+      1500,
+      1600,
+      1700,
+      1800,
+      1900,
+      2000
+    ]
+  },
+  "baseline": {
+    "population": 120,
+    "generations": 150,
+    "mutation_prob": 1.0,
+    "inversion_pct": 2.0,
+    "elitism": 0.2,
+    "selection": "rank",
+    "rank_power": 2.0,
+    "adaptive": false,
+    "adaptive_long_pct": 20.0,
+    "adaptive_long_prob": 0.05,
+    "local_every": 15,
+    "local_top": 1,
+    "local_passes": 2,
+    "local_candidates": 8,
+    "islands": 1,
+    "migration_interval": 15,
+    "migration_pct": 0.1
+  },
+  "levels": {
+    "population": [
+      60,
+      120,
+      240
+    ],
+    "generations": [
+      40,
+      100,
+      150,
+      250,
+      500
+    ],
+    "mutation_prob": [
+      0.3,
+      0.7,
+      1.0
+    ],
+    "inversion_pct": [
+      1.0,
+      2.0,
+      5.0,
+      20.0
+    ],
+    "elitism": [
+      0.0,
+      0.1,
+      0.2,
+      0.4
+    ],
+    "selection": [
+      "raw",
+      "rank"
+    ],
+    "rank_power": [
+      0.5,
+      1.0,
+      2.0,
+      4.0
+    ],
+    "adaptive": [
+      false,
+      true
+    ],
+    "local_every": [
+      0,
+      5,
+      15,
+      30
+    ],
+    "local_candidates": [
+      4,
+      8,
+      16,
+      32
+    ],
+    "local_passes": [
+      1,
+      2,
+      4
+    ],
+    "local_top": [
+      1,
+      2,
+      4
+    ],
+    "islands": [
+      1,
+      2,
+      4,
+      8
+    ],
+    "migration_interval": [
+      5,
+      15,
+      30,
+      50
+    ],
+    "migration_pct": [
+      0.0,
+      0.05,
+      0.1,
+      0.2
+    ]
+  },
+  "number_of_real_runs": 1855,
+  "note": "Per level one measured matrix per dimension. 550–950: transition, not in training class.",
+  "baseline_context": "Four islands held constant ONLY in migration sweeps",
+  "ofat": "Exactly one dataclass field differs inside a sweep",
+  "graph_curves": "PCHIP between measured dots only; smoothing does not create measured rows"
+}

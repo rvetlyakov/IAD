@@ -1,0 +1,49 @@
+{
+  "source": "full-run trajectory replay",
+  "mode": "full",
+  "seed": 20261030,
+  "repeats": 3,
+  "trajectories": 45,
+  "size_classes": {
+    "small": [
+      10,
+      20,
+      30,
+      40,
+      50
+    ],
+    "medium": [
+      100,
+      200,
+      300,
+      400,
+      500
+    ],
+    "large": [
+      1000,
+      1250,
+      1500,
+      1750,
+      2000
+    ]
+  },
+  "plateau_diff_values": [
+    0.0,
+    0.0001,
+    0.0003,
+    0.0007,
+    0.0015,
+    0.003,
+    0.005
+  ],
+  "plateau_limit_values": [
+    3,
+    5,
+    10,
+    20
+  ],
+  "plateau_limit_fixed_diff": 0.001,
+  "plateau_diff_fixed_limit": 5,
+  "fairness": "each parameter value replayed from identical full RNG trajectory",
+  "notes": "Numbers are replayed counterfactual stop points, NOT independent GA runs per level"
+}

@@ -1,0 +1,67 @@
+name: "Reclassify 1855 verified OFAT trials (15 factors, 3 size bands)"
+on:
+  push:
+    branches: ["fix/continuous-ofat-20261028"]
+    paths: [".github/workflows/replot-1855-ofat-once.yml"]
+permissions:
+  contents: write
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install scientific plotting dependencies and Montserrat
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fonts-montserrat
+          python -m pip install 'numpy>=2,<3' 'scipy>=1.14,<2' 'matplotlib>=3.9,<4'
+      - name: Regression tests
+        run: python -m unittest discover -s tests -v
+      - name: Quantify 15 factors and make 30 honest graphs
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          python -u lab1/verified_hyperparameter_curves.py
+      - name: Inspect exact true samples and output counts
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import csv
+          d=Path("results/continuous_three_class_20261028")
+          read=lambda p:list(csv.DictReader((d/p).open()))
+          expected={"three_class_mean_by_value.csv":159,
+                    "three_class_best_levels.csv":45,
+                    "three_class_parameter_influence.csv":45,
+                    "large_to_small_medium_transfer.csv":30}
+          for path,count in expected.items():
+              actual=len(read(path))
+              assert actual==count,(path,actual,count)
+          assert len(list((d/"plots").glob("*.png")))==30
+          assert len(list((d/"plots").glob("*.svg")))==30
+          counts={}
+          for r in read("three_class_best_levels.csv"):
+              counts[r["class_name"]]=counts.get(r["class_name"],0)+1
+          assert counts=={"small":15,"medium":15,"large":15}
+          print("PASS: all 15 factors x 3 classes; 1855 historic trials, 30 PNG/SVG plot pairs")
+          PY
+      - name: Commit reproducible reclassified analysis and real-point plots
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f results/continuous_three_class_20261028
+          if ! git diff --cached --quiet; then
+            git commit -m "results: 1855 real OFAT trials recategorized into three continuous classes"
+            git fetch origin fix/continuous-ofat-20261028
+            git rebase origin/fix/continuous-ofat-20261028
+            git push origin HEAD:fix/continuous-ofat-20261028
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: verified-1855-ofat-three-class-30-plots
+          path: results/continuous_three_class_20261028
+          retention-days: 90

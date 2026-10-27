@@ -1,0 +1,52 @@
+{
+  "mode": "full",
+  "seed": 20261027,
+  "repeats_per_size": 2,
+  "size_grids": {
+    "small": [
+      10,
+      14,
+      18,
+      22,
+      26,
+      30,
+      34,
+      38,
+      42,
+      46,
+      50
+    ],
+    "medium": [
+      100,
+      140,
+      180,
+      220,
+      260,
+      300,
+      340,
+      380,
+      420,
+      460,
+      500
+    ],
+    "large": [
+      1000,
+      1100,
+      1200,
+      1300,
+      1400,
+      1500,
+      1600,
+      1700,
+      1800,
+      1900,
+      2000
+    ]
+  },
+  "sampled_dimensions": "all x coordinates measured, no interpolation",
+  "visual_smoothing": "centered 3-point moving average (presentation only)",
+  "comparison": "matched cost matrices, seeds, total population, generations",
+  "parallel_workers": 2,
+  "source_parameters": "results/scale_benchmark_full/best_parameters.json",
+  "status": "complete"
+}

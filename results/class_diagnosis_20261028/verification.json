@@ -1,0 +1,9 @@
+{
+  "ruff": "passed: lab1 tests",
+  "compileall": "passed: lab1 tests",
+  "unittest": 97,
+  "new_paired_holdout": 30,
+  "factor_changed": "local_on_offspring",
+  "local_calls_both_variants": 40,
+  "historical_charts_regenerated": false
+}

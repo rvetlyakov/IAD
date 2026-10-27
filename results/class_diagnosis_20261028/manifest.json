@@ -1,0 +1,17 @@
+{
+  "summary.csv": "5cb98121869fb250386297d5582d991d2ee5fbaa723ed0562e95f7301bdbd3f8",
+  "generation_trace.csv": "4666494b0ee27f2c188eb52ab3a5482ce5a9930f6ae80fdf1798865cb7f62ab1",
+  "audit.json": "9264259f25746718cf4598079a59a32e51e2558ee07286bfa77e4f55578cf7f5",
+  "full_neighborhood_probe.csv": "3bb0bbb4bd8b13170a440a599c9684001ec20d04d46850ed79b7a1e2f93c9c05",
+  "matrix_structure.csv": "db07d6aeef3e44b2e4b0e7c7ed2e9d8bd8c2459774320b1573412cecdfcb5b67",
+  "mutation_lengths.csv": "0169dc2ae3b97130a74800b9186cb461571ab0e24a9377adc5b1c39631edb0aa",
+  "offspring_repair_holdout.csv": "eef50ac871399810e1d3d248e41e2b5d934c2c247cc36d15a7add758ef544534",
+  "offspring_repair_summary.json": "5d5e9bac18646ec6f7e671e61f1fee9c421073f005a8d5197eca76d549fca9e8",
+  "cost_range_error.png": "6395534912636eb5536898f5d7b73250fc2692a37f8d31ad3b39d1448da5826f",
+  "comparison.csv": "238f1d9f5c030959c449cf66d1626415fd86f74a48120acb79a0e1ca4b5c2e7d",
+  "unittest-output.txt": "7e61d3c6dbc7fe7dde479c355eb1da50d5097ef6f7ab914069d2353cf310ce9e",
+  "recommended_starting.json": "09601e2c17e51e3c2b74bdaf909f6577aba81e8516f80ba980730f13c0525b0b",
+  "verification.json": "a55180cc8d556ff4501b42f76174e56911bba96910da8499253de2b1cb326fa8",
+  "offspring_repair_train.csv": "430aa1be6c8727b4f5f5660e2c193d99742d63a9e3837b66072450a825fdad0a",
+  "cost_range_error.svg": "11714cf9ca2ca7d4871d11adf23e94bbe5c3a96e6c71744fec39ad79613b2ad3"
+}

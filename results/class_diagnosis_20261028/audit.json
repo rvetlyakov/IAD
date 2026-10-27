@@ -1,0 +1,8 @@
+{
+  "matched_pairs": 30,
+  "local_calls_per_run": 40,
+  "changed_factor": "local_on_offspring",
+  "train_offset": 950000000,
+  "holdout_offset": 970000000,
+  "original_series_unchanged": true
+}

@@ -1,0 +1,50 @@
+[
+  {
+    "group": "small",
+    "variant": "previous_class",
+    "runs": 15,
+    "mean_error_pct": 17.295504335974144,
+    "mean_seconds": 0.03231626399016629,
+    "local_calls": 40
+  },
+  {
+    "group": "small",
+    "variant": "matched_elite_repair",
+    "runs": 15,
+    "mean_error_pct": 18.64288619335796,
+    "mean_seconds": 0.024447277723811566,
+    "local_calls": 40
+  },
+  {
+    "group": "small",
+    "variant": "offspring_repair",
+    "runs": 15,
+    "mean_error_pct": 7.941095288721703,
+    "mean_seconds": 0.02680079167087873,
+    "local_calls": 40
+  },
+  {
+    "group": "medium",
+    "variant": "previous_class",
+    "runs": 15,
+    "mean_error_pct": 28.30805846021196,
+    "mean_seconds": 0.021813399981086452,
+    "local_calls": 10
+  },
+  {
+    "group": "medium",
+    "variant": "matched_elite_repair",
+    "runs": 15,
+    "mean_error_pct": 26.939958358493353,
+    "mean_seconds": 0.046202691520253816,
+    "local_calls": 40
+  },
+  {
+    "group": "medium",
+    "variant": "offspring_repair",
+    "runs": 15,
+    "mean_error_pct": 17.889463385612935,
+    "mean_seconds": 0.0566952027225246,
+    "local_calls": 40
+  }
+]

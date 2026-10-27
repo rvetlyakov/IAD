@@ -30,6 +30,7 @@ class Config:
     adaptive_horizon: int = 500  # fixed decay time, independent of max_generations
     adaptive_long_pct: float = 20.0
     adaptive_long_prob: float = .05
+    local_on_offspring: bool = False
     local_every: int = 0
     local_top: int = 1
     local_passes: int = 2
@@ -193,6 +194,12 @@ def _evolve(state):
                     missing-=added
                 quota=quotas[island_id]
             selected=np.argsort(pc)[:min(quota,len(pc))]
+            if c.local_on_offspring and len(mutants) and len(selected):
+                # Repair actual inversion offspring before RSS can discard
+                # uphill steps. Keep the same global local-search call budget.
+                count=min(len(selected),len(mutants))
+                indices=rng.choice(np.arange(len(pop),len(pop)+len(mutants)),count,replace=False)
+                selected=np.concatenate((selected[:len(selected)-count],indices))
             local_calls+=len(selected)
             better=[]
             for index in selected:

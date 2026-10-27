@@ -1,7 +1,7 @@
 name: Genetic algorithm checks
 on:
   push:
-    branches: [main, "fix/**"]
+    branches: [main, "fix/**", "audit/**"]
   workflow_dispatch:
 
 jobs:

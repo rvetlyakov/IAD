@@ -4,6 +4,7 @@ These checks fail if plot counts or raw evidence disappear from the repo.
 They are independent of Python unit tests and never generate fake runs.
 """
 from __future__ import annotations
+
 import csv
 import json
 import math
@@ -28,7 +29,7 @@ def plots(folder, expected):
 
 
 def check_three_cycle():
-    from medium_three_cycle_study import SURVEY_SIZES, OFAT, class_for
+    from medium_three_cycle_study import OFAT, SURVEY_SIZES, class_for
     base = "results/medium_3cycle_20261028"
     survey = rows(f"{base}/survey.csv")
     train = rows(f"{base}/train.csv")

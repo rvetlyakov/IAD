@@ -1,0 +1,66 @@
+name: Real OFAT hyperparameter graphs for all classes
+
+on:
+  push:
+    branches:
+      - "fix/scale-island-benchmark-20261026"
+    paths:
+      - ".github/workflows/ofat-all-classes-once.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  hyperparameter-curves:
+    runs-on: ubuntu-latest
+    timeout-minutes: 110
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install Python libraries and Montserrat
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y fonts-montserrat
+          python -m pip install 'numpy>=2.1,<3' 'scipy>=1.14,<2' 'matplotlib>=3.9,<4'
+          fc-match Montserrat
+      - name: Verify test harness and tiny smoke experiment
+        run: |
+          python -m unittest discover -s tests -p 'test_hyperparameter_curves.py' -v
+          python -m compileall -q lab1/hyperparameter_curves.py
+      - name: Run real 10–2000 OFAT sweeps on 15 matrix sizes
+        run: |
+          python -u lab1/hyperparameter_curves.py --mode full --repeats 1 --workers 2 --output-dir results/hyperparameter_curves_10_2000
+      - name: Validate no fabricated or omitted graph series
+        run: |
+          python - <<'PY'
+          import csv,json
+          from pathlib import Path
+          p=Path('results/hyperparameter_curves_10_2000')
+          m=json.loads((p/'metadata.json').read_text())
+          assert m['mode']=='full'
+          assert len(m['completed_parameters'])==10
+          assert m['classes']['medium']==[100,200,300,400,500]
+          assert m['classes']['large']==[1000,1250,1500,1750,2000]
+          rows=list(csv.DictReader((p/'raw.csv').open()))
+          assert len(rows)==465, len(rows)
+          assert len(list((p/'plots').glob('*.png')))==10
+          assert len(list((p/'plots').glob('*.svg')))==10
+          assert all(int(r['cost'])>=int(r['exact_cost']) for r in rows)
+          print('Validated',len(rows),'REAL runs on 15 matrix sizes, 10 hyperparameters')
+          PY
+      - name: Commit research CSV, metadata and 20 plot files to GitHub fork
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f results/hyperparameter_curves_10_2000
+          git commit -m "results: 10 real OFAT hyperparameter graphs across 10-2000 matrices"
+          git push origin HEAD:fix/scale-island-benchmark-20261026
+      - name: Preserve charts if run fails or upload results if it succeeds
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: iad-ofat-all-size-classes
+          path: results/hyperparameter_curves_10_2000
+          if-no-files-found: warn
+          retention-days: 90

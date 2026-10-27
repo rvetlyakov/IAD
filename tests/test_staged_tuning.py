@@ -6,7 +6,7 @@ from dataclasses import asdict
 import numpy as np
 sys.path.insert(0,str(Path(__file__).resolve().parents[1]/"lab1"))
 from staged_tuning import (class_for,CLASS_GRID,TRAIN,HOLDOUT,SEEDS,LEVELS,
-    ACTIVE_CONTEXT,_seed,train,ofat)
+    ACTIVE_CONTEXT,_seed,train,ofat,transfer)
 from hybrid_ga import Config
 
 class StagedTuningTests(unittest.TestCase):
@@ -86,6 +86,38 @@ class StagedTuningTests(unittest.TestCase):
             saved=json.loads((root/"medium_frozen_baseline.json").read_text())
             self.assertEqual(saved["selected_settings"]["generations"],500)
             self.assertEqual(saved["selected_settings"]["local_candidates"],16)
+
+    def test_large_class_parameter_transfers_only_if_it_helps_small_train(self):
+        base=Config(population=16,generations=20,mutation_prob=.3)
+        medium=__import__("dataclasses").replace(base,mutation_prob=.7)
+        large=__import__("dataclasses").replace(base,mutation_prob=1.)
+        with tempfile.TemporaryDirectory() as tmp:
+            root=Path(tmp)
+            for name,cfg in (("small",base),("medium",medium),("large",large)):
+                (root/f"{name}_frozen_baseline.json").write_text(
+                    json.dumps({"selected_settings":asdict(cfg)}))
+            def fake_eval(a,opt,cfg,seed,workers):
+                # Large donor setting improves target TRAIN; all other
+                # factors and the population/generation budget stay fixed.
+                return {"cost":100,"seconds":.1},100*(1-cfg.mutation_prob)
+            with patch("staged_tuning.TRAIN",
+                       {"small":(10,),"medium":(20,),"large":(30,)}), \
+                 patch("staged_tuning.SEEDS",dict(SEEDS,train=(7,))), \
+                 patch("staged_tuning.problem",
+                       side_effect=lambda n,seed:(np.ones((2,2)),2)), \
+                 patch("staged_tuning.evaluate",side_effect=fake_eval):
+                selected=transfer("small",root,workers=1)
+            self.assertEqual(selected["mutation_prob"],1.)
+            self.assertEqual(selected["population"],16)
+            self.assertEqual(selected["generations"],20)
+            rows=list(__import__("csv").DictReader(
+                (root/"small_transfer.csv").open()))
+            self.assertTrue(rows)
+            for row in rows:
+                before=json.loads(row["context_json"])
+                after=json.loads(row["settings_json"])
+                self.assertLessEqual({k for k in before if before[k]!=after[k]},
+                                     {row["parameter"]})
 
     def test_ofat_proves_only_one_field_changed_for_all_factors(self):
         base=Config(generations=150,population=16,islands=1,local_candidates=8)

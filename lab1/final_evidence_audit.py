@@ -40,7 +40,11 @@ def check_three_cycle():
     assert len(train) == 54 and len(survey) == 35 * sum(map(len, OFAT.values()))
     assert len(hold) == 30
     assert {int(r["size"]) for r in survey} == sizes
-    # The immutable historic CSV retains its old medium/transition labels.\n    # Reclassify from numeric n, as the current plots do; never rewrite data.\n    assert {class_for(int(r["size"])) for r in survey} == {\n        "small", "medium", "large"\n    }
+    # Original survey.csv retains legacy class labels (including "transition").
+    # Only n is authoritative: verify the new three-class numeric boundaries.
+    assert {class_for(int(r["size"])) for r in survey} == {
+        "small", "medium", "large"
+    }
     assert all(float(r["error_pct"]) >= -1e-8 for r in train + survey + hold)
     for record in survey:
         before = json.loads(record["baseline_json"])

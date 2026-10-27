@@ -95,7 +95,7 @@ jobs:
           assert set(d['classes'])=={'small','medium','large'}
           assert len(hold)==3*2*3*2
           assert {r['matrix_seed'] for r in train}.isdisjoint({r['matrix_seed'] for r in hold})
-          assert all(r['population']==json.loads(r['settings_json'])['population'] for r in train)
+          assert all(int(r['population'])==json.loads(r['settings_json'])['population'] for r in train)
           assert all(int(r['population'])==json.loads(r['settings_json'])['population'] for r in hold)
           print('PASS',len(train),'training runs; 36 independent paired holdout runs')
           PY

@@ -72,7 +72,7 @@ def draw_all(summary,out,sizes):
     for parameter,levels in SWEEPS.items():
         for metric,suffix in (("mean_error_percent","error"),("mean_seconds","runtime")):
             fig,ax=plt.subplots(figsize=(13,6.8),dpi=165,facecolor="white")
-            fig.subplots_adjust(left=.10,right=.985,top=.955,bottom=.22)
+            fig.subplots_adjust(left=.10,right=.985,top=.955,bottom=.285)
             for group in sizes:
                 l,r,color=bands[group]
                 ax.axvspan(l-.35,r+.35,color=color,alpha=.87,zorder=0)
@@ -92,7 +92,7 @@ def draw_all(summary,out,sizes):
             ax.set_xticks([pos[g,n] for g in sizes for n in sizes[g]])
             ax.set_xticklabels([str(n) for g in sizes for n in sizes[g]],fontsize=9)
             ax.set_ylim(bottom=0)
-            ax.set_xlabel("Размерность матрицы n × n",labelpad=30,fontsize=12)
+            ax.set_xlabel("Размерность матрицы n × n",labelpad=64,fontsize=12)
             ax.set_ylabel("Средняя относительная ошибка, %" if suffix=="error"
                           else "Время выполнения, с",fontsize=12)
             for spine in ax.spines.values():spine.set_visible(False)
@@ -101,7 +101,7 @@ def draw_all(summary,out,sizes):
                       facecolor="white",edgecolor="#d6d6d6",fontsize=10,loc="upper left")
             for group in sizes:
                 l,r,_=bands[group]
-                ax.text((l+r)/2,-.108,
+                ax.text((l+r)/2,-.095,
                         {"small":"малые","medium":"средние","large":"большие"}[group],
                         transform=ax.get_xaxis_transform(),ha="center",va="top",
                         fontsize=11,fontweight="bold",

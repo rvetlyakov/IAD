@@ -73,6 +73,20 @@ class GAResearchRegressions(unittest.TestCase):
         self.assertTrue(found)
         self.assertEqual(error, 0)
 
+    def test_zero_optimum_reports_infinite_relative_gap_without_division_error(self):
+        # The exact assignment can cost zero, while a stochastic GA may miss it.
+        matrix = [[0, 10], [10, 0]]
+        with patch("random.sample", return_value=[1, 0]):
+            found, generations, gap = run_ga(
+                population_size=1, mutation_probability=0,
+                mutation_percent=30, tournament_size=2, max_iterations=1,
+                plateau_limit=2, plateau_diff=0,
+                elitist_percent=0, matrix=matrix,
+            )
+        self.assertFalse(found)
+        self.assertEqual(generations, 1)
+        self.assertEqual(gap, float("inf"))
+
     def test_plateau_sweep_contains_strict_thresholds(self):
         actual = HYPERPARAMETERS["plateau_diff"]
         self.assertIn(0.0, actual)

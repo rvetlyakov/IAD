@@ -139,7 +139,9 @@ distance - integer - разность между нашим и оптималь�
         return (True, iteration, 0)
     else:
         # print(f"Найдено субоптимальное решение. Разница с идеалом: {best_cost - best_exact_cost}")
-        return (False, iteration, (best_cost - best_exact_cost) / best_exact_cost)
+        return (False, iteration,
+                float("inf") if best_exact_cost == 0
+                else (best_cost - best_exact_cost) / best_exact_cost)
 
 
 if __name__ == "__main__":

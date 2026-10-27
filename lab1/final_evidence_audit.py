@@ -29,7 +29,8 @@ def plots(folder, expected):
 
 
 def check_three_cycle():
-    from medium_three_cycle_study import OFAT, SURVEY_SIZES, class_for
+    from medium_three_cycle_study import OFAT, SURVEY_SIZES
+    from staged_tuning import class_for
     base = "results/medium_3cycle_20261028"
     survey = rows(f"{base}/survey.csv")
     train = rows(f"{base}/train.csv")

@@ -15,9 +15,12 @@ class StagedTuningTests(unittest.TestCase):
         self.assertEqual(class_for(99),"small")
         self.assertEqual(class_for(100),"medium")
         self.assertEqual(class_for(499),"medium")
-        self.assertEqual(class_for(500),"large")
+        self.assertEqual(class_for(500),"medium")
+        self.assertEqual(class_for(501),"transition")
+        self.assertEqual(class_for(999),"transition")
+        self.assertEqual(class_for(1000),"large")
         self.assertEqual(class_for(2000),"large")
-        self.assertEqual([len(x) for x in CLASS_GRID.values()],[9,16,13])
+        self.assertEqual([len(x) for x in CLASS_GRID.values()],[9,17,9])
         for name,values in CLASS_GRID.items():
             self.assertTrue(all(class_for(n)==name for n in values))
 

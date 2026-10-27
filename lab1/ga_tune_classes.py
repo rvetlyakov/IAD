@@ -53,17 +53,18 @@ def evaluate_on_cases(config,cases,phase,param,value,size_class,workers=2):
     return rows
 
 def select_best(options):
-    """Minimize mean relative gap; within 1% of best prefer faster option.
+    """Deterministically minimize the paired mean relative error.
 
-    This is a quality/runtime tie-break only; never claims global optimum.
+    Time is reported but deliberately excluded from noisy selection.
     """
     evaluated=[]
     for label,rows,config in options:
         evaluated.append((label,mean(r["gap_pct"] for r in rows),
                           mean(r["elapsed_seconds"] for r in rows),config))
-    best_error=min(x[1] for x in evaluated)
-    near=[x for x in evaluated if x[1]<=best_error+max(.5,abs(best_error)*.01)]
-    label,gap,sec,config=min(near,key=lambda x:(x[2],x[1]))
+    # Runtime is noisy (especially on shared CI runners) and MUST NOT be
+    # used as a primary/near-tie selector. Minimize measured error only;
+    # stable Python min keeps the earliest grid level for exact ties.
+    label,gap,sec,config=min(evaluated,key=lambda x:x[1])
     return (label,gap,sec,config,evaluated)
 
 def tune(output="results/ga_tuned_classes",mode="smoke",seed=20261105,
@@ -100,7 +101,7 @@ def tune(output="results/ga_tuned_classes",mode="smoke",seed=20261105,
             step_rows.append(dict(**{"class":cls},factor=factor,
                         selected=chosen,mean_gap_pct=round(gap,4),
                         mean_seconds=round(sec,5),
-                        reason="minimum paired error; <=1% tie chooses shorter time"))
+                        reason="minimum paired error; identical errors use earliest grid value"))
             print(f"TUNED {cls} {factor}={chosen} gap={gap:.2f}%",flush=True)
             write_csv(out/"train_raw.csv",all_rows)
             write_csv(out/"selection_steps.csv",step_rows)
@@ -124,7 +125,7 @@ def tune(output="results/ga_tuned_classes",mode="smoke",seed=20261105,
         write_csv(out/"validation_raw.csv",validation)
     (out/"best_parameters.json").write_text(json.dumps({
        "method":"one-pass sequential coordinate descent, best observed on paired training matrices",
-       "objective":"minimum mean gap; when within max(0.5 pp, 1% of best gap), choose shorter time",
+       "objective":"minimum paired mean relative error; deterministic first-listed tie breaker",
        "classes":best_by_class,"train_dimensions":training,
        "holdout_dimensions":holdout,"training_repeats":training_repeats,
        "holdout_repeats":holdout_repeats,"training_seed":seed,

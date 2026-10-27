@@ -1,0 +1,68 @@
+name: "Continuous three-class GA graphs from verified measurements"
+on:
+  push:
+    branches: ["fix/continuous-ofat-20261028"]
+    paths: [".github/workflows/continuous-real-measurements.yml"]
+permissions:
+  contents: write
+jobs:
+  plots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install plotting dependencies and Montserrat
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fonts-montserrat
+          python -m pip install 'numpy>=2,<3' 'scipy>=1.14,<2' 'matplotlib>=3.9,<4'
+      - name: Test continuous experimental protocol
+        run: |
+          python -m unittest discover -s tests -v
+      - name: Render from saved authentic observations without interpolation
+        run: |
+          python lab1/medium_three_cycle_study.py --stage plots --output results/medium_3cycle_20261028
+      - name: Audit measurement coverage and all plot files
+        run: |
+          python - <<'PY'
+          import csv,sys
+          from pathlib import Path
+          sys.path.insert(0,"lab1")
+          from medium_three_cycle_study import SURVEY_SIZES,OFAT,dimension_x,class_for
+          d=Path("results/medium_3cycle_20261028")
+          rows=list(csv.DictReader((d/"survey.csv").open()))
+          expected=set(n for sizes in SURVEY_SIZES.values() for n in sizes)
+          assert len(expected)==35 and len(rows)==len(expected)*sum(map(len,OFAT.values()))
+          assert set(int(r["size"]) for r in rows)==expected
+          for n in range(550,1000,50):assert class_for(n)=="large"
+          for p,levels in OFAT.items():
+              for value in levels:
+                  subset=[r for r in rows if r["parameter"]==p and r["value"]==str(value)]
+                  assert len(subset)==35 and len(set(r["size"] for r in subset))==35
+                  assert sorted(float(r["error_pct"]) for r in subset)[0]>=-1e-8
+          assert len(list((d/"plots").glob("*.png")))==8
+          assert len(list((d/"plots").glob("*.svg")))==8
+          print("PASS: 455 actual experiments, 35 ordered sizes, 550..950 all included in large")
+          PY
+      - name: Commit updated verified charts
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f results/medium_3cycle_20261028/plots
+          if ! git diff --cached --quiet; then
+            git commit -m "results: publish 8 uninterrupted true-point 3-class graphs"
+            git fetch origin fix/continuous-ofat-20261028
+            git rebase origin/fix/continuous-ofat-20261028
+            git push origin HEAD:fix/continuous-ofat-20261028
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: continuous-verified-35-size-curves
+          path: results/medium_3cycle_20261028/plots
+          retention-days: 90

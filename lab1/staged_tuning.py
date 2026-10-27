@@ -152,6 +152,84 @@ def train(group,root,source,workers=2):
          "training_grid":ranked},indent=2,ensure_ascii=False),encoding="utf-8")
     return winner
 
+
+def refine(group,root,workers=2,rounds=1,parameters=None):
+    """Coordinate search on TRAIN data only. Each comparison changes one
+    parameter from CURRENT context; repeat passes if interactions matter.
+    Island count/migration are tuned separately after the single GA.
+    """
+    root=Path(root)
+    meta=json.loads((root/f"{group}_frozen_baseline.json").read_text())
+    current=Config(**meta["selected_settings"])
+    order=list(parameters) if parameters is not None else [
+      "selection","rank_power","adaptive","mutation_prob","inversion_pct",
+      "elitism","population","local_every","local_candidates",
+      "local_passes","local_top","generations"]
+    history=[]
+    valid=set(LEVELS)-{"islands","migration_interval","migration_pct",
+                       "adaptive_long_prob","adaptive_long_pct"}
+    if any(p not in valid for p in order):raise ValueError("Unsupported tuning factor")
+    def score(parameter,candidate,baseline,phase):
+        errors=[];times=[]
+        for n in TRAIN[group]:
+            for rep,token in enumerate(SEEDS["train"]):
+                seed=_seed(n,token,"train")
+                a,opt=problem(n,seed)
+                result,error=evaluate(a,opt,candidate,seed+9,workers)
+                errors.append(error);times.append(result["seconds"])
+                history.append({
+                    "round":phase,"parameter":parameter,
+                    "value":str(getattr(candidate,parameter)),
+                    "n":n,"rep":rep,"error_pct":error,
+                    "seconds":result["seconds"],"matrix_seed":seed,
+                    "ga_seed":seed+9,
+                    "context_json":json.dumps(asdict(baseline),sort_keys=True),
+                    "settings_json":json.dumps(asdict(candidate),sort_keys=True)
+                })
+        return mean(errors),mean(times)
+
+    for round_index in range(rounds):
+        for parameter in order:
+            if parameter=="rank_power" and current.selection!="rank":
+                continue
+            candidates=LEVELS[parameter]
+            context=current
+            ranked=[]
+            for value in candidates:
+                candidate=replace(context,**{parameter:value})
+                loss,seconds=score(parameter,candidate,context,round_index)
+                ranked.append((loss,seconds,value))
+            ranked.sort(key=lambda x:(x[0],x[1]))
+            current=replace(current,**{parameter:ranked[0][2]})
+            save(root/f"{group}_refine_raw.csv",history)
+            print("REFINE",group,round_index,parameter,"best",ranked[0],flush=True)
+
+    # Separate parallel configuration; do not let island tuning change the
+    # selected SINGLE-GA config or confound the class OFAT baseline.
+    parallel=replace(current,islands=2)
+    for parameter in ("islands","migration_interval","migration_pct"):
+        context=parallel
+        values=(2,4,8) if parameter=="islands" else LEVELS[parameter]
+        ranked=[]
+        for value in values:
+            candidate=replace(context,**{parameter:value})
+            loss,seconds=score(parameter,candidate,context,"islands")
+            ranked.append((loss,seconds,value))
+        ranked.sort(key=lambda x:(x[0],x[1]))
+        parallel=replace(parallel,**{parameter:ranked[0][2]})
+        save(root/f"{group}_refine_raw.csv",history)
+        print("PARALLEL",group,parameter,"best",ranked[0],flush=True)
+
+    meta["selected_settings"]=asdict(current)
+    meta["island_settings"]=asdict(parallel)
+    meta["refine_rounds"]=rounds
+    meta["refine_order"]=order
+    meta["refinement_method"]="strict one-coordinate training search; no test or survey matrices"
+    (root/f"{group}_frozen_baseline.json").write_text(
+        json.dumps(meta,ensure_ascii=False,indent=2),encoding="utf-8")
+    return {"single":asdict(current),"islands":asdict(parallel)}
+
+
 def ofat(group,root,workers=2):
     """Freeze TRAIN winner, perturb exactly one active field per trial.
 
@@ -167,7 +245,9 @@ def ofat(group,root,workers=2):
             a,opt=problem(n,mat_seed)
             ga_seed=mat_seed+9
             for parameter,levels in LEVELS.items():
-                context=replace(base,**ACTIVE_CONTEXT.get(parameter,{}))
+                context=(Config(**meta.get("island_settings",asdict(replace(base,islands=4))))
+                         if parameter in ("migration_interval","migration_pct")
+                         else replace(base,**ACTIVE_CONTEXT.get(parameter,{})))
                 for value in levels:
                     cfg=replace(context,**{parameter:value})
                     changed={key for key in asdict(context)
@@ -202,7 +282,9 @@ def validate(group,root,workers=2):
         for repeat,token in enumerate(SEEDS["holdout"]):
             mat_seed=_seed(n,token,"holdout")
             a,opt=problem(n,mat_seed)
-            for name,cfg in [("before",base),("after",selected)]:
+            for name,cfg in [("before",base),("after",selected)]+(
+                [("after_islands",Config(**m["island_settings"]))]
+                if "island_settings" in m else []):
                 ans,err=evaluate(a,opt,cfg,mat_seed+9,workers)
                 rows.append({"class_name":group,"n":n,"repeat":repeat,
                     "variant":name,"cost":ans["cost"],"exact":opt,
@@ -217,11 +299,15 @@ def main():
     p.add_argument("--class-name",choices=tuple(TRAIN),default="medium")
     p.add_argument("--output",default="results/staged_tuning_v2")
     p.add_argument("--source",default="results/dense_ofat_20261027/best_observed_config.json")
-    p.add_argument("--stage",choices=("train","ofat","holdout","all"),default="all")
+    p.add_argument("--stage",choices=("train","refine","ofat","holdout","all"),default="all")
     p.add_argument("--workers",type=int,default=2)
+    p.add_argument("--rounds",type=int,default=1)
+    p.add_argument("--parameters",nargs="*",default=None)
     args=p.parse_args()
     if args.stage in ("train","all"):
         print("SELECTED",train(args.class_name,args.output,args.source,args.workers),flush=True)
+    if args.stage in ("refine","all"):
+        print("REFINED",refine(args.class_name,args.output,args.workers,args.rounds,args.parameters),flush=True)
     if args.stage in ("ofat","all"):ofat(args.class_name,args.output,args.workers)
     if args.stage in ("holdout","all"):validate(args.class_name,args.output,args.workers)
 

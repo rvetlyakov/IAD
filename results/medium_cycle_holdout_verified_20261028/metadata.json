@@ -1,0 +1,60 @@
+{
+  "method": "Paired seed and matrix, only Config.cycle3 changed",
+  "full_config": {
+    "population": 120,
+    "generations": 250,
+    "mutation_prob": 0.7,
+    "inversion_pct": 2,
+    "elitism": 0.2,
+    "selection": "rank",
+    "rank_power": 2,
+    "adaptive": false,
+    "adaptive_horizon": 500,
+    "adaptive_long_pct": 20.0,
+    "adaptive_long_prob": 0.05,
+    "local_every": 25,
+    "local_top": 1,
+    "local_passes": 2,
+    "local_candidates": 16,
+    "cycle3": false,
+    "cycle3_passes": 2,
+    "islands": 1,
+    "migration_interval": 25,
+    "migration_pct": 0.1
+  },
+  "comparison": {
+    "100_cycle3_False": {
+      "mean_error_percent": 123.43486569458314,
+      "mean_seconds": 0.15762798959999885,
+      "runs": 5
+    },
+    "100_cycle3_True": {
+      "mean_error_percent": 27.487913618632273,
+      "mean_seconds": 0.30639161000000004,
+      "runs": 5
+    },
+    "300_cycle3_False": {
+      "mean_error_percent": 146.18064198008506,
+      "mean_seconds": 0.22668908380000516,
+      "runs": 5
+    },
+    "300_cycle3_True": {
+      "mean_error_percent": 37.27296077918386,
+      "mean_seconds": 0.6812835975999973,
+      "runs": 5
+    },
+    "500_cycle3_False": {
+      "mean_error_percent": 109.86818440479767,
+      "mean_seconds": 0.29545306600000176,
+      "runs": 5
+    },
+    "500_cycle3_True": {
+      "mean_error_percent": 24.67829378012444,
+      "mean_seconds": 1.0861443536000024,
+      "runs": 5
+    }
+  },
+  "source": "actual executed GA with 3-cycle inside generations",
+  "class": "medium n=100/300/500",
+  "limits": "five independent matrices per size; further sizes in dense study"
+}

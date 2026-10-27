@@ -29,6 +29,26 @@ class StagedTuningTests(unittest.TestCase):
                 for second in keys:
                     if first!=second:self.assertFalse(keys[first]&keys[second])
 
+    def test_adaptive_mutation_does_not_change_when_generation_budget_changes(self):
+        from hybrid_ga import _evolve
+        n=10
+        rng=np.random.default_rng(123)
+        matrix=rng.integers(1,101,(n,n),dtype=np.int32)
+        population=np.asarray([rng.permutation(n) for _ in range(12)],
+                              dtype=np.int32)
+        base=Config(population=12,generations=50,adaptive=True,
+                    adaptive_horizon=100,local_every=0)
+        seed_state=np.random.default_rng(991).bit_generator.state
+        best=(int(np.min(matrix[np.arange(n)[None,:],population].sum(axis=1))),
+              population[0].copy())
+        short=_evolve((matrix,population.copy(),base,0,50,
+                       seed_state,None,best,0))
+        long=_evolve((matrix,population.copy(),
+                      __import__("dataclasses").replace(base,generations=200),
+                      0,50,seed_state,None,best,0))
+        np.testing.assert_array_equal(short[0],long[0])
+        self.assertEqual(short[2][0],long[2][0])
+
     def test_conditional_controls_are_active(self):
         self.assertEqual(ACTIVE_CONTEXT["rank_power"],{"selection":"rank"})
         self.assertEqual(ACTIVE_CONTEXT["migration_interval"],{"islands":4})

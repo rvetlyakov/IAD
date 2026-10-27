@@ -170,125 +170,106 @@ def aggregate(raw):
 
 
 def render_parameter(parameter, summaries, output, *, mode, repeats=1):
-    """16:9 Montserrat chart with three equally sized size-class regions."""
+    """Standalone chart asset, ready to place into a slide.
+
+    Only the data visualization is rendered: X/Y axes, real measured
+    curves/markers, a value legend, and shaded size-class bands.
+    Titles, explanatory cards, conclusions and presentation chrome belong
+    in the slide, NOT in exported PNG/SVG files.
+    """
     import matplotlib
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    from matplotlib.patches import FancyBboxPatch
 
-    title,unit=LABELS[parameter]
-    rows=[r for r in summaries if r["parameter"]==parameter]
+    rows = [r for r in summaries if r["parameter"] == parameter]
     if not rows:
         return
-    classes=REAL_SIZES if mode=="full" else SMOKE_SIZES
+    classes = REAL_SIZES if mode == "full" else SMOKE_SIZES
     plt.rcParams.update({
-        "font.family":"Montserrat", "font.size":11,
-        "axes.unicode_minus":False, "svg.fonttype":"none",
-        "savefig.facecolor":"#FFFFFF",
+        "font.family": "Montserrat",
+        "font.size": 12,
+        "axes.unicode_minus": False,
+        "svg.fonttype": "none",
+        "savefig.facecolor": "#FFFFFF",
     })
-    fig=plt.figure(figsize=(13.333,7.5),dpi=160,facecolor="white")
-    fig.patches.append(FancyBboxPatch(
-        (.015,.84),.97,.15,boxstyle="round,pad=0.001,rounding_size=0.027",
-        transform=fig.transFigure,facecolor="#1C4B8D",edgecolor="none",zorder=1,
-    ))
-    fig.text(.055,.935,"ИССЛЕДОВАНИЕ ГЕНЕТИЧЕСКОГО АЛГОРИТМА",
-             color="#DDEBFC",fontsize=10,fontweight="medium",zorder=2)
-    fig.text(.055,.876,title.upper(),color="white",fontsize=21,
-             fontweight="bold",zorder=2)
-    fig.text(.955,.893,"IAD  •  RSS + ЭЛИТИЗМ",color="#DDEBFC",
-             ha="right",fontsize=10,zorder=2)
-    fig.text(.059,.79,
-             "Влияние параметра на качество решений для трёх классов размерности",
-             color="#4B6787",fontsize=12)
-
-    ax=fig.add_axes([.084,.25,.677,.49])
+    fig, ax = plt.subplots(figsize=(12.8, 6.65), dpi=180, facecolor="white")
+    fig.subplots_adjust(left=.095, right=.985, top=.955, bottom=.265)
     ax.set_facecolor("#FFFFFF")
     ax.set_axisbelow(True)
-    for _,left,right,color,_ in BANDS:
-        ax.axvspan(left-.48,right+.48,color=color,alpha=.93,zorder=0)
-    ax.grid(axis="y",color="#D6E2EF",linewidth=.8,alpha=.9)
-    ax.set_yscale("symlog",linthresh=100,linscale=1.0,base=10)
-    # Lines run across all sampled dimensions; the visual X spacing is
-    # categorical and therefore its nonlinearity is declared in the caption.
-    max_value=0.0
-    for i,value in enumerate(_levels(parameter,mode)):
-        selected={(r["class"],int(r["size"])):r for r in rows
-                  if str(r["value"])==str(value)}
-        x=[];y=[]
-        for group,sizes in classes.items():
+
+    for _, left, right, color, _ in BANDS:
+        ax.axvspan(left - .48, right + .48, color=color, alpha=.89, zorder=0)
+    for boundary in (4.75, 10.25):
+        ax.axvline(boundary, color="#B8CBDE", lw=.9, ls=(0, (3, 4)),
+                   alpha=.75, zorder=1)
+    ax.grid(axis="y", color="#DCE5ED", linewidth=.85)
+    # Linear at 0..100%, log-like thereafter: keeps ALL size classes visible.
+    ax.set_yscale("symlog", linthresh=100, linscale=1.0, base=10)
+
+    observed_max = 0.0
+    for i, value in enumerate(_levels(parameter, mode)):
+        selected = {(r["class"], int(r["size"])): r for r in rows
+                    if str(r["value"]) == str(value)}
+        x, y = [], []
+        for group, sizes in classes.items():
             for size in sizes:
-                point=selected.get((group,size))
+                point = selected.get((group, size))
                 if point is not None:
-                    x.append(axis_position(group,size))
+                    x.append(axis_position(group, size))
                     y.append(float(point["mean_error_percent"]))
-        if not x: continue
-        max_value=max(max_value,*y)
-        ax.plot(x,y,color=COLORS[i],linewidth=2.45,alpha=.97,
-                label=str(value),solid_capstyle="round",zorder=4)
-        ax.scatter(x,y,color=COLORS[i],s=23,alpha=.36,zorder=5,
-                   edgecolors="white",linewidths=.45)
-    xtick_positions=[];tick_labels=[]
-    for group,sizes in classes.items():
+        if not x:
+            continue
+        observed_max = max(observed_max, *y)
+        ax.plot(x, y, color=COLORS[i], lw=2.75, alpha=.98,
+                label=str(value), solid_capstyle="round", zorder=4)
+        ax.scatter(x, y, s=29, color=COLORS[i], alpha=.43,
+                   edgecolors="white", lw=.55, zorder=5)
+
+    positions, labels = [], []
+    for group, sizes in classes.items():
         for size in sizes:
-            xtick_positions.append(axis_position(group,size))
-            tick_labels.append(str(size))
-    ax.set_xlim(-.54,15.54)
-    ax.set_xticks(xtick_positions)
-    ax.set_xticklabels(tick_labels,rotation=0,fontsize=8.3)
-    ax.tick_params(axis="x",pad=7,length=0,colors="#40546C")
-    ax.tick_params(axis="y",pad=6,length=0,colors="#40546C")
-    ticks=[0,20,50,100,300,1000,3000,5000,10000]
-    ax.set_yticks([t for t in ticks if t<=max(10000,max_value*1.6)])
-    ax.set_yticklabels([f"{t:,}".replace(","," ") for t in ticks if t<=max(10000,max_value*1.6)],
-                       fontsize=9)
-    ax.set_ylim(0,max(180,max_value*1.3))
-    ax.set_ylabel("Средняя ошибка относительно оптимума, %",fontsize=10,
-                  labelpad=12,color="#233E5A")
-    for spine in ax.spines.values(): spine.set_visible(False)
-    leg=ax.legend(title="Значение параметра",loc="upper left",ncol=2,
-                  fontsize=9.5,title_fontsize=10,framealpha=.96,
-                  facecolor="white",edgecolor="#D4DDE8",
-                  borderpad=.75,handlelength=2.7)
-    for t in leg.get_texts():t.set_color("#243B58")
-    for group,left,right,clr,label in BANDS:
-        ax.text((left+right)/2,-.155,label,
-                ha="center",fontsize=10,fontweight="bold",
-                color={"small":"#248673","medium":"#2464A0","large":"#B95D51"}[group],
+            positions.append(axis_position(group, size))
+            labels.append(str(size))
+    ax.set_xlim(-.55, 15.55)
+    ax.set_xticks(positions)
+    ax.set_xticklabels(labels, fontsize=9.4)
+    ax.tick_params(axis="x", pad=10, length=0, colors="#425870")
+    ax.tick_params(axis="y", pad=9, length=0, colors="#425870")
+
+    upper = max(190, observed_max * 1.18)
+    ax.set_ylim(0, upper)
+    ticks = [0, 20, 50, 100, 300, 1000, 3000, 5000, 10000, 20000]
+    ticks = [tick for tick in ticks if tick <= upper]
+    ax.set_yticks(ticks)
+    ax.set_yticklabels([f"{tick:,}".replace(",", " ") for tick in ticks],
+                       fontsize=10)
+    ax.set_ylabel("Отклонение от оптимума, % · symlog",
+                  fontsize=12.5, labelpad=13, color="#243D59")
+    ax.set_xlabel("Размерность матрицы n × n",
+                  fontsize=12.5, labelpad=48, color="#243D59")
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+
+    ax.legend(title="Значение параметра", loc="upper left",
+              ncol=2, fontsize=11, title_fontsize=11,
+              frameon=True, framealpha=.96,
+              facecolor="white", edgecolor="#CAD6E4",
+              borderpad=.75, labelspacing=.5,
+              handlelength=2.6)
+
+    for group, left, right, _, label in BANDS:
+        ax.text((left + right) / 2, -.14, label,
+                ha="center", va="top", fontsize=11.2,
+                fontweight="bold",
+                color={"small": "#248673", "medium": "#2464A0",
+                       "large": "#B95D51"}[group],
                 transform=ax.get_xaxis_transform())
 
-    # Side explanation based on the ACTUAL plotted series, no invented trend.
-    card=FancyBboxPatch((.785,.242),.188,.506,
-        boxstyle="round,pad=0.015,rounding_size=0.025",
-        transform=fig.transFigure,facecolor="#F8FBFE",
-        edgecolor="#D5E3F0",linewidth=1.3,zorder=1)
-    fig.patches.append(card)
-    fig.text(.808,.705,"КАК ЧИТАТЬ",color="#1C4B8D",
-             fontsize=14,fontweight="bold",va="top",zorder=2)
-    fig.text(.808,.648,"Ось X — размеры\nматриц всех классов:\n10–50, 100–500,\n1000–2000.",
-             color="#2E435C",fontsize=10.5,linespacing=1.45,va="top",zorder=2)
-    fig.text(.808,.462,"Ось Y — отклонение\nот точного решения.\nМеньше — лучше.",
-             color="#2E435C",fontsize=10.5,linespacing=1.48,va="top",zorder=2)
-    fig.text(.808,.344,"Каждая линия —\nодно значение\nпараметра.",
-             color="#008C80",fontsize=11,fontweight="bold",
-             linespacing=1.45,va="top",zorder=2)
-
-    fig.text(.063,.124,
-             f"Измерения: {sum(1 for r in rows if r['value']==str(_levels(parameter,mode)[0]))} размеров"
-             f"  •  Повторений: {repeats}"
-             f"  •  Исследуемый параметр: {unit}",
-             fontsize=9.3,color="#385674")
-    fig.text(.063,.084,
-             "Размерности сгруппированы с равной шириной классов; шкала Y — нелинейная.",
-             fontsize=9,color="#627B94")
-    fig.text(.063,.055,
-             "Точки и линии — реальные результаты. Никаких нарисованных или интерполированных измерений.",
-             fontsize=8.6,color="#627B94")
-    fig.text(.954,.06,"SMOKE — НЕ ДАННЫЕ 100–2000" if mode=="smoke" else "ГА • РЕАЛЬНЫЙ ЭКСПЕРИМЕНТ",
-             fontsize=8.6,color="#9AAFC4",ha="right")
-    output=Path(output)
-    output.mkdir(parents=True,exist_ok=True)
-    fig.savefig(output/f"{parameter}.png",dpi=175)
-    fig.savefig(output/f"{parameter}.svg")
+    output = Path(output)
+    output.mkdir(parents=True, exist_ok=True)
+    fig.savefig(output / f"{parameter}.png", dpi=180,
+                facecolor="white")
+    fig.savefig(output / f"{parameter}.svg", facecolor="white")
     plt.close(fig)
 
 

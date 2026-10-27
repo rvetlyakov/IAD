@@ -34,6 +34,20 @@ class DenseResearchTests(unittest.TestCase):
                 self.assertEqual(len(changes),1)
                 if name.startswith("migration_"):self.assertEqual(cfg.islands,4)
 
+    def test_hyperparameter_selection_ignores_noisy_wall_clock(self):
+        from ga_tune_classes import select_best
+        configs=[Config(generations=40),Config(generations=100)]
+        options=[
+            ("40", [{"gap_pct":10.0,"elapsed_seconds":100.}], configs[0]),
+            ("100",[{"gap_pct":9.9,"elapsed_seconds":10000.}], configs[1]),
+        ]
+        chosen=select_best(options)
+        self.assertEqual(chosen[0],"100")
+        self.assertAlmostEqual(chosen[1],9.9)
+        options[0][1][0]["elapsed_seconds"]=.001
+        options[1][1][0]["elapsed_seconds"]=.0001
+        self.assertEqual(select_best(options)[0],"100")
+
     def test_dense_smoke_uses_real_matrices_and_paired_seeds(self):
         with tempfile.TemporaryDirectory() as temp:
             rows=run_dense(temp,"smoke",1,2,700,["selection","islands"])

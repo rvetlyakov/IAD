@@ -1,0 +1,189 @@
+name: "GA final research — three classes, true 3-cycle tuning and fair islands"
+on:
+  push:
+    branches: ["fix/final-ga-audit-20261028"]
+    paths: [".github/workflows/ga-final-research.yml"]
+permissions:
+  contents: write
+concurrency:
+  group: ga-final-research-20261028
+  cancel-in-progress: false
+jobs:
+  tune:
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [small, medium, large]
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    env:
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install numerical dependencies
+        run: python -m pip install 'numpy>=2,<3' 'scipy>=1.14,<2' 'matplotlib>=3.9,<4'
+      - name: Select generations and local search independently on TRAIN
+        run: python -u lab1/staged_tuning.py --stage train --class-name ${{ matrix.group }} --workers 2
+      - name: Tune every active single-GA factor and islands separately on TRAIN
+        run: python -u lab1/staged_tuning.py --stage refine --class-name ${{ matrix.group }} --workers 2 --rounds 1
+      - name: Save actual training results whether complete or interrupted
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ga-tuned-${{ matrix.group }}
+          path: results/staged_tuning_v2/${{ matrix.group }}_*
+          if-no-files-found: warn
+          retention-days: 90
+
+  transfer:
+    needs: tune
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: python -m pip install 'numpy>=2,<3' 'scipy>=1.14,<2' 'matplotlib>=3.9,<4'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: ga-tuned-*
+          path: results/staged_tuning_v2
+          merge-multiple: true
+      - name: Test cross-class parameters only on target-class TRAIN
+        run: python -u lab1/staged_tuning.py --stage transfer --class-name all --workers 2
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ga-transferred-all
+          path: results/staged_tuning_v2
+          retention-days: 90
+
+  measure:
+    needs: transfer
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [small, medium, large]
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    env:
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: python -m pip install 'numpy>=2,<3' 'scipy>=1.14,<2' 'matplotlib>=3.9,<4'
+      - uses: actions/download-artifact@v4
+        with:
+          name: ga-transferred-all
+          path: results/staged_tuning_v2
+      - name: Scan every active factor, change one only, on 2 unseen seeds per size
+        run: python -u lab1/staged_tuning.py --stage ofat --class-name ${{ matrix.group }} --workers 2
+      - name: Validate optimized single and multiprocessing island GAs on HOLDOUT
+        run: python -u lab1/staged_tuning.py --stage holdout --class-name ${{ matrix.group }} --workers 2
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ga-measured-${{ matrix.group }}
+          path: results/staged_tuning_v2/${{ matrix.group }}_*
+          retention-days: 90
+
+  finalize:
+    needs: measure
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install plotting stack and Montserrat
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fonts-montserrat
+          python -m pip install 'numpy>=2,<3' 'scipy>=1.14,<2' 'matplotlib>=3.9,<4'
+      - uses: actions/download-artifact@v4
+        with:
+          name: ga-transferred-all
+          path: results/staged_tuning_v2
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: ga-measured-*
+          path: results/staged_tuning_v2
+          merge-multiple: true
+      - name: Plot all 20 parameters on the real 35-size continuous axis
+        run: python -u lab1/staged_charts.py --root results/staged_tuning_v2
+      - name: Reject missing experiments, fictitious x-values and unfair budgets
+        run: |
+          python - <<'PY'
+          import csv,json,sys
+          from pathlib import Path
+          sys.path.insert(0,"lab1")
+          from staged_tuning import CLASS_GRID,LEVELS,TRAIN,HOLDOUT,SEEDS
+          p=Path("results/staged_tuning_v2")
+          load=lambda name:list(csv.DictReader((p/name).open(encoding="utf-8")))
+          size_count=0;run_count=0
+          for group in CLASS_GRID:
+              ofat=load(f"{group}_ofat.csv")
+              train=load(f"{group}_train.csv")
+              hold=load(f"{group}_holdout.csv")
+              m=json.loads((p/f"{group}_frozen_baseline.json").read_text())
+              assert "island_settings" in m and "cross_class_transfer" in m
+              expected=len(CLASS_GRID[group])*len(SEEDS["survey"])*sum(len(x) for x in LEVELS.values())
+              assert len(ofat)==expected,(group,len(ofat),expected)
+              assert len(hold)==len(HOLDOUT[group])*len(SEEDS["holdout"])*3
+              assert {int(r["n"]) for r in ofat}==set(CLASS_GRID[group])
+              for r in ofat:
+                  a=json.loads(r["context_json"]); b=json.loads(r["settings_json"])
+                  assert {k for k in a if a[k]!=b[k]}<={r["parameter"]}
+                  assert int(r["population"])==b["population"]
+              seeds=lambda data:{r["matrix_seed"] for r in data}
+              assert not (seeds(train)&seeds(ofat) or seeds(train)&seeds(hold) or seeds(ofat)&seeds(hold))
+              for n in HOLDOUT[group]:
+                  for repeat in range(len(SEEDS["holdout"])):
+                      pair=[r for r in hold if int(r["n"])==n and int(r["repeat"])==repeat]
+                      assert {r["variant"] for r in pair}=={"before","after","after_islands"}
+                      a=next(r for r in pair if r["variant"]=="after")
+                      b=next(r for r in pair if r["variant"]=="after_islands")
+                      for fld in ("population","generations","local_calls","exact","matrix_seed","ga_seed"):
+                          assert a[fld]==b[fld],(group,n,repeat,fld)
+              size_count+=len(CLASS_GRID[group]);run_count+=len(ofat)
+          assert size_count==46
+          assert len(list((p/"plots").glob("*.png")))==2*len(LEVELS)
+          assert len(list((p/"plots").glob("*.svg")))==2*len(LEVELS)
+          print("PASS full 20-factor OFAT all 3 classes, 46 measured matrix sizes,",
+                run_count,"real trials, untouched HOLDOUT and fair islands")
+          PY
+      - name: Publish genuine new measurements and charts to audit branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f results/staged_tuning_v2
+          git commit -m "results: finish full three-class 3-cycle OFAT, holdout and 40 measured charts"
+          git pull --rebase origin fix/final-ga-audit-20261028
+          git push origin HEAD:fix/final-ga-audit-20261028
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ga-final-defense-all-classes
+          path: results/staged_tuning_v2
+          retention-days: 90

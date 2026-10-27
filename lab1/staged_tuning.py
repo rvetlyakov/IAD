@@ -1,6 +1,6 @@
 """Two-stage, leakage-resistant GA tuning followed by strict one-factor plots.
 
-Stage A: evaluate a G x K factorial on TRAIN matrices and choose a BASELINE.
+Stage A: choose generations, then local candidates, in two one-factor TRAIN scans.
 Stage B: freeze that selected baseline, change ONE parameter at a time on
 distinct SURVEY matrices, and store all source parameters/seed.
 Stage C: evaluate the chosen baseline on INDEPENDENT HOLDOUT matrices.

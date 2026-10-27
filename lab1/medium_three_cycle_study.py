@@ -1,6 +1,6 @@
 """Reproducible three-cycle training, controlled OFAT and size sweep.
 
-No fabricated samples: charts only connect actually measured points with PCHIP.
+No fabricated samples: charts only connect actually measured points, without interpolation.
 Training uses separate seeds from SURVEY and HOLDOUT. The original GA
 operators remain available (cycle3=False).
 """
@@ -8,7 +8,6 @@ from __future__ import annotations
 import argparse,csv,json
 from pathlib import Path
 from dataclasses import asdict,replace
-from collections import defaultdict
 from statistics import mean
 import numpy as np
 from scipy.optimize import linear_sum_assignment

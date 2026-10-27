@@ -58,7 +58,9 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           import csv,json
-          from lab1.staged_tuning import LEVELS,SEEDS,CLASS_GRID
+          import sys
+          sys.path.insert(0, 'lab1')
+          from staged_tuning import LEVELS,SEEDS,CLASS_GRID
           root=Path('results/staged_tuning_v2')
           load=lambda p:list(csv.DictReader((root/p).open()))
           train=load('medium_train.csv')

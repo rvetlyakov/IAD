@@ -20,23 +20,24 @@ import numpy as np
 from scipy.optimize import linear_sum_assignment
 from hybrid_ga import Config, run
 
+# Actual non-overlapping measured sizes, with NO transition category.
 CLASS_GRID={
  "small":tuple(range(10,100,10)),
- "medium":tuple(range(100,501,25)),
- "large":tuple(range(1000,2001,125)),
+ "medium":tuple(range(100,500,25)),
+ "large":(500,)+tuple(range(550,1000,50))+tuple(range(1000,2001,100)),
 }
-# Assignment: small 2–99, medium 100–500, transition 501–999, large 1000–2000.
+# Class boundaries: [2,100), [100,500), [500,2000].
 TRAIN={"small":(20,60,90),"medium":(150,300,450),
-       "large":(1000,1250,1500,2000)}
+       "large":(550,750,950,1250,1750)}
 HOLDOUT={"small":(30,70),"medium":(200,400),
-         "large":(1125,1625,1875)}
+         "large":(600,800,1100,1600,1900)}
 GENERATIONS={
  "small":(100,250,500),
  "medium":(100,250,500,750,1000),
  "large":(250,500,750,1000),
 }
 CANDIDATES=(8,16,32)
-SEEDS={"train":(33,44),"survey":(55,),"holdout":(77,88,99)}
+SEEDS={"train":(33,44),"survey":(55,66),"holdout":(77,88,99)}
 LEVELS={
  "population":(60,120,240),
  "generations":(100,250,500,750,1000),
@@ -55,7 +56,9 @@ LEVELS={
  "migration_interval":(5,15,30,50),
  "migration_pct":(0.,.05,.1,.2),
  "adaptive_long_prob":(0.,.05,.15),
- "adaptive_long_pct":(5.,20.,40.)
+ "adaptive_long_pct":(5.,20.,40.),
+ "cycle3":(False,True),
+ "cycle3_passes":(1,2,3),
 }
 # Only scan active variants: meaningless inactive parameters are excluded.
 ACTIVE_CONTEXT={
@@ -64,7 +67,8 @@ ACTIVE_CONTEXT={
  "migration_pct":{"islands":4},
  "adaptive_long_prob":{"adaptive":True},
  "adaptive_long_pct":{"adaptive":True},
- "adaptive_horizon":{"adaptive":True}
+ "adaptive_horizon":{"adaptive":True},
+ "cycle3_passes":{"cycle3":True}
 }
 
 def _seed(n,repeat,stage):
@@ -90,9 +94,8 @@ def read(path):
 
 def class_for(n):
     if 2<=n<100:return "small"
-    if 100<=n<=500:return "medium"
-    if 501<=n<1000:return "transition"
-    if 1000<=n<=2000:return "large"
+    if 100<=n<500:return "medium"
+    if 500<=n<=2000:return "large"
     raise ValueError(f"n outside research classes: {n}")
 
 def evaluate(a,opt,cfg,seed,workers):
@@ -107,54 +110,61 @@ def starter(group,source):
     return Config(**data[group]["single"])
 
 def train(group,root,source,workers=2):
-    """Compare all G and K pairs with identical test instances, seeds, and
-    all OTHER knobs fixed; choose after aggregating ALL training matrices.
+    """Strict one-factor training: choose G with K fixed, then K with G fixed.
+
+    Every comparison is on the same TRAIN matrices and random seeds; no
+    two-dimensional grid is used to choose hyperparameters.
     """
     if group not in TRAIN:raise ValueError(group)
     root=Path(root);root.mkdir(parents=True,exist_ok=True)
     base=starter(group,source)
     records=[]
-    for n in TRAIN[group]:
-        for repeat,token in enumerate(SEEDS["train"]):
-            mat_seed=_seed(n,token,"train")
-            a,opt=problem(n,mat_seed)
-            ga_seed=mat_seed+9
-            for gens in GENERATIONS[group]:
-                for k in CANDIDATES:
-                    cfg=replace(base,generations=gens,local_candidates=k)
+    def measure_candidates(parameter,values,context):
+        ranked=[]
+        for value in values:
+            cfg=replace(context,**{parameter:value})
+            assert {key for key in asdict(context)
+                    if getattr(cfg,key)!=getattr(context,key)}<={parameter}
+            errors=[];times=[]
+            for n in TRAIN[group]:
+                for repeat,token in enumerate(SEEDS["train"]):
+                    mat_seed=_seed(n,token,"train")
+                    a,opt=problem(n,mat_seed)
+                    ga_seed=mat_seed+9
                     result,err=evaluate(a,opt,cfg,ga_seed,workers)
+                    errors.append(err);times.append(result["seconds"])
                     records.append({
-                      "class_name":group,"n":n,"repeat":repeat,
-                      "generations":gens,"local_candidates":k,
-                      "cost":result["cost"],"exact":opt,"error_pct":err,
-                      "seconds":result["seconds"],
-                      "matrix_seed":mat_seed,"ga_seed":ga_seed,
-                      "settings_json":json.dumps(asdict(cfg),sort_keys=True)
-                    })
-        save(root/f"{group}_train.csv",records)
-        print(f"TRAIN {group} n={n}, observations={len(records)}",flush=True)
-    ranked=[]
-    for gens in GENERATIONS[group]:
-        for k in CANDIDATES:
-            observed=[r for r in records
-                      if r["generations"]==gens and r["local_candidates"]==k]
-            ranked.append({"generations":gens,"local_candidates":k,
-                           "mean_error_pct":mean(r["error_pct"] for r in observed),
-                           "mean_seconds":mean(r["seconds"] for r in observed),
-                           "samples":len(observed)})
-    ranked.sort(key=lambda r:(r["mean_error_pct"],r["mean_seconds"]))
-    save(root/f"{group}_grid_rankings.csv",ranked)
-    winner=ranked[0]
-    tuned=replace(base,generations=int(winner["generations"]),
-                  local_candidates=int(winner["local_candidates"]))
+                        "class_name":group,"n":n,"repeat":repeat,
+                        "parameter":parameter,"value":str(value),
+                        "cost":result["cost"],"exact":opt,"error_pct":err,
+                        "seconds":result["seconds"],"matrix_seed":mat_seed,
+                        "ga_seed":ga_seed,
+                        "context_json":json.dumps(asdict(context),sort_keys=True),
+                        "settings_json":json.dumps(asdict(cfg),sort_keys=True)})
+            ranked.append(dict(parameter=parameter,value=value,
+                               mean_error_pct=mean(errors),
+                               mean_seconds=mean(times),samples=len(errors)))
+        ranked.sort(key=lambda x:(x["mean_error_pct"],x["mean_seconds"]))
+        return ranked
+
+    first=measure_candidates("generations",GENERATIONS[group],base)
+    after_g=replace(base,generations=int(first[0]["value"]))
+    second=measure_candidates("local_candidates",CANDIDATES,after_g)
+    tuned=replace(after_g,local_candidates=int(second[0]["value"]))
+    rankings=first+second
+    save(root/f"{group}_train.csv",records)
+    save(root/f"{group}_train_rankings.csv",rankings)
+    winner={"generations":tuned.generations,
+            "local_candidates":tuned.local_candidates,
+            "mean_error_pct":second[0]["mean_error_pct"]}
     (root/f"{group}_frozen_baseline.json").write_text(
-       json.dumps({"phase":"selected exclusively on training matrices",
+       json.dumps({"phase":"trained exclusively on training matrices",
          "class":group,"starting_settings":asdict(base),
          "selected_settings":asdict(tuned),"winner":winner,
          "train_sizes":TRAIN[group],"train_repeats":len(SEEDS["train"]),
-         "training_grid":ranked},indent=2,ensure_ascii=False),encoding="utf-8")
+         "method":"sequential fixed-context one-parameter-at-a-time (G, then K)",
+         "training_rankings":rankings},indent=2,ensure_ascii=False),encoding="utf-8")
     return winner
-
 
 def refine(group,root,workers=2,rounds=1,parameters=None):
     """Coordinate search on TRAIN data only. Each comparison changes one
@@ -166,12 +176,12 @@ def refine(group,root,workers=2,rounds=1,parameters=None):
     current=Config(**meta["selected_settings"])
     order=list(parameters) if parameters is not None else [
       "selection","rank_power","adaptive","adaptive_horizon",
-      "mutation_prob","inversion_pct",
-      "elitism","population","local_every","local_candidates",
-      "local_passes","local_top","generations"]
+      "adaptive_long_prob","adaptive_long_pct",
+      "mutation_prob","inversion_pct","elitism","population",
+      "local_every","local_candidates","local_passes","local_top",
+      "cycle3","cycle3_passes","generations"]
     history=[]
-    valid=set(LEVELS)-{"islands","migration_interval","migration_pct",
-                       "adaptive_long_prob","adaptive_long_pct"}
+    valid=set(LEVELS)-{"islands","migration_interval","migration_pct"}
     if any(p not in valid for p in order):raise ValueError("Unsupported tuning factor")
     def score(parameter,candidate,baseline,phase):
         errors=[];times=[]
@@ -196,7 +206,10 @@ def refine(group,root,workers=2,rounds=1,parameters=None):
         for parameter in order:
             if parameter=="rank_power" and current.selection!="rank":
                 continue
-            if parameter=="adaptive_horizon" and not current.adaptive:
+            if parameter in ("adaptive_horizon","adaptive_long_prob",
+                              "adaptive_long_pct") and not current.adaptive:
+                continue
+            if parameter=="cycle3_passes" and not current.cycle3:
                 continue
             candidates=LEVELS[parameter]
             context=current

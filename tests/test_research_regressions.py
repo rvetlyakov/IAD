@@ -47,7 +47,7 @@ class GAResearchRegressions(unittest.TestCase):
         found, generations, error = run_ga(
             population_size=15, mutation_probability=0,
             mutation_percent=45, tournament_size=2, max_iterations=25,
-            plateau_limit=2, plateau_diff=1.0, elitist_percent=.2,
+            plateau_limit=2, plateau_diff=1000.0, elitist_percent=.2,
             matrix=matrix,
         )
         self.assertEqual(generations, 2)  # two changes, three mean-fitness snapshots

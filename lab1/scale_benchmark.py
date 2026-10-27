@@ -89,7 +89,18 @@ def assignment_cost(matrix, vector) -> int:
     return int(np.sum(matrix[rows, vector], dtype=np.int64))
 
 
+def relative_gap(found_cost: int, reference_cost: int) -> float:
+    """Zero is a valid optimum; non-optimal relative gap is then infinite."""
+    if reference_cost == 0:
+        return 0.0 if found_cost == 0 else float("inf")
+    return float((found_cost - reference_cost) / reference_cost)
+
+
 def exact_cost(matrix: np.ndarray) -> int:
+    """Exact assignment cost for Python nested lists or NumPy square arrays."""
+    matrix = np.asarray(matrix, dtype=np.int64)
+    if matrix.ndim != 2 or matrix.shape[0] != matrix.shape[1]:
+        raise ValueError("Expected a square cost matrix")
     rows, cols = linear_sum_assignment(matrix)
     return int(np.sum(matrix[rows, cols], dtype=np.int64))
 
@@ -260,7 +271,7 @@ def evaluate_pair(matrix, common_settings: dict, island_settings: dict,
             "generations": result.generations,
             "exact_cost": exact,
             "ga_cost": result.cost,
-            "relative_gap": float((result.cost - exact) / exact),
+            "relative_gap": relative_gap(result.cost, exact),
             "elapsed_seconds": result.elapsed_seconds,
             "workers": result.workers,
             "parallel": result.parallel,
@@ -284,7 +295,7 @@ def _mean_gap(matrix, reference, params, seed, workers, repeats):
     for run_index in range(repeats):
         result = run_variant(matrix, params, seed=seed + 37 * run_index,
                              workers=workers)
-        gaps.append((result.cost - reference) / reference)
+        gaps.append(relative_gap(result.cost, reference))
         runtimes.append(result.elapsed_seconds)
     return statistics.mean(gaps), statistics.mean(runtimes)
 

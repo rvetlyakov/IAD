@@ -36,7 +36,7 @@ matrices = {
 }
 
 NUM_ISLANDS = 3  # Количество независимых популяций (островов)
-POPULATION_SIZE = 50  # Размер каждой популяции
+POPULATION_SIZE = 150  # Общее число особей ВСЕХ островов (50 × 3)
 MUTATION_PROBABILITY = 0.7
 MUTATION_PERCENT = 30 # процент от длины элемента вектора, который переворачивается в ходе мутации
 TOURNAMENT_SIZE = 2
@@ -47,6 +47,18 @@ ELITIST_PERCENT = 0.2
 
 MIGRATION_INTERVAL = 10  # Каждые 10 поколений происходит обмен
 MIGRATION_PERCENT = 10  # Передаем 10% лучших особей (5 штук при размере 50)
+
+def weighted_population_fitness(islands):
+    """Mean fitness of *all individuals*, not mean of island means.
+
+    When total population does not divide evenly by island count, islands have
+    different sizes. An unweighted mean of means is then mathematically wrong.
+    """
+    total = sum(len(ga.population) for ga in islands)
+    if total <= 0:
+        raise ValueError("No individuals across island populations")
+    return sum(ga.fitness() * len(ga.population) for ga in islands) / total
+
 
 def run_ga_with_migrations(
         population_size,
@@ -62,108 +74,65 @@ def run_ga_with_migrations(
         elitist_percent,
         matrix
 ):
-    """Функция ГА с миграциями.\n
-**Параметры**:
-population_size - размер популяции \n
-mutation_probability - вероятность мутации \n
-mutation_percent - процент от длины элемента вектора, который переворачивается в ходе мутации\n
-tournament_size - количество участников турнира\n
-max_iterations - максимальное количество итераций\n
-plateau_limit - длина участка, при достижении постоянства на котором, мы останавливаем алгоритм\n
-plateau_diff - максимальное колебание целевой функции, при которой участок считается постоянным\n
-migration_interval - периодичность миграции\n
-migration_percent - процент прибавления размера популяции острова после миграции\n
-num_islands - количество островов\n
-matrix - матрица, для которой требуется найти решение\n\n
-**Возвращает**: кортеж (found_best, iteration, distance)\n
-found_best - boolean - нашел ли алгоритм оптимальное решение\n
-iteration - integer - сколько итераций потребовалось для нахождения решения \n
-distance - integer - разность между нашим и оптимальным значением."""
-    
-    # 1. Инициализируем список независимых островов-популяций
+    """Sequential island demonstrator using a **total** population budget.
+
+    total population_size is split as evenly as possible among num_islands.
+    This module is a SEQUENTIAL teaching example; for ACTUAL multiprocessing
+    and equal-generation comparison use scale_benchmark.run_variant().
+    Both preserve best visited chromosome cost, including lost mutants.
+    """
+    if population_size < 1 or num_islands < 1 or population_size < num_islands:
+        raise ValueError("Need at least one individual per island")
+    if migration_interval < 1:
+        raise ValueError("migration_interval must be positive")
+    if not 0 <= migration_percent <= 100:
+        raise ValueError("migration_percent must be in [0, 100]")
+    per_island, extra = divmod(population_size, num_islands)
+    sizes = [per_island + (i < extra) for i in range(num_islands)]
+
     islands = [
-        Employees(n=population_size, 
-                  mutation_probability=mutation_probability, 
-                  matrix=matrix, 
-                  mutation_percent=mutation_percent, 
+        Employees(n=size,
+                  mutation_probability=mutation_probability,
+                  matrix=matrix,
+                  mutation_percent=mutation_percent,
                   elitist_percent=elitist_percent,
                   t=tournament_size)
-        for _ in range(num_islands)
+        for size in sizes
     ]
 
+    best_so_far = min(ga.get_best()[1] for ga in islands)
     iteration = 0
-    fitness_history = []
+    fitness_history = [weighted_population_fitness(islands)]
 
-    # === ГЛАВНЫЙ ЦИКЛ ЭВОЛЮЦИИ ===
     while iteration < max_iterations:
-
-        # Шаг А. Независимая эволюция на каждом острове
         for ga in islands:
-            ga.mutate()  # Мутация
-            ga.select()  # Отбор лучших
+            ga.mutate()
+            best_so_far = min(best_so_far, ga.get_best()[1])
+            ga.select()
+            best_so_far = min(best_so_far, ga.get_best()[1])
         iteration += 1
 
-        # Шаг Б. Миграция особей между островами (каждые migration_interval поколений)
-        if iteration > 0 and iteration % migration_interval == 0:
-            # Собираем мигрантов (лучших особей) со всех островов в памяти
+        if num_islands > 1 and iteration % migration_interval == 0:
             migrants_from = [ga.get_top(migration_percent) for ga in islands]
-
-            # Передаем по схеме "Кольцо"
             for i in range(num_islands):
-                next_island_idx = (i + 1) % num_islands
-                # Остров (i) отдает своих мигрантов острову (next_island_idx)
-                islands[next_island_idx].extend_population(migrants_from[i])
-
-            # Сразу после миграции принудительно делаем отбор (select),
-            # чтобы ужать расширившиеся популяции обратно до population_size
+                islands[(i + 1) % num_islands].extend_population(migrants_from[i])
+            best_so_far = min(best_so_far, *(ga.get_best()[1] for ga in islands))
             for ga in islands:
                 ga.select()
+                best_so_far = min(best_so_far, ga.get_best()[1])
 
-        # Шаг В. Считаем среднюю общую приспособленность по всем островам для проверки плато
-        total_islands_fitness = sum(ga.fitness() for ga in islands) / num_islands
-        fitness_history.append(total_islands_fitness)
+        fitness_history.append(weighted_population_fitness(islands))
         if plateau_reached(fitness_history, plateau_limit, plateau_diff):
             break
 
-    # else:
-        # print(f"-> Достигнут лимит в {max_iterations} итераций.")
-
-    # 2. Ищем наилучшее решение среди абсолютно всех островов
-    best_vectors = []
-    best_costs = []
-    for ga in islands:
-        v, c = ga.get_best()
-        best_vectors.append(v)
-        best_costs.append(c)
-
-    min_ga_cost = min(best_costs)
-    best_island_idx = best_costs.index(min_ga_cost)
-    ga_vector = best_vectors[best_island_idx]
-
-    # === НАХОЖДЕНИЕ ЭТАЛОНА ЧЕРЕЗ ПЕРЕБОР ===
-    n_size = len(matrix)
-    best_exact_cost = float('inf')
-    best_exact_vector = None
-
-    _, best_exact_vector = linear_sum_assignment(matrix)
-    best_exact_vector = [int(i) for i in best_exact_vector]
-    best_exact_cost = sum(matrix[i][best_exact_vector[i]] for i in range(len(matrix)))
-    
-    # Печатаем результаты сравнения
-    # print(f"Результат Генетического Алгоритма (Лучший остров):")
-    # print(f"  - Распределение задач (индексы): {ga_vector}")
-    # print(f"  - Итоговая стоимость: {min_ga_cost}")
-
-    # print(f"Результат точного метода (Полный перебор):")
-    # print(f"  - Распределение задач (индексы): {list(best_exact_vector)}")
-    # print(f"  - Итоговая стоимость: {best_exact_cost}")
-
-    if min_ga_cost == best_exact_cost:
-        # print("Мультипопуляционный алгоритм нашел точное решение.")
-        return (True, iteration, 0)
-    else:
-        # print(f"Найдено субоптимальное решение. Разница с идеалом: {min_ga_cost - best_exact_cost}")
-        return (False, iteration, (min_ga_cost - best_exact_cost) / best_exact_cost)
+    row_ind, col_ind = linear_sum_assignment(matrix)
+    exact = sum(matrix[int(i)][int(j)] for i, j in zip(row_ind, col_ind))
+    if exact <= 0:
+        # A zero-cost optimum is valid. The absolute gap is meaningful here;
+        # a relative gap with zero denominator is mathematically undefined.
+        return (best_so_far == exact, iteration, 0 if best_so_far == 0 else float("inf"))
+    return (best_so_far == exact, iteration,
+            (best_so_far - exact) / exact)
 
 
 if __name__ == "__main__":

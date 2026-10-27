@@ -41,9 +41,16 @@ class Employee( Vector ):
         return Employee(result, self.length, self.matrix, self.mutation_percent)
 
     def fitness(self, vector): # pyright: ignore[reportIncompatibleMethodOverride]
-        f = 1 / sum(self.matrix[i][self.vector[i]] for i in range(self.length))
-        self.fit = f
-        return f
+        """Evaluate the chromosome passed in, not a stale instance vector.
+
+        Zero-cost assignments are valid; map them to large finite fitness
+        so RSS remains numerically defined. Costs below zero are unsupported
+        by this non-negative assignment-cost formulation.
+        """
+        cost = sum(self.matrix[i][vector[i]] for i in range(self.length))
+        if cost < 0:
+            raise ValueError("Assignment costs must sum to a non-negative value")
+        return 1.0 / max(float(cost), 1e-12)
 
 
     
@@ -60,15 +67,31 @@ class Employees( Population ):
     elitist_percent - процент особей, который сохраняется"""
 
     def __init__(self, n, mutation_probability, matrix, mutation_percent, elitist_percent, t=2):
+        # Invalid hyperparameters must never silently produce misleading
+        # experiments (e.g. probability 1.3 behaving exactly like 1.0).
+        if not isinstance(n, int) or n < 1:
+            raise ValueError("Population size must be a positive integer")
+        if not math.isfinite(mutation_probability) or not 0 <= mutation_probability <= 1:
+            raise ValueError("mutation_probability must be finite and within [0, 1]")
+        if not math.isfinite(mutation_percent) or not 0 < mutation_percent <= 100:
+            raise ValueError("mutation_percent must be finite and within (0, 100]")
+        if not math.isfinite(elitist_percent) or not 0 <= elitist_percent <= 1:
+            raise ValueError("elitist_percent must be finite and within [0, 1]")
+        try:
+            length = len(matrix)
+            square = length >= 1 and all(len(row) == length for row in matrix)
+        except (TypeError, ValueError):
+            square = False
+        if not square:
+            raise ValueError("Expected a non-empty square assignment-cost matrix")
         self.matrix = matrix
         self.population = []
         self.n = n
         self.mutation_probability = mutation_probability
-        self.form_first_population(mutation_percent)
         self.elitist_percent = elitist_percent
-        # self.matrix = matrix Поменял местами, так как суперкласс вызывает form_first_population, который вызывает self.matrix
-        self.t = t
+        self.t = t  # Legacy API: tournament selection is no longer used.
         self.mutation_percent = mutation_percent
+        self.form_first_population(mutation_percent)
         
 
     def form_first_population(self, mutation_percent):

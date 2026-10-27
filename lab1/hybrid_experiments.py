@@ -29,9 +29,11 @@ SWEEPS={
  "elitism":[("0%",{"elitism":0}),("10%",{"elitism":.1}),("20%",{"elitism":.2}),("40%",{"elitism":.4})],
  "mutation_probability":[("0.3",{"mutation_prob":.3}),("0.7",{"mutation_prob":.7}),("1.0",{"mutation_prob":1.0})],
  "migration_interval":[("5",{"islands":4,"migration_interval":5}),("25",{"islands":4,"migration_interval":25}),("50",{"islands":4,"migration_interval":50})],
- "migration_fraction":[("5%",{"islands":4,"migration_pct":.05}),("10%",{"islands":4,"migration_pct":.10}),("20%",{"islands":4,"migration_pct":.20})]
+ "migration_fraction":[("5%",{"islands":4,"migration_pct":.05}),("10%",{"islands":4,"migration_pct":.10}),("20%",{"islands":4,"migration_pct":.20})],
+ "local_candidates":[("4",{"local_candidates":4}),("8",{"local_candidates":8}),("16",{"local_candidates":16}),("32",{"local_candidates":32})]
 }
 COLORS=["#1d4f91","#258b7b","#e08449","#88478e","#bd6259"]
+DISPLAY={"off":"без поиска","every 5":"каждые 5","every 10":"каждые 10","every 25":"каждые 25","rank 1":"ранг 1","rank 2":"ранг 2","rank 4":"ранг 4","adaptive":"адаптивная"}
 
 def save_csv(path,rows):
     if not rows:return
@@ -86,7 +88,7 @@ def draw_all(summary,out,sizes):
                 yy=[q[metric] for q in subset]
                 if not yy:continue
                 ax.plot(xx,yy,lw=2.65,color=COLORS[index],
-                        label=label,solid_capstyle="round")
+                        label=DISPLAY.get(label,label),solid_capstyle="round")
                 ax.scatter(xx,yy,s=23,color=COLORS[index],alpha=.35,zorder=5)
             ax.set_xlim(-.45,17.45)
             ax.set_xticks([pos[g,n] for g in sizes for n in sizes[g]])

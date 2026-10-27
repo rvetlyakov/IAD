@@ -58,8 +58,8 @@ class OFATProtocolTests(unittest.TestCase):
             parameter,klass,size,repeat=key
             with self.subTest(key=key):
                 self.assertEqual(len(cases),len(HYPERPARAMETERS[parameter]))
-                self.assertEqual({str(x) for x in HYPERPARAMETERS[parameter]},
-                                 {str(float(r["value"])) for r in cases})
+                self.assertEqual({float(x) for x in HYPERPARAMETERS[parameter]},
+                                 {float(r["value"]) for r in cases})
                 for common in ("matrix_seed","ga_seed","exact_cost"):
                     self.assertEqual(len({r[common] for r in cases}),1)
                 self.assertEqual(int(cases[0]["size"]),size)

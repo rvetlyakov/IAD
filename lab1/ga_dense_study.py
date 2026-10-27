@@ -104,6 +104,8 @@ def plot(summary,path,mode="full",curve="pchip"):
     xs=positions(groups)
     dest=Path(path);dest.mkdir(parents=True,exist_ok=True)
     for param,levels in FACTORS.items():
+        if not any(row["factor"]==param for row in summary):
+            continue
         for metric,suffix in (("mean_gap","error"),("mean_seconds","time")):
             fig,ax=plt.subplots(figsize=(13.4,7.1),dpi=180,facecolor="white")
             fig.subplots_adjust(left=.10,right=.98,top=.96,bottom=.28)

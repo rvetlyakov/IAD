@@ -1,4 +1,4 @@
-name: Hybrid GA: real full-size sweep and graphs
+name: "Hybrid GA: real full-size sweep and graphs"
 on:
   push:
     branches:

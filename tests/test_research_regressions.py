@@ -87,6 +87,19 @@ class GAResearchRegressions(unittest.TestCase):
         self.assertEqual(generations, 1)
         self.assertEqual(gap, float("inf"))
 
+    def test_scale_benchmark_zero_optimum_uses_finite_or_infinite_gap(self):
+        from scale_benchmark import evaluate_pair, BASELINE
+        matrix = [[0, 100], [100, 0]]
+        settings = dict(BASELINE, total_population=2, max_generations=1,
+                        mutation_probability=0.0, elitist_percent=0.0)
+        rows = evaluate_pair(matrix, settings,
+                             dict(settings, num_islands=2),
+                             seed=3, workers=2)
+        self.assertEqual(len(rows), 2)
+        self.assertEqual({r["exact_cost"] for r in rows}, {0})
+        self.assertTrue(all(r["relative_gap"] in (0.0, float("inf"))
+                            for r in rows))
+
     def test_plateau_sweep_contains_strict_thresholds(self):
         actual = HYPERPARAMETERS["plateau_diff"]
         self.assertIn(0.0, actual)

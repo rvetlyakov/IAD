@@ -1,0 +1,62 @@
+name: Calibrated mean-fitness plateau replay on real matrices
+on:
+  push:
+    branches:
+      - "fix/ga-methodology-and-core-20261027"
+    paths:
+      - ".github/workflows/ga-plateau-trace-once.yml"
+permissions:
+  contents: write
+jobs:
+  real-trajectory-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Scientific dependencies and typeface
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y fonts-montserrat
+          python -m pip install 'numpy>=2.1,<3' 'scipy>=1.14,<2' 'matplotlib>=3.9,<4'
+      - name: Prove replay agrees with direct stopping
+        run: python -m unittest discover -s tests -p test_plateau_trace.py -v
+      - name: Record full real GA histories and replay selected plateau settings
+        run: |
+          python -u lab1/plateau_trace_study.py --mode full --repeats 3 --seed 20261030 --output-dir results/plateau_trace_20261027
+      - name: Verify saved trajectories, counterfactuals and graphics
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import csv,json
+          p=Path('results/plateau_trace_20261027')
+          meta=json.loads((p/'metadata.json').read_text())
+          assert meta['mode']=='full' and meta['repeats']==3
+          assert meta['source']=='full-run trajectory replay'
+          assert meta['size_classes']['large']==[1000,1250,1500,1750,2000]
+          raw=list(csv.DictReader((p/'raw.csv').open()))
+          trace=list(csv.DictReader((p/'trajectories.csv').open()))
+          assert len(trace)==15*3*41,(len(trace),len(raw))
+          assert len(raw)==15*3*(4+7),len(raw)
+          assert all('settings_json' in r for r in raw)
+          assert len(list((p/'plots').glob('*.png')))==4
+          assert len(list((p/'plots').glob('*.svg')))==4
+          print('PASS: 45 real trajectories; 495 paired parameter outcomes')
+          PY
+      - name: Commit measured histories and calibrated graphs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f results/plateau_trace_20261027/
+          git commit -m "results: 45 real GA traces and 495 exact plateau replay evaluations"
+          git push origin HEAD:fix/ga-methodology-and-core-20261027
+      - name: Retain artifacts when interrupted or successful
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ga-plateau-calibrated-traces
+          path: results/plateau_trace_20261027/
+          if-no-files-found: warn
+          retention-days: 90

@@ -1,0 +1,68 @@
+name: Hybrid GA: real full-size sweep and graphs
+on:
+  push:
+    branches:
+      - "feat/hybrid-ga-experiments-20261027"
+    paths:
+      - ".github/workflows/ga-hybrid-research-once.yml"
+permissions:
+  contents: write
+jobs:
+  experiment:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Install matrix and plotting dependencies
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y fonts-montserrat
+          python -m pip install 'numpy>=2.1,<3' 'scipy>=1.14,<2' 'matplotlib>=3.9,<4'
+      - name: Verify module and core regression tests
+        run: |
+          python -m compileall -q lab1/hybrid_ga.py lab1/hybrid_experiments.py tests/test_hybrid_ga.py
+          python -m unittest discover -s tests -p test_hybrid_ga.py -v
+      - name: Run 14 sampled dimensions, all experimental factors, diagonal controls
+        env:
+          OPENBLAS_NUM_THREADS: '1'
+        run: |
+          python -u lab1/hybrid_experiments.py --repeats 1 --workers 2 --seed 20261101 --output results/hybrid_ga_study --diagonal
+      - name: Validate observations and exact comparison
+        run: |
+          python - <<'PY'
+          import csv,json
+          from pathlib import Path
+          d=Path('results/hybrid_ga_study')
+          m=json.loads((d/'metadata.json').read_text())
+          r=list(csv.DictReader((d/'raw.csv').open()))
+          diag=list(csv.DictReader((d/'diagonal.csv').open()))
+          assert len(r)==14*37, len(r)
+          assert len(diag)==4*2*3
+          assert set(m['sizes']['medium'])=={100,200,300,400,500}
+          assert set(m['sizes']['large'])=={1000,1250,1500,1750,2000}
+          assert len(list((d/'plots').glob('*.png')))==20
+          assert len(list((d/'plots').glob('*.svg')))==20
+          for row in r:
+              assert float(row['error_percent'])>=-1e-9
+              setting=json.loads(row['settings_json'])
+              assert int(row['total_population'])==setting['population']
+              assert int(row['num_islands'])==setting['islands']
+          print('PASS: 518 real experiments, 24 diagonal tests, 40 clean plots')
+          PY
+      - name: Commit genuine measured CSV and graphs into feature branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -f results/hybrid_ga_study/
+          git commit -m "results: full 14-size hybrid GA sweeps and 40 clean graphs"
+          git push origin HEAD:feat/hybrid-ga-experiments-20261027
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hybrid-GA-full-measured-results
+          path: results/hybrid_ga_study/
+          if-no-files-found: ignore
+          retention-days: 90

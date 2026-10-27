@@ -1,0 +1,62 @@
+{
+  "mode": "full",
+  "seed": 20261106,
+  "repeats": 2,
+  "dimensions": {
+    "small": [
+      10,
+      20,
+      30,
+      40,
+      50
+    ],
+    "medium": [
+      100,
+      140,
+      180,
+      220,
+      260,
+      300,
+      340,
+      380,
+      420,
+      460,
+      500
+    ],
+    "transition": [
+      550,
+      600,
+      650,
+      700,
+      750,
+      800,
+      850,
+      900,
+      950
+    ],
+    "large": [
+      1000,
+      1100,
+      1200,
+      1300,
+      1400,
+      1500,
+      1600,
+      1700,
+      1800,
+      1900,
+      2000
+    ]
+  },
+  "population": 120,
+  "generations": 250,
+  "variants": [
+    1,
+    2,
+    4,
+    8
+  ],
+  "protocol": "exactly one setting changes: number of islands; same total population, generations, initial seeded permutations",
+  "timing": "wall clock including worker and migration overhead",
+  "chart": "PCHIP presentation interpolation only; scatter points are empirical"
+}

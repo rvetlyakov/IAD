@@ -313,22 +313,112 @@ def validate(group,root,workers=2):
         save(root/f"{group}_holdout.csv",rows)
     return rows
 
+# Values found on larger/smaller training groups are candidates, never
+# automatically transplanted without TARGET-class training evidence.
+TRANSFER_FIELDS=("selection","rank_power","adaptive","adaptive_horizon",
+    "adaptive_long_prob","adaptive_long_pct","mutation_prob","inversion_pct",
+    "elitism","local_every","local_candidates","local_passes","local_top",
+    "cycle3","cycle3_passes")
+
+def transfer(group,root,workers=2):
+    """One-coordinate cross-size transfer tested only on TARGET TRAIN data.
+
+    Equal population and generations are held in the target context.
+    Accept a donor's value only if its paired target TRAIN mean error drops.
+    No survey/holdout observations enter selection; only one config field
+    changes per test. Run this after refining all three classes, before OFAT.
+    """
+    root=Path(root)
+    metas={}
+    for name in TRAIN:
+        file=root/f"{name}_frozen_baseline.json"
+        if not file.is_file():
+            raise FileNotFoundError(f"Complete refinement for {name} before transfer")
+        metas[name]=json.loads(file.read_text(encoding="utf-8"))
+    meta=metas[group]
+    current=Config(**meta["selected_settings"])
+    sources={name:Config(**m["selected_settings"]) for name,m in metas.items()}
+    cache={}
+    for n in TRAIN[group]:
+        for token in SEEDS["train"]:
+            seed=_seed(n,token,"train")
+            cache[(n,token)]=(seed,)+problem(n,seed)
+    def average(c):
+        return mean(evaluate(cache[(n,t)][1],cache[(n,t)][2],c,
+                   cache[(n,t)][0]+9,workers)[1]
+                   for n in TRAIN[group] for t in SEEDS["train"])
+    trials=[]
+    for field in TRANSFER_FIELDS:
+        if field=="rank_power" and current.selection!="rank":continue
+        if field.startswith("adaptive_") and not current.adaptive:continue
+        if field=="cycle3_passes" and not current.cycle3:continue
+        context=current
+        candidates={getattr(context,field):"target"}
+        for name,source in sources.items():
+            if name!=group:candidates.setdefault(getattr(source,field),name)
+        scores=[]
+        for value,origin in candidates.items():
+            c=replace(context,**{field:value})
+            changed={k for k in asdict(context) if getattr(context,k)!=getattr(c,k)}
+            assert changed<={field}
+            score=average(c)
+            scores.append((score,value,origin))
+            trials.append(dict(target_class=group,parameter=field,
+                value=str(value),source_class=origin,mean_train_error_pct=score,
+                context_json=json.dumps(asdict(context),sort_keys=True),
+                settings_json=json.dumps(asdict(c),sort_keys=True)))
+        winner=min(scores,key=lambda z:z[0])
+        # Require strict improvement, rather than moving on ties.
+        baseline=next(score for score,value,_ in scores
+                      if value==getattr(context,field))
+        if winner[0]<baseline-1.e-9:
+            current=replace(context,**{field:winner[1]})
+    save(root/f"{group}_transfer.csv",trials)
+    meta["selected_settings"]=asdict(current)
+    if "island_settings" in meta:
+        island=Config(**meta["island_settings"])
+        island=replace(island,**{name:getattr(current,name)
+                               for name in TRANSFER_FIELDS})
+        meta["island_settings"]=asdict(island)
+    meta["cross_class_transfer"]={
+        "method":"one-factor on target TRAIN with fixed N,G; lower mean accepted",
+        "candidate_sources":list(TRAIN),"trials":len(trials),
+        "no_holdout_selection":True}
+    (root/f"{group}_frozen_baseline.json").write_text(
+        json.dumps(meta,indent=2,ensure_ascii=False),encoding="utf-8")
+    return asdict(current)
+
+
 def main():
     p=argparse.ArgumentParser()
-    p.add_argument("--class-name",choices=tuple(TRAIN),default="medium")
+    p.add_argument("--class-name",choices=tuple(TRAIN)+("all",),default="medium")
     p.add_argument("--output",default="results/staged_tuning_v2")
     p.add_argument("--source",default="results/dense_ofat_20261027/best_observed_config.json")
-    p.add_argument("--stage",choices=("train","refine","ofat","holdout","all"),default="all")
+    p.add_argument("--stage",choices=("train","refine","transfer","ofat","holdout","all"),default="all")
     p.add_argument("--workers",type=int,default=2)
     p.add_argument("--rounds",type=int,default=1)
     p.add_argument("--parameters",nargs="*",default=None)
     args=p.parse_args()
+    groups=tuple(TRAIN) if args.class_name=="all" else (args.class_name,)
+    # Complete the TRAIN-only phases for ALL groups before any transfer.
     if args.stage in ("train","all"):
-        print("SELECTED",train(args.class_name,args.output,args.source,args.workers),flush=True)
+        for group in groups:
+            print("SELECTED",group,train(group,args.output,args.source,args.workers),
+                  flush=True)
     if args.stage in ("refine","all"):
-        print("REFINED",refine(args.class_name,args.output,args.workers,args.rounds,args.parameters),flush=True)
-    if args.stage in ("ofat","all"):ofat(args.class_name,args.output,args.workers)
-    if args.stage in ("holdout","all"):validate(args.class_name,args.output,args.workers)
+        for group in groups:
+            print("REFINED",group,refine(group,args.output,args.workers,
+                                    args.rounds,args.parameters),flush=True)
+    if args.stage in ("transfer","all") and args.class_name=="all":
+        for group in groups:
+            print("TRANSFER",group,transfer(group,args.output,args.workers),flush=True)
+    elif args.stage=="transfer":
+        print("TRANSFER",groups[0],transfer(groups[0],args.output,args.workers),
+              flush=True)
+    if args.stage in ("ofat","all"):
+        for group in groups:ofat(group,args.output,args.workers)
+    if args.stage in ("holdout","all"):
+        for group in groups:validate(group,args.output,args.workers)
 
 if __name__=="__main__":
     main()

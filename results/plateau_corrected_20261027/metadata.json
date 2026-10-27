@@ -1,0 +1,45 @@
+{
+  "mode": "full",
+  "seed": 20261029,
+  "repeats": 2,
+  "requested_parameters": [
+    "plateau_limit",
+    "plateau_diff"
+  ],
+  "completed_parameters": [
+    "plateau_limit",
+    "plateau_diff"
+  ],
+  "classes": {
+    "small": [
+      10,
+      20,
+      30,
+      40,
+      50
+    ],
+    "medium": [
+      100,
+      200,
+      300,
+      400,
+      500
+    ],
+    "large": [
+      1000,
+      1250,
+      1500,
+      1750,
+      2000
+    ]
+  },
+  "x_axis": "categorical: equal-width small, medium, large class bands",
+  "y_axis": "symmetric log for relative error percent, linear from 0 to 100%",
+  "series": "one per changed hyperparameter value",
+  "method": "per class tuned baseline, OFAT (all other values held fixed)",
+  "reference": "scipy.optimize.linear_sum_assignment",
+  "seeds": "paired among values of each parameter; independent across sizes/repeats",
+  "plateau_experiments": "single GA only; early stop on population mean fitness",
+  "island_experiments": "multiprocess islands; total_population is the sum over islands",
+  "caveat": "best among observed settings only; not a global optimizer"
+}

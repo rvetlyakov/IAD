@@ -71,8 +71,8 @@ jobs:
           assert len(ofat)==len(CLASS_GRID['medium'])*sum(map(len,LEVELS.values()))
           assert len(hold)==2*3*3,len(hold)
           assert int(meta['selected_settings']['generations']) in (100,250,500,750,1000)
-          assert len(list((root/'plots').glob('*.png')))==len(LEVELS)
-          assert len(list((root/'plots').glob('*.svg')))==len(LEVELS)
+          assert len(list((root/'plots').glob('*.png')))==2*len(LEVELS)
+          assert len(list((root/'plots').glob('*.svg')))==2*len(LEVELS)
           for row in ofat:
               b=json.loads(row['context_json']);c=json.loads(row['settings_json'])
               assert {k for k in b if b[k]!=c[k]}<={row['parameter']}
@@ -85,7 +85,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -f results/staged_tuning_v2
-          git commit -m "results: train medium G up to 1000, freeze settings, and draw 17 pure charts"
+          git commit -m "results: train medium G up to 1000, freeze settings, and draw verified error/time chart pairs"
           git fetch origin research/dense-ofat-20261027
           git rebase origin/research/dense-ofat-20261027
           git push origin HEAD:research/dense-ofat-20261027

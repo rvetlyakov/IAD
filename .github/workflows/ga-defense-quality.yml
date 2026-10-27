@@ -1,0 +1,39 @@
+name: GA defense quality gate
+on:
+  push:
+    branches: [main, "fix/**", "research/**"]
+    paths:
+      - "lab1/**"
+      - "tests/**"
+      - "results/**"
+      - ".github/workflows/ga-defense-quality.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      OPENBLAS_NUM_THREADS: "1"
+      OMP_NUM_THREADS: "1"
+      MKL_NUM_THREADS: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - name: Install dependencies and Ruff
+        run: |
+          python -m pip install -r requirements.txt ruff
+      - name: Compile all Python
+        run: python -m compileall -q lab1 tests
+      - name: Critical lint for complete repository
+        run: ruff check lab1 tests --select E9,F63,F7,F82
+      - name: Strict lint of release evidence audit
+        run: ruff check lab1/final_evidence_audit.py
+      - name: Entire regression suite
+        run: python -m unittest discover -s tests -v
+      - name: Validate real graphs, source CSV, independence and island fairness
+        run: python lab1/final_evidence_audit.py
